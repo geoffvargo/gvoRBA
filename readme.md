@@ -1,2 +1,2 @@
 gvoRBA
-(Geoff Vargo's Own Room)
+(Geoff Vargo's Own Room Booking App)
