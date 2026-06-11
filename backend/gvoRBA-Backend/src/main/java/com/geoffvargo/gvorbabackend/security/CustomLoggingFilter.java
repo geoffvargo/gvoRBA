@@ -1,5 +1,6 @@
 package com.geoffvargo.gvorbabackend.security;
 
+import org.slf4j.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.filter.*;
 
@@ -10,11 +11,16 @@ import jakarta.servlet.http.*;
 
 @Component
 public class CustomLoggingFilter extends OncePerRequestFilter {
+	private static final Logger logger = LoggerFactory.getLogger(CustomLoggingFilter.class);
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 	throws ServletException, IOException {
-		System.out.println("CustomLoggingFilter --- Request URI: " + request.getRequestURI());
-		filterChain.doFilter(request, response);
-		System.out.println("CustomLoggingFilter --- Response Status: " + response.getStatus());
+		logger.info("CustomLoggingFilter --- Request URI: {}", request.getRequestURI());
+		try {
+			filterChain.doFilter(request, response);
+		} finally {
+			logger.info("CustomLoggingFilter --- Response Status: {}", response.getStatus());
+		}
 	}
 }

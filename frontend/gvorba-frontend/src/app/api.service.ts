@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Ping } from './ping.interface';
 
-const baseURL = 'http://localhost:8080/api';
+const baseURL = '/api';
 
 @Injectable({
 	providedIn: 'root',

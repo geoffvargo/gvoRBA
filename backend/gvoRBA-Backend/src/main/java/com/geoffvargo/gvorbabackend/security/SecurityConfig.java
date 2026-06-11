@@ -19,7 +19,7 @@ public class SecurityConfig {
 	private String allowedOrigins;
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http, CustomLoggingFilter customLoggingFilter) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		http.authorizeHttpRequests(requests ->
@@ -27,7 +27,7 @@ public class SecurityConfig {
 				                           .requestMatchers("/api/health").permitAll()
 				                           .requestMatchers("/api/ping").permitAll()
 				                           .anyRequest().authenticated());
-		http.addFilterBefore(new CustomLoggingFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(customLoggingFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

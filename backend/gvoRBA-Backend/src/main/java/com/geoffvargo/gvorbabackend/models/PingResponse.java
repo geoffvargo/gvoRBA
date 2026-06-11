@@ -5,6 +5,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 public class PingResponse {
-	String status;
-	String timestamp;
+	private String status;
+	private String timestamp;
 }

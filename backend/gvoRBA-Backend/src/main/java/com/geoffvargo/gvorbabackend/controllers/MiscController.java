@@ -11,12 +11,12 @@ import java.time.*;
 @RequestMapping("/api")
 public class MiscController {
 	@GetMapping("/health")
-	public ResponseEntity<?> getHealth() {
+	public ResponseEntity<String> getHealth() {
 		return ResponseEntity.ok("I'M ALIVE!");
 	}
 	
 	@GetMapping("/ping")
-	public ResponseEntity<?> getPing() {
+	public ResponseEntity<PingResponse> getPing() {
 		String status = "ok";
 		String timestamp = LocalDateTime.now().toString();
 		PingResponse pingResponse = new PingResponse(status, timestamp);
