@@ -74,9 +74,9 @@
 		</dependency>
 
 		<dependency>
-			<artifactId>mysql-connector-j</artifactId>
-			<groupId>com.mysql</groupId>
-			<scope>runtime</scope>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<artifactId>lombok</artifactId>
