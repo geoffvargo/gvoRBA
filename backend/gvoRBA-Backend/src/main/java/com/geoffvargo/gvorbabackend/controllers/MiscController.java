@@ -9,7 +9,6 @@ import java.time.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
 public class MiscController {
 	@GetMapping("/health")
 	public ResponseEntity<?> getHealth() {
