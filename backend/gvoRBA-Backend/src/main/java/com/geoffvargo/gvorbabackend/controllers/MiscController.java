@@ -1,7 +1,6 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import org.springframework.http.*;
-import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,6 +8,6 @@ import org.springframework.web.bind.annotation.*;
 public class MiscController {
 	@GetMapping("/health")
 	public ResponseEntity<?> getHealth() {
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ResponseEntity.ok("I'M ALIVE!");
 	}
 }
