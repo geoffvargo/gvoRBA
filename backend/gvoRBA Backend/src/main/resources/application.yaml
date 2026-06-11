@@ -3,9 +3,9 @@ spring:
     name: gvoRBA Backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/booking
-    username: booking
-    password: booking
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/booking}
+    username: ${DB_USERNAME:booking}
+    password: ${DB_PASSWORD:booking}
   jpa:
     hibernate:
       ddl-auto: update
