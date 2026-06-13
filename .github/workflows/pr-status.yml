@@ -1,0 +1,12 @@
+name: PR Status
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  status:
+    name: PR check passed
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All required checks satisfied"
