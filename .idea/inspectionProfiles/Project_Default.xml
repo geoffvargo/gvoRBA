@@ -242,6 +242,7 @@
     <inspection_tool class="PermissionUsageInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="R8IgnoredFlags" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="SpringBootApplicationProperties" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="SqlNoDataSourceInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="XmlWrongFileType" enabled="true" level="ERROR" enabled_by_default="true" />
   </profile>
 </component>
