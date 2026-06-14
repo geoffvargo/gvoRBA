@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="booking@localhost" uuid="e01bc41d-61ed-4a49-beb7-a8d7d017bb33">
+    <data-source source="LOCAL" name="booking@localhost" uuid="399e7ed3-3f6a-4953-951d-9e3e6a2f7f9c">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
-      <remarks>$PROJECT_DIR$/backend/gvoRBA Backend/src/main/resources/application.yaml</remarks>
+      <remarks>$PROJECT_DIR$/backend/gvoRBA-Backend/src/main/resources/application.yaml</remarks>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/booking</jdbc-url>
       <jdbc-additional-properties>

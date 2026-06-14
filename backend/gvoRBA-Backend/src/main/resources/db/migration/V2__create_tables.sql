@@ -1,0 +1,34 @@
+CREATE SEQUENCE users_seq START WITH 1 INCREMENT BY 50;
+CREATE SEQUENCE rooms_seq START WITH 1 INCREMENT BY 50;
+CREATE SEQUENCE bookings_seq START WITH 1 INCREMENT BY 50;
+
+CREATE TABLE users
+(
+	id         BIGINT PRIMARY KEY,
+	email      VARCHAR(255),
+	password   VARCHAR(255),
+	name       VARCHAR(255),
+	role       SMALLINT,
+	created_on TIMESTAMP
+);
+
+CREATE TABLE rooms
+(
+	id         BIGINT PRIMARY KEY,
+	name       VARCHAR(255) NOT NULL,
+	location   VARCHAR(255),
+	capacity   INTEGER,
+	amenities  TEXT[],
+	is_active  BOOLEAN,
+	created_on TIMESTAMP
+);
+
+CREATE TABLE bookings
+(
+	id        BIGINT PRIMARY KEY,
+	room_id   BIGINT NOT NULL REFERENCES rooms (id),
+	starts_at TIMESTAMP,
+	ends_at   TIMESTAMP,
+	purpose   VARCHAR(255),
+	status    SMALLINT
+);
