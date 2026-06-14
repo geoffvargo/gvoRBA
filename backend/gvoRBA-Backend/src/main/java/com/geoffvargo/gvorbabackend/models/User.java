@@ -15,13 +15,18 @@ public class User {
 	@Column(name = "id", nullable = false)
 	private Long id;
 	
+	@Column(name = "email")
 	private String email;
 	
+	@Column(name="password")
 	private String password;
 	
+	@Column(name="name")
 	private String name;
 	
+	@Column(name="role")
 	private Role role;
 	
+	@Column(name="created_on")
 	private Date createdOn;
 }
