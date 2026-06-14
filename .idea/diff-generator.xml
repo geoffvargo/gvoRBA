@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DiffGenerationConfig">
+    <option name="snapshotDb" value="false" />
+    <option name="snapshotModelValue" value="gvoRBA-backend:entityManagerFactory" />
+    <option name="sourceModelValue" value="gvoRBA-backend:entityManagerFactory" />
+    <option name="targetDbValue" value="29d9ba6a-1cac-44c8-bc58-7479dc3f4129" />
+  </component>
+</project>

@@ -12,19 +12,24 @@ import lombok.*;
 public class Room {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(nullable = false)
+	@Column(name = "id", nullable = false)
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(name = "name", nullable = false)
 	private String name;
 	
+	@Column(name = "location")
 	private String location;
 	
+	@Column(name = "capacity")
 	private Integer capacity;
 	
+	@Column(name = "amenities")
 	private String[] amenities;
 	
+	@Column(name = "isActive")
 	private Boolean isActive;
 	
+	@Column(name = "createdOn")
 	private Date createdOn;
 }
