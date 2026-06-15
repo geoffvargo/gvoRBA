@@ -1,5 +1,7 @@
 package com.geoffvargo.gvorbabackend.models;
 
+import com.fasterxml.jackson.annotation.*;
+
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -24,7 +26,10 @@ public class User {
 	@Column(name="name")
 	private String name;
 	
-	@Column(name="role")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="role", referencedColumnName = "role_id")
+	@JsonIgnoreProperties
+	@ToString.Exclude
 	private Role role;
 	
 	@Column(name="created_on")

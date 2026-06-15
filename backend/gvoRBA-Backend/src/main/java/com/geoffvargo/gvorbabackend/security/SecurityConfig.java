@@ -4,9 +4,13 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.*;
+import org.springframework.security.config.annotation.authentication.configuration.*;
 import org.springframework.security.config.annotation.web.builders.*;
 import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.config.annotation.web.configurers.*;
+import org.springframework.security.crypto.bcrypt.*;
+import org.springframework.security.crypto.password.*;
 import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.*;
 import org.springframework.web.cors.*;
@@ -14,6 +18,15 @@ import org.springframework.web.cors.*;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+		return authConfig.getAuthenticationManager();
+	}
 
 	@Value("${app.cors.allowed-origins:http://localhost:4200}")
 	private String allowedOrigins;
@@ -28,6 +41,7 @@ public class SecurityConfig {
 				                           .requestMatchers("/api/ping").permitAll()
 				                           .anyRequest().authenticated());
 		http.addFilterBefore(customLoggingFilter, UsernamePasswordAuthenticationFilter.class);
+		
 		return http.build();
 	}
 
