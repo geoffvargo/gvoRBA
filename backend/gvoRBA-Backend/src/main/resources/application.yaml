@@ -6,6 +6,10 @@ spring:
   application:
     name: gvoRBA Backend
 
+  app:
+    jwtSecret: "mySecretKey123912738aopsgjnspkmndfsopkvajoirjg94gf2opfng2moknm"
+    jwtExpirationMs: 172800000
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/booking}
     username: ${DB_USERNAME:booking}
@@ -19,3 +23,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 server:
   port: ${PORT:8080}
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        security.oauth2: DEBUG
+        web: DEBUG

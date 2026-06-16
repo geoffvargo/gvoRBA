@@ -1,8 +1,12 @@
 package com.geoffvargo.gvorbabackend.security;
 
-import java.util.*;
+import com.geoffvargo.gvorbabackend.models.*;
+import com.geoffvargo.gvorbabackend.models.Role;
+import com.geoffvargo.gvorbabackend.repos.*;
+import com.geoffvargo.gvorbabackend.security.jwt.*;
 
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.*;
@@ -15,9 +19,17 @@ import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.*;
 import org.springframework.web.cors.*;
 
+import java.util.*;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+	@Autowired
+	private AuthEntryPointJwt unauthorizedHandler;
+	
+	@Value("${app.cors.allowed-origins:http://localhost:4200}")
+	private String allowedOrigins;
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -27,24 +39,25 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
 	}
-
-	@Value("${app.cors.allowed-origins:http://localhost:4200}")
-	private String allowedOrigins;
-
+	
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http, CustomLoggingFilter customLoggingFilter) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http, CustomLoggingFilter customLoggingFilter)
+	throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		http.authorizeHttpRequests(requests ->
 			                           requests
 				                           .requestMatchers("/api/health").permitAll()
 				                           .requestMatchers("/api/ping").permitAll()
+				                           .requestMatchers("/api/auth/public/**").permitAll()
 				                           .anyRequest().authenticated());
+		http.exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler));
 		http.addFilterBefore(customLoggingFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 		
 		return http.build();
 	}
-
+	
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
@@ -54,5 +67,45 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);
 		return source;
+	}
+	
+	@Bean
+	public AuthTokenFilter authTokenFilter() {
+		return new AuthTokenFilter();
+	}
+	
+	@Bean
+	public CommandLineRunner initData(UserRepository userRepository, RoleRepository roleRepository,
+	                                  PasswordEncoder passwordEncoder) {
+		return args -> {
+			Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+				                .orElseGet(() ->
+					                           roleRepository.save(new Role(AppRole.ROLE_USER)));
+			
+			Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+				                 .orElseGet(() ->
+					                            roleRepository.save(new Role(AppRole.ROLE_ADMIN)));
+			
+			if (!userRepository.existsByName("user1")) {
+				User user1 = new User();
+				user1.setName("user1");
+				user1.setEmail("user1@blah.com");
+				user1.setPassword(passwordEncoder.encode("password1"));
+				user1.setRole(userRole);
+				user1.setCreatedOn(new Date());
+				
+				userRepository.save(user1);
+			}
+			
+			if (!userRepository.existsByName("admin")) {
+				User user2 = new User();
+				user2.setName("admin");
+				user2.setEmail("admin@blah.com");
+				user2.setPassword(passwordEncoder.encode("password1"));
+				user2.setRole(adminRole);
+				user2.setCreatedOn(new Date());
+				userRepository.save(user2);
+			}
+		};
 	}
 }

@@ -35,6 +35,7 @@ CREATE TABLE bookings
 (
 	id        BIGINT PRIMARY KEY,
 	room_id   BIGINT NOT NULL REFERENCES rooms (id),
+	user_id   BIGINT NOT NULL REFERENCES users (id),
 	starts_at TIMESTAMP,
 	ends_at   TIMESTAMP,
 	purpose   VARCHAR(255),
@@ -43,10 +44,10 @@ CREATE TABLE bookings
 
 CREATE TABLE refresh_token
 (
-	id  BIGINT PRIMARY KEY,
-	user_id BIGINT REFERENCES users (id),
+	id         BIGINT PRIMARY KEY,
+	user_id    BIGINT REFERENCES users (id),
 	token_hash VARCHAR(255) NOT NULL UNIQUE,
-	expires_at TIMESTAMP NOT NULL,
+	expires_at TIMESTAMP    NOT NULL,
 	revoked_at TIMESTAMP
 );
 
