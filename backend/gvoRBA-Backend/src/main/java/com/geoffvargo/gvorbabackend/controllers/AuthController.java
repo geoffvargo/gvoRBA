@@ -1,6 +1,8 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import com.geoffvargo.gvorbabackend.models.*;
+import com.geoffvargo.gvorbabackend.models.User;
+import com.geoffvargo.gvorbabackend.repos.*;
 import com.geoffvargo.gvorbabackend.security.jwt.*;
 import com.geoffvargo.gvorbabackend.services.*;
 import com.geoffvargo.gvorbabackend.utils.*;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+import jakarta.validation.*;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -25,6 +29,12 @@ public class AuthController {
 	
 	@Autowired
 	private AuthenticationManager authManager;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
 	
 	@Autowired
 	private UserDetailsService userDetailsService;
@@ -67,5 +77,39 @@ public class AuthController {
 		LoginResponse response = new LoginResponse(jwtToken, userDetails.getUsername(), roles);
 		
 		return ResponseEntity.ok(response);
+	}
+	
+	@PostMapping("/public/signup")
+	public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
+		if (userRepository.existsByName(request.getUsername())) {
+			return ResponseEntity.badRequest().body("Username is already in use!");
+		}
+		
+		if (userRepository.existsByEmail(request.getEmail())) {
+			return ResponseEntity.badRequest().body("Email is already in use!");
+		}
+		
+		/// Create the new user's account
+		User user = User.builder()
+			            .name(request.getUsername())
+			            .email(request.getEmail())
+			            .role(parseRole())
+			            .password(passwordEncoder.encode(request.getPassword()))
+			            .createdOn(new Date())
+			            .build();
+		
+		userRepository.save(user);
+		
+		return ResponseEntity.ok("User registered successfully!");
+	}
+	
+	private Role parseRole() {
+		if ("ROLE_USER".matches("ROLE_ADMIN")) {
+			return roleRepository.findByRoleName(AppRole.ROLE_ADMIN).orElseThrow(
+				() -> new RuntimeException("Role not found!"));
+		} else {
+			return roleRepository.findByRoleName(AppRole.valueOf("ROLE_USER")).orElseThrow(
+				() -> new RuntimeException("Role not found!"));
+		}
 	}
 }

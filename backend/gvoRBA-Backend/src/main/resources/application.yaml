@@ -28,6 +28,6 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: trace
         security.oauth2: DEBUG
         web: DEBUG
