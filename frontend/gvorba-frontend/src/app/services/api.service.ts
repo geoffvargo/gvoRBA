@@ -1,0 +1,24 @@
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Ping } from '../ping.interface';
+import { environment } from '../../environments/environment';
+import { LoginRequest } from '../models/login-request.model';
+import { LoginResponse } from '../models/login-response.model';
+
+// const baseURL = '/api';
+
+@Injectable({
+	providedIn: 'root',
+})
+export class ApiService {
+	private httpClient = inject(HttpClient);
+	private baseUrl = environment.apiBaseUrl;
+	
+	loginUser(data: LoginRequest) {
+		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/signin`, data);
+	}
+	
+	getPing() {
+		return this.httpClient.get<Ping>(`${this.baseUrl}/api/ping`);
+	}
+}
