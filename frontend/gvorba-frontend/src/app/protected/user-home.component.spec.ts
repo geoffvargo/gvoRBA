@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 
 import { UserHomeComponent } from './user-home.component';
 
@@ -8,7 +11,13 @@ describe('UserLandingComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserHomeComponent]
+      imports: [UserHomeComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+        JwtHelperService,
+      ],
     })
     .compileComponents();
 
