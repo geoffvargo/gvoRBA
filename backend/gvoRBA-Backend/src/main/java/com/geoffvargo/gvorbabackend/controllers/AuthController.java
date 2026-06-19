@@ -1,6 +1,7 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import com.geoffvargo.gvorbabackend.models.*;
+import com.geoffvargo.gvorbabackend.models.DTOs.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.repos.*;
 import com.geoffvargo.gvorbabackend.security.jwt.*;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.*;
+import org.springframework.security.core.annotation.*;
 import org.springframework.security.core.context.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.*;
@@ -101,6 +103,19 @@ public class AuthController {
 		userRepository.save(user);
 		
 		return ResponseEntity.ok("User registered successfully!");
+	}
+	
+	@GetMapping("/getUser")
+	public ResponseEntity<UserDto> getUser(@AuthenticationPrincipal UserDetails userDetails) {
+		User user = userRepository.findByName(userDetails.getUsername()).orElseThrow(
+			() -> new UsernameNotFoundException("User not found!")
+		);
+
+//		List<String> roles = userDetails.getAuthorities().stream()
+//			                     .map(GrantedAuthority::getAuthority)
+//			                     .toList();
+		
+		return ResponseEntity.ok(UserDto.fromUser(user));
 	}
 	
 	private Role parseRole() {
