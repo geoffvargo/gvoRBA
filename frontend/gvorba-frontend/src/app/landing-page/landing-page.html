@@ -1,0 +1,54 @@
+<div class="flex-nowrap justify-center">
+	<div class="w-full py-16 flex justify-center items-center flex-col">
+		<div class="card bg-base-100 shadow-lg w-fit">
+			<form [formGroup]="loginForm">
+				<div class="px-4 py-2 m-2 flex flex-col gap-2">
+					<label for="username">
+						Username:
+					</label>
+					<input type="text"
+					       name="username"
+					       id="username"
+					       class="input"
+					       formControlName="username">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex flex-col gap-2">
+					<label for="password">Password:</label>
+					<input type="password"
+					       name="password"
+					       id="password"
+					       class="input bg-white"
+					       formControlName="password">
+				</div>
+				<div class="card-actions m-4 gap-2 flex-col items-center">
+					<a routerLink="login">
+						<button class="btn btn-primary hover:scale-105 shadow-md"
+						        id="login-button"
+						        (click)="onSubmit()">
+							Log In
+						</button>
+					</a>
+				</div>
+			</form>
+		</div>
+		<div class="card bg-neutral-content flex m-4 shadow-md">
+			<div class="card-body">
+				<h2 class="card-title">Login Response:</h2>
+				<h3 class="flex-wrap text-wrap">
+					<b>Token:</b>
+					{{ loginResponse().jwtToken }}
+				</h3>
+				<h3 class="flex-wrap text-wrap">
+					<b>Username:</b>
+					{{ loginResponse().username }}
+				</h3>
+				<h3 class="flex-wrap text-wrap">
+					<b>Role:</b>
+					{{ loginResponse().roles }}
+				</h3>
+			</div>
+		</div>
+	</div>
+
+</div>

@@ -19,6 +19,10 @@ public class Booking {
 	@JoinColumn(name = "room_id", referencedColumnName = "id", nullable = false)
 	private Room roomId;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+	private User userId;
+	
 	@Column(name = "starts_at")
 	private LocalDateTime startsAt;
 	

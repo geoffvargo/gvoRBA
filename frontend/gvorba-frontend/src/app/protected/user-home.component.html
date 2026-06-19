@@ -1,0 +1,25 @@
+<div class="flex-nowrap justify-center">
+	<div class="w-full py-16 flex items-center justify-center">
+		<div class="card bg-base-100 shadow-lg w-fit p-2">
+			<h2 class="card-title">Credentials:</h2>
+			<div class="card-body">
+				<p>
+					<span class="font-semibold">Username:</span>
+					{{ currUser().name }}
+				</p>
+				<p>
+					<span class="font-semibold">Email:</span>
+					{{ currUser().email }}
+				</p>
+				<p>
+					<span class="font-semibold">Role:</span>
+					{{ currUser().role.roleName }}
+				</p>
+				<p class="break-all pl-19 -indent-19">
+					<span class="font-semibold">JWT Token:</span>
+					{{ token() }}
+				</p>
+			</div>
+		</div>
+	</div>
+</div>

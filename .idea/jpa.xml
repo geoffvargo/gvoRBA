@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="JpaBuddyIdeaProjectConfig" ddlLastScriptDirectoryPath="$PROJECT_DIR$/backend/gvoRBA-Backend" />
+  <component name="JpaBuddyIdeaProjectConfig" ddlLastScriptDirectoryPath="$PROJECT_DIR$/backend/gvoRBA-Backend" newRepositoryParent="org.springframework.data.jpa.repository.JpaRepository" />
+  <component name="JpaPluginProjectSettings" repositoryOtherConditionTypes="3, 1" />
 </project>

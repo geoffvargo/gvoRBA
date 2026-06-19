@@ -19,6 +19,7 @@ module.exports = tseslint.config(
     processor: angularTemplate.processors['extract-inline-html'],
     rules: {
       ...angular.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@angular-eslint/directive-selector': [
         'error',
         {
