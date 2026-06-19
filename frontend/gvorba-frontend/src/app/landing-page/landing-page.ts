@@ -1,9 +1,10 @@
 import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { LoginRequest } from '../models/login-request.model';
 import { emptyResponse, LoginResponse } from '../models/login-response.model';
+import { TokenStorageService } from '../services/token-storage-service';
 
 @Component({
 	selector: 'app-landing-page',
@@ -14,6 +15,8 @@ import { emptyResponse, LoginResponse } from '../models/login-response.model';
 })
 export class LandingPage {
 	private apiService = inject(ApiService);
+	private tokenStorageService = inject(TokenStorageService);
+	private router = inject(Router);
 	
 	loginRequest = signal<LoginRequest>({ username: '', password: '' });
 	loginResponse = signal<LoginResponse>(emptyResponse());
@@ -38,7 +41,8 @@ export class LandingPage {
 			next: (response: LoginResponse) => {
 				console.log('logged in: ', response);
 				this.loginResponse.set(response);
-				sessionStorage.setItem('auth-token', response.jwtToken);
+				this.tokenStorageService.saveToken(response.jwtToken);
+				this.router.navigate(['/home']);
 			},
 			error: err => console.log(err),
 		});
