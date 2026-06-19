@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { TokenStorageService } from '../services/token-storage-service';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -10,7 +10,7 @@ import { User } from '../models/user.model';
 	templateUrl: './user-home.component.html',
 	styleUrl: './user-home.component.css',
 })
-export class UserHomeComponent {
+export class UserHomeComponent implements OnInit {
 	private apiService = inject(ApiService);
 	private tokenService = inject(TokenStorageService);
 	private jwtHelper = inject(JwtHelperService);
@@ -18,7 +18,7 @@ export class UserHomeComponent {
 	token = signal(this.tokenService.getToken() ?? '');
 	currUser = signal<User>(new User);
 	
-	decodeJwt(token: string): any {
+	decodeJwt(token: string): unknown {
 		const payload = token.split('.')[1];
 		const decodedPayload = atob(payload);
 		console.log('[TARGET] decodedPayload: ' + decodedPayload);

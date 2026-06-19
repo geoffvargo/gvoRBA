@@ -1,15 +1,15 @@
 import { Role } from './role.model';
 
 export class User {
-	id: number = -1;
-	email: string = '';
-	name: string = '';
+	id = -1;
+	email = '';
+	name = '';
 	role: Role = new Role();
 	createdOn: Date = new Date();
 	
-	constructor(id: number = -1,
-	            email: string = '',
-	            name: string = '',
+	constructor(id = -1,
+	            email = '',
+	            name = '',
 	            role: Role = new Role(),
 	            createdOn: Date = new Date()) {
 		this.id = id;

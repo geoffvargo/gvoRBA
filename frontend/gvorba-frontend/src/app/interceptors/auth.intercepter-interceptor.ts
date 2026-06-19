@@ -8,7 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 	const tokenService = inject(TokenStorageService);
 	const token = tokenService.getToken();
 	
-	const headers: { [p: string]: string | string[] } = {
+	const headers: Record<string, string | string[]> = {
 		'Authorization': token ? `Bearer ${token}` : '',
 		'Content-Type': 'application/json',
 		'Accept': 'application/json',

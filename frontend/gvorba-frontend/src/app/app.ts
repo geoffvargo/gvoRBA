@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ApiService } from './services/api.service';
 
@@ -8,11 +8,8 @@ import { ApiService } from './services/api.service';
 	templateUrl: './app.html',
 	styleUrl: './app.css',
 })
-export class App implements OnInit {
+export class App {
 	private apiService = inject(ApiService);
 	private destroyRef = inject(DestroyRef);
 	protected readonly title = signal('gvorba-frontend');
-	
-	ngOnInit() {
-	}
 }

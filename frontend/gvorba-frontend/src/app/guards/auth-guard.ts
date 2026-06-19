@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { TokenStorageService } from '../services/token-storage-service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (_route, _state) => {
 	const router = inject(Router);
 	const tokenService = inject(TokenStorageService);
 	const jwtHelper = inject(JwtHelperService);
