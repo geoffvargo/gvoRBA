@@ -6,6 +6,8 @@ import { LoginRequest } from '../models/login-request.model';
 import { LoginResponse } from '../models/login-response.model';
 import { User } from '../models/user.model';
 import { Room } from '../models/room.model';
+import { BehaviorSubject } from 'rxjs';
+import { TokenStorageService } from './token-storage-service';
 
 // const baseURL = '/api';
 
@@ -15,9 +17,24 @@ import { Room } from '../models/room.model';
 export class ApiService {
 	private httpClient = inject(HttpClient);
 	private baseUrl = environment.apiBaseUrl;
+	private tokenService = inject(TokenStorageService);
+	private isLoggedInSubject = new BehaviorSubject<boolean>(false);
+	
+	// loggedIn = new BehaviorSubject<boolean>(true);
+	isloggedIn$ = this.isLoggedInSubject.asObservable();
+	
+	notifyLoggedIn() {
+		this.isLoggedInSubject.next(true);
+	}
 	
 	loginUser(data: LoginRequest) {
 		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/signin`, data);
+	}
+	
+	logout() {
+		this.tokenService.removeToken();
+		
+		this.isLoggedInSubject.next(false);
 	}
 	
 	getUser() {

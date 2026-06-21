@@ -11,4 +11,8 @@ export class TokenStorageService {
 	saveToken(token: string) {
 		return sessionStorage.setItem('auth-token', token);
 	}
+	
+	removeToken() {
+		return sessionStorage.removeItem('auth-token');
+	}
 }

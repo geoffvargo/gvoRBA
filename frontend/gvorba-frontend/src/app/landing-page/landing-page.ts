@@ -42,6 +42,7 @@ export class LandingPage {
 				console.log('logged in: ', response);
 				this.loginResponse.set(response);
 				this.tokenStorageService.saveToken(response.jwtToken);
+				this.apiService.notifyLoggedIn();
 				this.router.navigate(['/home']);
 			},
 			error: err => console.log(err),

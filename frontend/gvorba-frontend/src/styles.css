@@ -395,6 +395,9 @@
 	default: true;
 	prefersdark: false;
 	color-scheme: "light";
+	
+	--headerHeight: 74px;
+	
 	--color-base-100: oklch(91.637% 0.034 90.515);
 	--color-base-200: oklch(88.272% 0.049 91.774);
 	--color-base-300: oklch(84.133% 0.065 90.856);
@@ -415,16 +418,27 @@
 	--color-warning-content: oklch(96% 0.059 95.617);
 	--color-error: oklch(70% 0.191 22.216);
 	--color-error-content: oklch(40% 0.123 38.172);
+	
 	--radius-selector: 0.25rem;
 	--radius-field: 0.25rem;
 	--radius-box: 0.5rem;
+	
 	--size-selector: 0.25rem;
 	--size-field: 0.25rem;
+	
 	--border: 1px;
 	--depth: 1;
+	
 	/*--noise: 2;*/
 	
 }
+
+@theme {
+	--height-headerHeight: 74px;
+	--max-height-navbarHeight: 420px;
+	--min-height-customHeight: 530px;
+}
+
 .action-btn {
 	@apply flex justify-center text-white w-full py-2 px-6 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3 cursor-pointer;
 }

@@ -1,0 +1,33 @@
+<header class="h-headerHeight z-50 text-textColor bg-headerColor shadow-sm flex items-center sticky top-0">
+	<nav class="flex p-4 w-full h-full items-center justify-between">
+		<a routerLink="">
+			<h3>gvoRBA</h3>
+		</a>
+		
+		<ul class="flex flex-row gap-4 lg:static absolute left-0 top-16 w-full lg:w-fit lg:px-0">
+			@if (isLoggedIn()) {
+				<li>
+					<a routerLink="/rooms"
+					   class="py-2 cursor-pointer hover:text-slate-300"
+					   [class.font-semibold]="false">
+						Rooms
+					</a>
+				</li>
+				
+				<li>
+					<a class="py-2 cursor-pointer hover:text-slate-300"
+					   [class.font-semibold]="false">
+						Bookings
+					</a>
+				</li>
+				
+				<li>
+					<a class="py-2 cursor-pointer hover:text-slate-300"
+					   (click)="onLogout()">
+						Logout
+					</a>
+				</li>
+			}
+		</ul>
+	</nav>
+</header>
