@@ -62,61 +62,86 @@ Numbered for traceability. Each requirement is testable.
 
 ### 4.1 Authentication and Account Management
 
-- **FR-1.1** A guest can register with email and password. Passwords are
+- **FR-1.1** 
+  A guest can register with email and password. Passwords are
   hashed with BCrypt (strength ≥ 10).
-- **FR-1.2** A registered user can sign in with email and password and
+- **FR-1.2** 
+  A registered user can sign in with email and password and
   receive an access token and refresh token. See ADR-0002.
-- **FR-1.3** A signed-in user can refresh their access token using the
+- **FR-1.3** 
+  A signed-in user can refresh their access token using the
   refresh token cookie without re-entering credentials.
-- **FR-1.4** A signed-in user can sign out, which revokes the current
+- **FR-1.4** 
+  A signed-in user can sign out, which revokes the current
   refresh token.
-- **FR-1.5** A signed-in user can view their own profile (email, role,
+- **FR-1.5** 
+  A signed-in user can view their own profile (email, role,
   registration date).
-- **FR-1.6** Passwords must be at least 8 characters with at least one
+- **FR-1.6** 
+  Passwords must be at least 8 characters with at least one
   letter and one number. Validation is enforced on both client and server.
 
 ### 4.2 Room catalog
 
-- **FR-2.1** A member can view a list of all rooms, with name, capacity, location/floor, and a short description.
-- **FR-2.2** A member can filter rooms by minimum capacity and free-text search across name and description.
-- **FR-2.3** A member can view a single room's details, including a calendar view of its existing bookings for the
+- **FR-2.1** 
+  A member can view a list of all rooms, with name, capacity, location/floor, and a short description.
+- **FR-2.2** 
+  A member can filter rooms by minimum capacity and free-text search across name and description.
+- **FR-2.3** 
+  A member can view a single room's details, including a calendar view of its existing bookings for the
   current and next week.
-- **FR-2.4** An admin can create a new room with name, capacity, location, and description.
-- **FR-2.5** An admin can edit a room's metadata.
-- **FR-2.6** An admin can deactivate a room. Deactivated rooms cannot be booked, but existing future bookings still
+- **FR-2.4** 
+  An admin can create a new room with name, capacity, location, and description.
+- **FR-2.5** 
+  An admin can edit a room's metadata.
+- **FR-2.6** 
+  An admin can deactivate a room. Deactivated rooms cannot be booked, but existing future bookings still
   remain visible. Deactivation is soft; rooms are not hard-deleted.
 
 ### 4.3 Booking Lifecycle
 
-- **FR-3.1** A member can create a booking for an active room by selecting a start time and end time. Bookings must:
+- **FR-3.1** 
+  A member can create a booking for an active room by selecting a start time and end time. Bookings must:
     - Start at a 15-minute boundary (`:00`, `:15`, `:30`, `:45`).
     - Be at least 15 minutes long and at most 4 hours long.
     - Start in the future (not in the past).
     - Start no more than 30 days in the future.
-- **FR-3.2** The system must reject a booking that overlaps any existing booking on the same room, with HTTP 409
+- **FR-3.2** 
+  The system must reject a booking that overlaps any existing booking on the same room, with HTTP 409
   Conflict. See ADR-0001.
-- **FR-3.3** A member can view their own upcoming and past bookings, sorted by start time descending.
-- **FR-3.4** A member can cancel one of their own future bookings. Past bookings cannot be canceled.
-- **FR-3.5** An admin can view all bookings across all rooms and members.
-- **FR-3.6** An admin can cancel any future booking (e.g., to free a room for maintenance). Cancellation by an admin
+- **FR-3.3** 
+  A member can view their own upcoming and past bookings, sorted by start time descending.
+- **FR-3.4** 
+  A member can cancel one of their own future bookings. Past bookings cannot be canceled.
+- **FR-3.5** 
+  An admin can view all bookings across all rooms and members.
+- **FR-3.6** 
+  An admin can cancel any future booking (e.g., to free a room for maintenance). Cancellation by an admin
   records the actor for audit.
 - **FR-3.7** Canceled bookings are soft-deleted (retained with a `cancelled_at` timestamp and `cancelled_by` reference)
   for audit history.
 
 ## 4.4 Availability
 
-- **FR-4.1** The system will return the appropriate bookings when provided with a room and date, which can then be
+- **FR-4.1** 
+  The system will return the appropriate bookings when provided with a room and date, which can then be
   rendered as a day view.
-- **FR-4.2** When provided with a valid range of dates (within working hours) and a minimum capacity, the system will
+- **FR-4.2** 
+  When provided with a valid range of dates (within working hours) and a minimum capacity, the system will
   return a list of available rooms, each with at least one time slot satisfying the specified parameters.
-- **FR-4.3** Default working hours are Mon-Fri, 08:00-18:00, but can be customized the end-user organization.
-- **FR-4.4** Booking requests outside working hours are rejected outright.
+- **FR-4.3** 
+  Default working hours are Mon-Fri, 08:00-18:00, but can be customized the end-user organization.
+- **FR-4.4** 
+  Booking requests outside working hours are rejected outright.
 
 ## 4.5 Administration
 
-- **FR-5.1** An admin can view a list of all users and their roles.
-- **FR-5.2** Admins can promote/demote members to/from the admin role. However, admins cannot demote themselves.
-- **FR-5.3** User accounts can be deactivated by admins. Once deactivated, users can no longer log in, and all their
+- **FR-5.1** 
+  An admin can view a list of all users and their roles.
+- **FR-5.2** 
+  Admins can promote/demote members to/from the admin role. However, admins cannot demote themselves.
+- **FR-5.3** 
+  User accounts can be deactivated by admins. Once deactivated, users can no longer log in, and all their
   pending bookings are automatically canceled.
 
 ## 5. Non-Functional Requirements
