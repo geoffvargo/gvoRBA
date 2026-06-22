@@ -4,10 +4,12 @@ import { AccessDenied } from './access-denied/access-denied';
 import { UserHomeComponent } from './protected/user-home.component';
 import { authGuard } from './guards/auth-guard';
 import { RoomListComponent } from './protected/room-list.component';
+import { BookingsComponent } from './protected/bookings.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
 	{ path: 'access-denied', component: AccessDenied },
 	{ path: 'home', component: UserHomeComponent, canActivate: [authGuard] },
 	{ path: 'rooms', component: RoomListComponent, canActivate: [authGuard] },
+	{ path: 'bookings', component: BookingsComponent, canActivate: [authGuard] },
 ];

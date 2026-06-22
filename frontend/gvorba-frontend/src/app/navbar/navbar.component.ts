@@ -16,7 +16,8 @@ export class NavbarComponent {
 	private subscription!: Subscription;
 	private apiService = inject(ApiService);
 	private jwtHelper = inject(JwtHelperService);
-	private router = inject(Router);
+	
+	protected router = inject(Router);
 	
 	isAdmin = signal(false);
 	isLoggedIn = signal(false);

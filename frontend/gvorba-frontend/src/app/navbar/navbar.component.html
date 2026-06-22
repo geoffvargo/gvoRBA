@@ -9,14 +9,14 @@
 				<li>
 					<a routerLink="/rooms"
 					   class="py-2 cursor-pointer hover:text-slate-300"
-					   [class.font-semibold]="false">
+					   [class.font-semibold]="router.url === '/rooms'">
 						Rooms
 					</a>
 				</li>
 				
 				<li>
-					<a class="py-2 cursor-pointer hover:text-slate-300"
-					   [class.font-semibold]="false">
+					<a routerLink="/bookings" class="py-2 cursor-pointer hover:text-slate-300"
+					   [class.font-semibold]="router.url ==='bookings'">
 						Bookings
 					</a>
 				</li>
