@@ -8,6 +8,7 @@ import { User } from '../models/user.model';
 import { Room } from '../models/room.model';
 import { BehaviorSubject } from 'rxjs';
 import { TokenStorageService } from './token-storage-service';
+import { Booking } from '../models/booking.model';
 
 // const baseURL = '/api';
 
@@ -51,5 +52,9 @@ export class ApiService {
 	
 	getRoom(id: number) {
 		return this.httpClient.get<Room>(`${this.baseUrl}/api/rooms/${id}`);
+	}
+	
+	getBookings() {
+		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings`);
 	}
 }
