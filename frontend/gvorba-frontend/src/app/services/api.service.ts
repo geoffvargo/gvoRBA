@@ -57,4 +57,8 @@ export class ApiService {
 	getBookings() {
 		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings`);
 	}
+	
+	getCurrentUser() {
+		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/me`);
+	}
 }
