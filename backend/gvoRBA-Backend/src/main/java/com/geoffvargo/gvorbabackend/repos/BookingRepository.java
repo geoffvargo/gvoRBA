@@ -12,4 +12,6 @@ import java.util.*;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 	Optional<Booking> findByRoomId(Long id);
 	Optional<Booking> findByCancelledAt(LocalDateTime cancelledAt);
+	Optional<Booking> findByUserId(Long id);
+	List<Booking> findAllByUserId(Long id);
 }
