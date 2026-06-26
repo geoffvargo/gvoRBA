@@ -1,5 +1,6 @@
 package com.geoffvargo.gvorbabackend.models;
 
+import java.time.*;
 import java.util.*;
 
 import jakarta.persistence.*;
@@ -8,6 +9,9 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "rooms")
 public class Room {
 	@Id
@@ -25,11 +29,21 @@ public class Room {
 	private Integer capacity;
 	
 	@Column(name = "amenities")
-	private String[] amenities;
+	private List<String> amenities;
 	
 	@Column(name = "isActive")
 	private Boolean isActive;
 	
 	@Column(name = "createdOn")
-	private Date createdOn;
+	private LocalDateTime createdOn;
+	
+	public Room(String name, String location, Integer capacity, List<String> amenities, Boolean isActive,
+	            LocalDateTime createdOn) {
+		this.name = name;
+		this.location = location;
+		this.capacity = capacity;
+		this.amenities = amenities;
+		this.isActive = isActive;
+		this.createdOn = createdOn;
+	}
 }

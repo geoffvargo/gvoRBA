@@ -19,6 +19,7 @@ import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.*;
 import org.springframework.web.cors.*;
 
+import java.time.*;
 import java.util.*;
 
 @Configuration
@@ -76,7 +77,7 @@ public class SecurityConfig {
 	
 	@Bean
 	public CommandLineRunner initData(UserRepository userRepository, RoleRepository roleRepository,
-	                                  PasswordEncoder passwordEncoder) {
+	                                  PasswordEncoder passwordEncoder, RoomRepository roomRepository) {
 		return args -> {
 			Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
 				                .orElseGet(() ->
@@ -105,6 +106,49 @@ public class SecurityConfig {
 				user2.setRole(adminRole);
 				user2.setCreatedOn(new Date());
 				userRepository.save(user2);
+			}
+			
+			if (roomRepository.findAll().isEmpty()) {
+				roomRepository.save(new Room(
+					"Cedar Conference Room",
+					"Building A, Floor 2",
+					12,
+					List.of("Projector", "Whiteboard", "Video Conferencing", "WiFi"),
+					true,
+					LocalDate.of(2024, 3, 15).atStartOfDay()
+				));
+				roomRepository.save(new Room(
+					"Summit Boardroom",
+					"Building B, Floor 5",
+					20,
+					List.of("4K Display", "Surround Sound", "Climate Control", "WiFi", "Coffee Station"),
+					true,
+					LocalDate.of(2024, 6, 1).atStartOfDay()
+				));
+				roomRepository.save(new Room(
+					"Birch Huddle Space",
+					"Building A, Floor 1",
+					4,
+					List.of("Whiteboard", "WiFi"),
+					false,
+					LocalDate.of(2023, 11, 20).atStartOfDay()
+				));
+				roomRepository.save(new Room(
+					"Horizon Training Room",
+					"Building C, Floor 3",
+					30,
+					List.of("Projector", "Microphone", "Recording Equipment", "WiFi", "Whiteboard"),
+					true,
+					LocalDate.of(2024, 1, 8).atStartOfDay()
+				));
+				roomRepository.save(new Room(
+					"Ember Focus Pod",
+					"Building B, Floor 2",
+					2,
+					List.of("WiFi", "Noise Cancellation"),
+					true,
+					LocalDate.of(2024, 9, 30).atStartOfDay()
+				));
 			}
 		};
 	}

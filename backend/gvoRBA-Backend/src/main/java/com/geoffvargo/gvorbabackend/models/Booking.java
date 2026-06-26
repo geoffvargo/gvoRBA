@@ -5,9 +5,12 @@ import java.time.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
 @Getter
 @Setter
-@Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "bookings")
 public class Booking {
 	@Id
@@ -23,11 +26,14 @@ public class Booking {
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
 	private User userId;
 	
-	@Column(name = "starts_at")
+	@Column(name = "starts_at", nullable = false)
 	private LocalDateTime startsAt;
 	
-	@Column(name = "ends_at")
+	@Column(name = "ends_at", nullable = false)
 	private LocalDateTime endsAt;
+	
+	@Column(name = "cancelled_at", nullable = false)
+	private LocalDateTime cancelledAt;
 	
 	@Column(name = "purpose")
 	private String purpose;

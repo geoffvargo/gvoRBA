@@ -127,4 +127,11 @@ public class AuthController {
 				() -> new RuntimeException("Role not found!"));
 		}
 	}
+	
+	@GetMapping("/me")
+	public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+		User user = userRepository.findByName(userDetails.getUsername()).orElseThrow();
+		
+		return ResponseEntity.ok(UserDto.fromUser(user));
+	}
 }
