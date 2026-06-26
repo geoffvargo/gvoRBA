@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { BookingsListComponent } from './bookings-list.component';
+import { ApiService } from '../services/api.service';
 
 describe('BookingsListComponent', () => {
   let component: BookingsListComponent;
@@ -8,12 +10,21 @@ describe('BookingsListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BookingsListComponent]
+      imports: [BookingsListComponent],
+      providers: [
+        {
+          provide: ApiService,
+          useValue: {
+            getBookings: () => of([])
+          }
+        }
+      ]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(BookingsListComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 
