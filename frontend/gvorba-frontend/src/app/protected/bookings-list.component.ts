@@ -73,7 +73,7 @@ export class BookingsListComponent {
 				case 'endsAt':
 					return item.endsAt.getTime();
 				case 'cancelledAt':
-					return item.cancelledAt.getTime();
+					return item.cancelledAt ? item.cancelledAt.getTime() : 0;
 				case 'purpose':
 					return item.purpose;
 				case 'status':

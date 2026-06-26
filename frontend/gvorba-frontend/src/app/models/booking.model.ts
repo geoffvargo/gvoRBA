@@ -4,7 +4,7 @@ export class Booking {
 	userId = -1;
 	startsAt: Date = new Date();
 	endsAt: Date = new Date();
-	cancelledAt: Date = new Date();
+	cancelledAt: Date | null = null;
 	purpose = '';
 	status = '';
 	
@@ -13,7 +13,7 @@ export class Booking {
 	            userId = -1,
 	            startsAt: Date = new Date(),
 	            endsAt: Date = new Date(),
-	            cancelledAt: Date = new Date(),
+	            cancelledAt: Date | null = null,
 	            purpose = '',
 	            status = '') {
 		this.id = id;
