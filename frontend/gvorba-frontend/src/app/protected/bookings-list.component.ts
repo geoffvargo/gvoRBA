@@ -4,7 +4,6 @@ import { Booking } from '../models/booking.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { MAT_SELECT_CONFIG } from '@angular/material/select';
 
 @Component({
 	selector: 'app-bookings-list',
@@ -61,7 +60,7 @@ export class BookingsListComponent {
 	ngAfterViewInit() {
 		/** set the sorter  */
 		this.dataSource.sort = this.sorter();
-		this.dataSource.sortingDataAccessor = (item: Booking, property: string): any => {
+		this.dataSource.sortingDataAccessor = (item: Booking, property: string): string | number => {
 			switch (property) {
 				case 'id':
 					return item.id;
@@ -70,11 +69,11 @@ export class BookingsListComponent {
 				case 'userId':
 					return item.userId;
 				case 'startsAt':
-					return item.startsAt;
+					return item.startsAt.getTime();
 				case 'endsAt':
-					return item.endsAt;
+					return item.endsAt.getTime();
 				case 'cancelledAt':
-					return item.cancelledAt;
+					return item.cancelledAt.getTime();
 				case 'purpose':
 					return item.purpose;
 				case 'status':

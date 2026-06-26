@@ -1,21 +1,21 @@
 export class Booking {
-	id: number = -1;
-	roomId: number = -1;
-	userId: number = -1;
+	id = -1;
+	roomId = -1;
+	userId = -1;
 	startsAt: Date = new Date();
 	endsAt: Date = new Date();
 	cancelledAt: Date = new Date();
-	purpose: string = '';
-	status: string = '';
+	purpose = '';
+	status = '';
 	
-	constructor(id: number = -1,
-	            roomId: number = -1,
-	            userId: number = -1,
+	constructor(id = -1,
+	            roomId = -1,
+	            userId = -1,
 	            startsAt: Date = new Date(),
 	            endsAt: Date = new Date(),
 	            cancelledAt: Date = new Date(),
-	            purpose: string = '',
-	            status: string = '') {
+	            purpose = '',
+	            status = '') {
 		this.id = id;
 		this.roomId = roomId;
 		this.userId = userId;

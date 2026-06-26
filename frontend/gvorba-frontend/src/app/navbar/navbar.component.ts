@@ -62,7 +62,7 @@ export class NavbarComponent {
 		this.isAdmin.set(payload.roles === 'ROLE_ADMIN');
 	}
 	
-	private decodeJwt(token: string): any {
+	private decodeJwt(token: string): { roles: string } {
 		const payload = token.split('.')[1];
 		const decodedPayload = atob(payload);
 		return JSON.parse(decodedPayload);

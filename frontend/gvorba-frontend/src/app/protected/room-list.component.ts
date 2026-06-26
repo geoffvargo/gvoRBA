@@ -54,7 +54,7 @@ export class RoomListComponent {
 	ngAfterViewInit() {
 		this.dataSource.sort = this.sorter();
 		
-		this.dataSource.sortingDataAccessor = (item: Room, property: string): any => {
+		this.dataSource.sortingDataAccessor = (item: Room, property: string): string | number => {
 			switch (property) {
 				case 'id':
 					return item.id;
@@ -65,11 +65,11 @@ export class RoomListComponent {
 				case 'capacity':
 					return item.capacity;
 				case 'amenities':
-					return item.amenities;
+					return item.amenities.join(', ');
 				case 'isActive':
-					return item.isActive;
+					return item.isActive ? 1 : 0;
 				case 'createdOn':
-					return item.createdOn;
+					return item.createdOn.getTime();
 				default:
 					return '';
 			}

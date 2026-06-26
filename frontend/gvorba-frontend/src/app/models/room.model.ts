@@ -1,18 +1,18 @@
 export class Room {
-	id: number = -1;
-	name: string = '';
-	location: string = '';
-	capacity: number = -1;
+	id = -1;
+	name = '';
+	location = '';
+	capacity = -1;
 	amenities: string[] = [''];
-	isActive: boolean = false;
+	isActive = false;
 	createdOn: Date = new Date();
 	
-	constructor(id: number = -1,
-	            name: string = '',
-	            location: string = '',
-	            capacity: number = -1,
+	constructor(id = -1,
+	            name = '',
+	            location = '',
+	            capacity = -1,
 	            amenities: string[] = [],
-	            isActive: boolean = false,
+	            isActive = false,
 	            createdOn: Date = new Date()) {
 		this.id = id;
 		this.name = name;
