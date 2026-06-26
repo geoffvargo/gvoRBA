@@ -35,7 +35,7 @@ export class NavbarComponent {
 	}
 	
 	ngOnDestroy() {
-		this.subscription.unsubscribe();
+		this.subscription?.unsubscribe();
 	}
 	
 	onLogout() {
