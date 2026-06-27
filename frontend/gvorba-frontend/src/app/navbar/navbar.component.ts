@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router, RouterLink } from '@angular/router';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 	templateUrl: './navbar.component.html',
 	styleUrl: './navbar.component.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
 	private subscription!: Subscription;
 	private apiService = inject(ApiService);
 	private jwtHelper = inject(JwtHelperService);
