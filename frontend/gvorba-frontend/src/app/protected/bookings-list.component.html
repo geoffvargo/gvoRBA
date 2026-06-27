@@ -1,5 +1,5 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex justify-center content-center w-auto items-center">
-	<div class="card bg-base-100 flex flex-col py-4 overflow-x-auto w-fit justify-center">
+	<div class="card shadow-lg bg-base-100 flex flex-col py-4 overflow-x-auto w-fit justify-center">
 		<h1 class="text-center text-2xl font-bold">
 			All Bookings
 		</h1>
@@ -105,6 +105,21 @@
 					</td>
 				</ng-container>
 				
+				<ng-container matColumnDef="action">
+					<th mat-header-cell
+					    *matHeaderCellDef
+					    mat-sort-header="action">
+						Action
+					</th>
+					<td mat-cell
+					    *matCellDef="let booking">
+						<button class="action-btn"
+						        (click)="onView(booking.id, booking)">
+							View
+						</button>
+					</td>
+				</ng-container>
+				
 				<tr mat-header-row
 				    *matHeaderRowDef="displayedColumns"></tr>
 				<tr mat-row
@@ -117,7 +132,7 @@
 			               class="m-4 rounded-box!"
 			               showFirstLastButtons
 			               aria-label="List of All Bookings"></mat-paginator>
-<!-- 			               style="border-radius: 1rem; overflow: hidden" -->
+			<!-- 			               style="border-radius: 1rem; overflow: hidden" -->
 		
 		</div>
 	</div>

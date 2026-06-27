@@ -45,6 +45,7 @@ export class BookingsListComponent {
 		'cancelledAt',
 		'purpose',
 		'status',
+		'action',
 	];
 	
 	ngOnInit() {
@@ -87,4 +88,6 @@ export class BookingsListComponent {
 			this.dataSource.paginator = this.paginator();
 		}
 	}
+	
+	onView(id: number, bookings: Booking) {}
 }

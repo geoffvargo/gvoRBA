@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Room } from '../models/room.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
 	selector: 'app-room-details',
@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class RoomDetailsComponent implements OnInit {
 	private apiService = inject(ApiService);
+	private router = inject(Router);
 	private activatedRoute = inject(ActivatedRoute);
 	
 	roomId = signal<number>(this.activatedRoute.snapshot.params['id']);
@@ -24,5 +25,11 @@ export class RoomDetailsComponent implements OnInit {
 				console.log(room);
 			},
 		});
+	}
+	
+	onBack() {
+		this.router.navigate(['..'],
+			{ relativeTo: this.activatedRoute },
+		);
 	}
 }

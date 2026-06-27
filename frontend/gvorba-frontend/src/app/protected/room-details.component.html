@@ -1,5 +1,52 @@
-<div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex justify-center">
-	<div class="card">
-		<h2>Room Details</h2>
+<div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
+	<div class="card m-4 flex w-full bg-base-200 shadow-md items-center">
+		<div class="card-title">
+			<h1 class="text-xl font-bold p-2 m-2">
+				Room Details
+			</h1>
+		</div>
+		<div class="grid grid-cols-2 gap-x-16 sm:gap-x-8 gap-y-2">
+			<p class="flex gap-2">
+				<span class="font-semibold">Room Id:</span>
+				<span>{{ room().id }}</span>
+			</p>
+			
+			<p class="flex gap-2">
+				<span class="font-semibold">Name:</span>
+				<span>{{ room().name }}</span>
+			</p>
+			
+			<p class="flex gap-2">
+				<span class="font-semibold">Location: </span>
+				<span>{{ room().location }}</span>
+			</p>
+			
+			<p class="flex gap-2">
+				<span class="font-semibold">Capacity: </span>
+				<span>{{ room().capacity }}</span>
+			</p>
+			
+			<p class="flex gap-2 col-span-2">
+				<span class="font-semibold">Amenities: </span>
+				<span>{{ room().amenities }}</span>
+			</p>
+			
+			<p class="flex gap-2">
+				<span class="font-semibold">Created On: </span>
+				<span>{{ room().createdOn }}</span>
+			</p>
+			
+			<p class="flex gap-2">
+				<span class="font-semibold">Active: </span>
+				<span>{{ room().isActive }}</span>
+			</p>
+		</div>
+		
+		<div class="flex h-full items-end">
+			<button class="action-btn bottom-0"
+			        (click)="onBack()">
+				Back
+			</button>
+		</div>
 	</div>
 </div>
