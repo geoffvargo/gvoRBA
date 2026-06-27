@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 
 import { RoomListComponent } from './room-list.component';
 import { ApiService } from '../services/api.service';
+import { provideRouter } from '@angular/router';
 
 describe('RoomListComponent', () => {
   let component: RoomListComponent;
@@ -12,6 +13,7 @@ describe('RoomListComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RoomListComponent],
       providers: [
+				provideRouter([]),
         {
           provide: ApiService,
           useValue: {
