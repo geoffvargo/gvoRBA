@@ -1,11 +1,11 @@
-<header class="h-headerHeight bg-base-300 shadow-lg flex items-center sticky top-0">
+<header class="h-headerHeight bg-base-300 shadow-lg flex items-center sticky top-0 z-9999">
 	<nav class="flex p-4 w-full h-full items-center justify-between">
-		<a class="min-w-0 flex-1 truncate"
+		<a class="min-w-0 truncate"
 		   routerLink="">
 			<h3>gvoRBA</h3>
 		</a>
 		
-		<ul class="flex flex-row shrink-0 gap-4">
+		<ul class="flex flex-row shrink-0 gap-4 items-center">
 			@if (isLoggedIn()) {
 				<li>
 					<a routerLink="/rooms"
@@ -24,10 +24,13 @@
 				</li>
 				
 				<li>
-					<button class="py-2 cursor-pointer hover:text-slate-300"
-					        (click)="onLogout()">
+					<a class="py-2 cursor-pointer hover:text-slate-300"
+					   tabindex="0"
+					   (click)="onLogout()"
+					   (keyup.enter)="onLogout()"
+					   (keydown.space)="onLogout()">
 						Logout
-					</button>
+					</a>
 				</li>
 			}
 		</ul>

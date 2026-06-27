@@ -1,8 +1,10 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild, ViewEncapsulation, OnInit, AfterViewInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Room } from '../models/room.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
 	selector: 'app-room-list',
@@ -19,17 +21,22 @@ import { MatSort, MatSortHeader } from '@angular/material/sort';
 		MatHeaderRowDef,
 		MatRow,
 		MatRowDef,
+		MatPaginator,
 	],
 	templateUrl: './room-list.component.html',
 	styleUrl: './room-list.component.css',
+	encapsulation: ViewEncapsulation.None,
 })
-export class RoomListComponent {
+export class RoomListComponent implements OnInit, AfterViewInit {
 	private apiService = inject(ApiService);
+	private router = inject(Router);
+	private route = inject(ActivatedRoute);
 	
 	_rooms = signal<Room[]>([]);
 	readonly rooms = this._rooms.asReadonly();
 	
 	sorter = viewChild(MatSort);
+	paginator = viewChild(MatPaginator);
 	
 	dataSource = new MatTableDataSource<Room>();
 	displayedColumns = [
@@ -40,6 +47,7 @@ export class RoomListComponent {
 		'amenities',
 		'isActive',
 		'createdOn',
+		'action',
 	];
 	
 	ngOnInit() {
@@ -74,5 +82,15 @@ export class RoomListComponent {
 					return '';
 			}
 		};
+		
+		if (this.paginator) {
+			this.dataSource.paginator = this.paginator();
+		}
+	}
+	
+	onView(id: number, room: Room) {
+		this.router.navigate([id],
+			{ relativeTo: this.route, state: { room, id } },
+		);
 	}
 }

@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild, ViewEncapsulation } from '@angular/core';
+import { Component, inject, signal, viewChild, ViewEncapsulation, OnInit, AfterViewInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Booking } from '../models/booking.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
@@ -26,7 +26,7 @@ import { MatPaginator } from '@angular/material/paginator';
 	styleUrl: './bookings-list.component.css',
 	encapsulation: ViewEncapsulation.None,
 })
-export class BookingsListComponent {
+export class BookingsListComponent implements OnInit, AfterViewInit {
 	private apiService = inject(ApiService);
 	
 	_bookings = signal<Booking[]>([]);
@@ -45,6 +45,7 @@ export class BookingsListComponent {
 		'cancelledAt',
 		'purpose',
 		'status',
+		'action',
 	];
 	
 	ngOnInit() {
@@ -86,5 +87,9 @@ export class BookingsListComponent {
 		if (this.paginator) {
 			this.dataSource.paginator = this.paginator();
 		}
+	}
+	
+	onView(id: number, bookings: Booking) {
+		console.log(id, bookings);
 	}
 }
