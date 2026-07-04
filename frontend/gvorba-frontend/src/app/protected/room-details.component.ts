@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Room } from '../models/room.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 	imports: [],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
+	encapsulation: ViewEncapsulation.None
 })
 export class RoomDetailsComponent implements OnInit {
 	private apiService = inject(ApiService);
