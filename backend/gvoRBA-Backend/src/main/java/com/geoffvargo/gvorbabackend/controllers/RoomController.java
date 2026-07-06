@@ -21,6 +21,9 @@ public class RoomController {
 	@Autowired
 	private RoomRepository roomRepository;
 	
+	@Autowired
+	private BookingRepository bookingRepository;
+	
 	@GetMapping()
 	public ResponseEntity<?> getAllRooms() {
 		return ResponseEntity.ok(roomRepository.findAll());
@@ -85,5 +88,19 @@ public class RoomController {
 			roomRepository.save(room);
 		}
 		return ResponseEntity.ok(rooms);
+	}
+	
+	@GetMapping("/{id}/bookings")
+	public ResponseEntity<?> getBookings(@PathVariable Long id, @RequestParam LocalDateTime date) {
+		List<Booking> bookings = null;
+		try {
+			bookings = bookingRepository.findByRoom_Id(id).stream()
+				                         .filter(b -> b.getStartsAt().isEqual(date))
+				                         .toList();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		return ResponseEntity.ok(bookings);
 	}
 }

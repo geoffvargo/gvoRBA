@@ -52,7 +52,7 @@ public class BookingController {
 		Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
 		
 		Booking booking = Booking.builder()
-			                  .roomId(room)
+			                  .room(room)
 			                  .userId(user)
 			                  .startsAt(request.getStartsAt())
 			                  .endsAt(request.getEndsAt())
@@ -77,7 +77,7 @@ public class BookingController {
 			room = roomRepository.findById(request.getRoomId()).orElseThrow();
 			
 			booking = Booking.builder()
-				          .roomId(room)
+				          .room(room)
 				          .userId(user)
 				          .startsAt(request.getStartsAt())
 				          .endsAt(request.getEndsAt())
