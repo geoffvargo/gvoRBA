@@ -9,9 +9,13 @@ import { Role } from '../models/role.model';
 export class AuthStore {
 	private apiService = inject(ApiService);
 	
-	protected user = signal<User>(new User());
-	protected role = signal<Role>(new Role());
-	protected authToken = signal('');
+	private _user = signal<User>(new User());
+	private _role = signal<Role>(new Role());
+	private _authToken = signal('');
+	
+	readonly user = this._user.asReadonly();
+	readonly role = this._role.asReadonly();
+	readonly authToken = this._authToken.asReadonly();
 	
 	constructor() {
 		const token = sessionStorage.getItem('auth-token');
@@ -19,22 +23,23 @@ export class AuthStore {
 		if (token) {
 			this.apiService.getCurrentUser().subscribe({
 				next: (data: User) => {
-					this.user.set(data);
-					console.log(this.user());
-					this.role.set(this.user().role);
-					this.authToken.set(token);
+					this._user.set(data);
+					console.log(this._user());
+					this._role.set(this._user().role);
+					this._authToken.set(token);
+				},
+				error: err => {
+					console.log(err);
+					this.resetState();
 				},
 			});
 		}
 	}
 	
-	getUser() {
-		return this.user();
+	private resetState() {
+		sessionStorage.removeItem('auth-token');
+		this._user.set(new User());
+		this._role.set(new Role());
+		this._authToken.set('');
 	}
-	
-	getRole() {
-		return this.role();
-	}
-	
-	
 }

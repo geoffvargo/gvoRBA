@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.logging.*;
 
+import lombok.*;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/bookings")
 @CrossOrigin(origins = "http://localhost:4200")
 public class BookingController {
 	public static final Logger LOGGER = Logger.getLogger(BookingController.class.getName());
 	
-	@Autowired
-	private BookingRepository bookingRepository;
+	private final BookingRepository bookingRepository;
 	
-	@Autowired
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	@Autowired
-	private RoomRepository roomRepository;
+	private final RoomRepository roomRepository;
 	
 	@GetMapping()
 	public ResponseEntity<List<Booking>> getAllBookings() {

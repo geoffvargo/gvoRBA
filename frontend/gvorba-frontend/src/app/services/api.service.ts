@@ -9,6 +9,7 @@ import { Room } from '../models/room.model';
 import { BehaviorSubject } from 'rxjs';
 import { TokenStorageService } from './token-storage-service';
 import { Booking } from '../models/booking.model';
+import { CreateRoomRequest } from '../models/create-room.request';
 
 // const baseURL = '/api';
 
@@ -60,5 +61,13 @@ export class ApiService {
 	
 	getCurrentUser() {
 		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/me`);
+	}
+	
+	getRoomBookings(id: string, date: string) {
+		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/rooms/${id}/bookings/${date}`);
+	}
+	
+	createRoom(data: CreateRoomRequest) {
+		return this.httpClient.post<Room>(`${this.baseUrl}/api/add-room`, data);
 	}
 }
