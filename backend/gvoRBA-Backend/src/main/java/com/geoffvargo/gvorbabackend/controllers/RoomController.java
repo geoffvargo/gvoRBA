@@ -25,12 +25,13 @@ public class RoomController {
 	private final BookingRepository bookingRepository;
 	
 	@GetMapping()
-	public ResponseEntity<?> getAllRooms(@RequestParam String name, @RequestParam Integer minCapacity) {
+	public ResponseEntity<?> getAllRooms(@RequestParam(required = false) String name,
+	                                     @RequestParam(required = false) Integer minCapacity) {
 		List<Room> rooms = roomRepository.findAll();
 		
 		if (name != null) {
 			rooms = rooms.stream()
-				.filter(room -> room.getName().equals(name))
+				.filter(room -> room.getName().contains(name))
 				.toList();
 		}
 		if (minCapacity != null) {
