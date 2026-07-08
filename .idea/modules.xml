@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/gvoRBA.iml" filepath="$PROJECT_DIR$/.idea/gvoRBA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/gvoRBA-Backend/gvoRBA-backend.iml" filepath="$PROJECT_DIR$/backend/gvoRBA-Backend/gvoRBA-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend/gvorba-frontend/gvorba-frontend.iml" filepath="$PROJECT_DIR$/frontend/gvorba-frontend/gvorba-frontend.iml" />
     </modules>
   </component>
 </project>

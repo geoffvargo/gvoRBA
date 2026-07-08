@@ -3,6 +3,7 @@ import { ApiService } from '../services/api.service';
 import { Room } from '../models/room.model';
 import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
+import { UpdateRoomRequest } from '../models/update-room.request';
 
 @Injectable({
 	providedIn: 'root',
@@ -85,5 +86,41 @@ export class RoomStore {
 				this._isLoading.set(false);
 			},
 		});
+	}
+	
+	updateRoom(id: number, payload: UpdateRoomRequest) {
+		this._isLoading.set(true);
+		this.apiService.updateRoom(id, payload).subscribe({
+			next: room => {
+				this._rooms.set([...this._rooms(), room]);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.error(err);
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	deactivateRoom(id: number) {
+		this._isLoading.set(true);
+		this.apiService.deactivateRoom(id).subscribe({
+			next: room => {
+				console.log(room);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.error(err);
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	reset() {
+		this._rooms.set([]);
+		this._selectedRoom.set(null);
+		this._roomBookings.set([]);
+		this._selectedDate.set(new Date());
+		this._isLoading.set(false);
 	}
 }

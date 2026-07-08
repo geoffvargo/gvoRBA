@@ -241,6 +241,11 @@
     <inspection_tool class="AndroidUnknownAttribute" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PermissionUsageInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="R8IgnoredFlags" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
     <inspection_tool class="XmlWrongFileType" enabled="true" level="ERROR" enabled_by_default="true" />
   </profile>
 </component>
