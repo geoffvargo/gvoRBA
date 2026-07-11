@@ -2,7 +2,7 @@
 
 **Version:** 0.1 (Draft)
 **Status:** Living document — updated as decisions are made
-**Last updated:** 2026-06-08
+**Last updated:** 2026-07-09
 
 ---
 
@@ -88,8 +88,11 @@ Numbered for traceability. Each requirement is testable.
 - **FR-2.2** <br>
   A member can filter rooms by minimum capacity and free-text search across name and description.
 - **FR-2.3** <br>
-  A member can view a single room's details, including a calendar view of its existing bookings for the
-  current and next week.
+  A member can view a single room's details, including a week-view calendar of its existing bookings.
+  The calendar renders whole business weeks (Mon–Fri, per FR-4.3). The displayed span is selectable
+  between a minimum of one business week and a maximum of four business weeks ("one business month"),
+  and supports navigation forward and back across the 30-day booking horizon defined in FR-3.1. The
+  calendar never displays a span shorter than one business week, on any viewport.
 - **FR-2.4** <br>
   An admin can create a new room with name, capacity, location, and description.
 - **FR-2.5** <br>
@@ -124,8 +127,11 @@ Numbered for traceability. Each requirement is testable.
 ## 4.4 Availability
 
 - **FR-4.1** <br>
-  The system will return the appropriate bookings when provided with a room and date, which can then be
-  rendered as a day view.
+  Given a room and an inclusive date range, the system returns the room's bookings within that range.
+  The range may not exceed 31 days; a request for a longer range is rejected with `VALIDATION_FAILED`.
+  When only a start date is supplied, the range collapses to that single day — used by the
+  409-conflict refresh, not by any calendar view. Four business weeks, the largest span FR-2.3
+  permits, occupies at most 26 calendar days and therefore always fits. See ADR-0004.
 - **FR-4.2** <br>
   When provided with a valid range of dates (within working hours) and a minimum capacity, the system will
   return a list of available rooms, each with at least one time slot satisfying the specified parameters.
@@ -210,7 +216,9 @@ REST over HTTPS, JSON request/response and conventional status codes. Full contr
 
 - `GET /` – list rooms (members, admins); supports parameters `?search=` and `?minCapacity=`
 - `GET /{id}` – room details (members, admins)
-- `GET /{id}/bookings?date=YYYY-MM-DD` – bookings for a room on a given date
+- `GET /{id}/bookings?from=YYYY-MM-DD&to=YYYY-MM-DD` – bookings for a room over an inclusive date
+  range. `to` is optional and defaults to `from`, which collapses the response to a single day.
+  A range exceeding 31 days is rejected with `VALIDATION_FAILED`. See FR-4.1 and ADR-0004.
 - `POST /` – create room (admins only)
 - `PUT /{id}` – update room (admins only)
 - `DELETE /{id)` – deactivate room (admins only, soft)
@@ -254,17 +262,17 @@ Documented error codes: `VALIDATION_FAILED`, `AUTHENTICATION_REQUIRED`,
 
 ### Routes
 
-| Path                  | Guard  | Purpose                    |
-|-----------------------|--------|----------------------------|
-| `/`                   | none   | Landing Page               |
-| `/login`, `/register` | none   | Auth forms                 |
-| `/rooms`              | member | Browse and filter rooms    |
-| `/rooms/:id`          | member | Room detail & day calender |
-| `/bookings`           | member | current user's bookings    |
-| `/book?:roomId`       | member | booking form               |
-| `/admin/rooms`        | admin  | manage room inventory      |
-| `/admin/bookings`     | admin  | All bookings (filterable)  |
-| `/admin/users`        | admin  | manage users               |
+| Path                  | Guard  | Purpose                     |
+|-----------------------|--------|-----------------------------|
+| `/`                   | none   | Landing Page                |
+| `/login`, `/register` | none   | Auth forms                  |
+| `/rooms`              | member | Browse and filter rooms     |
+| `/rooms/:id`          | member | Room detail & week calendar |
+| `/bookings`           | member | current user's bookings     |
+| `/book?:roomId`       | member | booking form                |
+| `/admin/rooms`        | admin  | manage room inventory       |
+| `/admin/bookings`     | admin  | All bookings (filterable)   |
+| `/admin/users`        | admin  | manage users                |
 
 ### State
 
@@ -274,10 +282,17 @@ As per ADR-0003, a state is a signal residing in an injectable service. The stor
 ### Notable UX Behaviors
 
 - On booking conflict (409), the form shows an inline message and refreshes
-  the day's bookings so the user sees the now-taken slot.
+  the bookings for the affected day so the user sees the now-taken slot. The refresh issues a
+  single-day request (`?from=` with no `to=`) rather than re-fetching the whole week.
 - A loading spinner is shown for any request taking more than 200 ms.
 - Forms use Angular Reactive Forms with custom validators (slot boundary,
   duration limits).
+- The calendar on `/rooms/:id` is a hand-rolled SVG/CSS grid — no third-party calendar
+  library. It renders between one and four business weeks (Mon–Fri) as a column per day, with a
+  control to change the span. It never collapses below one business week; on narrow viewports the
+  grid scrolls horizontally, with the time gutter pinned.
+- The calendar is read-only. Booking creation happens on the booking form route; the calendar
+  may deep-link into that form with a pre-filled start time, but performs no mutations itself.
 
 ## 9. Design Decisions
 
@@ -287,6 +302,8 @@ Captured as ADRs in `docs/adr/`. Current set:
   conflict prevention.
 - **ADR-0002** — Stateless JWT authentication with split token storage.
 - **ADR-0003** — Angular signals for client-side state management.
+- **ADR-0004** — Range-scoped room bookings endpoint (supersedes the original
+  single-date endpoint).
 
 ## 10. Phasing
 
@@ -309,7 +326,7 @@ demo-able and deployable.
 
 - Booking create/cancel/list.
 - Concurrency control verified by integration test.
-- Day-view calendar on the room detail page.
+- Week-view calendar on the room detail page.
 
 ### Milestone 4 — Admin
 
