@@ -108,9 +108,10 @@ public class RoomController {
 	public ResponseEntity<?> getBookings(@PathVariable Long id, @RequestParam LocalDateTime date) {
 		List<Booking> bookings;
 		try {
-			bookings = bookingRepository.findByRoom_Id(id).stream()
-				           .filter(b -> b.getStartsAt().isEqual(date))
-				           .toList();
+//			bookings = bookingRepository.findByRoom_Id(id).stream()
+//				           .filter(b -> b.getStartsAt().isEqual(date))
+//				           .toList();
+			bookings = bookingRepository.findForRoomInRange(id, date);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
