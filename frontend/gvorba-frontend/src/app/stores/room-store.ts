@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Room } from '../models/room.model';
 import { Booking } from '../models/booking.model';
@@ -22,6 +22,21 @@ export class RoomStore {
 	readonly roomBookings = this._roomBookings.asReadonly();
 	readonly selectedDate = this._selectedDate.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
+	
+	constructor() {
+		effect(() => {
+			const id = this._selectedRoom()?.id;
+			const date = this._selectedDate();
+			
+			if (id != null) {
+				this.loadRoomBookings(id, date);
+			}
+		});
+	}
+	
+	setSelectedDate(date: Date) {
+		this._selectedDate.set(date);
+	}
 	
 	loadRooms(name?: string, minCapacity?: number) {
 		this._isLoading.set(true);
@@ -61,10 +76,13 @@ export class RoomStore {
 	}
 	
 	loadRoomBookings(id: number, date: Date) {
+		console.log(new Error().stack!.split('\n')[1].trim(), 'my message');
 		this._isLoading.set(true);
-		this.apiService.getRoomBookings(id.toString(), date.toString()).subscribe({
+		this.apiService.getRoomBookings(id.toString(), date).subscribe({
 			next: bookings => {
+				// console.log(new Error().stack!.split('\n')[1].trim(), 'my message');
 				this._roomBookings.set(bookings);
+				console.log('roomBookings: {}', this.roomBookings());
 				this._isLoading.set(false);
 			},
 			error: err => {

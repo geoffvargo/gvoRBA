@@ -116,6 +116,7 @@ public class RoomController {
 			throw new RuntimeException(e);
 		}
 		
+		LOGGER.info("{} bookings: {}", id, bookings.size());
 		return ResponseEntity.ok(bookings);
 	}
 	

@@ -64,8 +64,8 @@ export class ApiService {
 		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/me`);
 	}
 	
-	getRoomBookings(id: string, date: string) {
-		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/rooms/${id}/bookings/${date}`);
+	getRoomBookings(id: string, date: Date) {
+		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/rooms/${id}/bookings?date=${date.toISOString().slice(0, 19)}`);
 	}
 	
 	createRoom(data: CreateRoomRequest) {

@@ -5,128 +5,93 @@
 				Room Details
 			</h1>
 		</div>
-		<div class="grid grid-cols-2 gap-x-16 sm:gap-x-8 gap-y-2">
-			<p class="flex gap-2">
-				<span class="font-semibold">Room Id:</span>
-				<span>{{ room().id }}</span>
-			</p>
-			
-			<p class="flex gap-2">
-				<span class="font-semibold">Name:</span>
-				<span>{{ room().name }}</span>
-			</p>
-			
-			<p class="flex gap-2">
-				<span class="font-semibold">Location: </span>
-				<span>{{ room().location }}</span>
-			</p>
-			
-			<p class="flex gap-2">
-				<span class="font-semibold">Capacity: </span>
-				<span>{{ room().capacity }}</span>
-			</p>
-			
-			<p class="flex gap-2 col-span-2">
-				<span class="font-semibold">Amenities: </span>
-				<span>{{ room().amenities }}</span>
-			</p>
-			
-			<p class="flex gap-2">
-				<span class="font-semibold">Created On: </span>
-				<span>{{ room().createdOn }}</span>
-			</p>
-			
-			<p class="flex gap-2">
-				<span class="font-semibold">Active: </span>
-				<span>{{ room().isActive }}</span>
-			</p>
-		</div>
-		
-		<!--
-				<div class="weekly__background"></div>
+		@if (!isLoading()) {
+			<div class="grid grid-cols-2 gap-x-16 sm:gap-x-8 gap-y-2">
+				<p class="flex gap-2">
+					<span class="font-semibold">Room Id:</span>
+					<span>{{ room()?.id }}</span>
+				</p>
 				
-				<div class="w-full p-4">
-					&lt;!&ndash; 			div &ndash;&gt;
-					<ul class="calendar weekly">
-						&lt;!&ndash;  DAYS OF THE WEEK  &ndash;&gt;
-						<li class="day mon">Monday</li>
-						<li class="day tue">Tuesday</li>
-						<li class="day wed">Wednesday</li>
-						<li class="day thu">Thursday</li>
-						<li class="day fri">Friday</li>
-						
-						&lt;!&ndash;  TIMES OF THE DAY  &ndash;&gt;
-						<li class="time h08">8:00 am</li>
-						<li class="h08-line"></li>
-						<li class="time h09">9:00 am</li>
-						<li class="h09-line"></li>
-						<li class="time h10">10:00 am</li>
-						<li class="h10-line"></li>
-						<li class="time h11">11:00 am</li>
-						<li class="h11-line"></li>
-						<li class="time h12">12:00 pm</li>
-						<li class="h12-line"></li>
-						<li class="time h13">1:00 pm</li>
-						<li class="h13-line"></li>
-						<li class="time h14">2:00 pm</li>
-						<li class="h14-line"></li>
-						<li class="time h15">3:00 pm</li>
-						<li class="h15-line"></li>
-						<li class="time h16">4:00 pm</li>
-						<li class="h16-line"></li>
-						<li class="time h17">5:00 pm</li>
-						<li class="h17-line"></li>
-					</ul>
-				</div>
-		-->
-		
-		<div id="calendar-canvas"
-		     class="grid grid-cols-[repeat(6,8rem)] grid-rows-[2rem,repeat(10,4rem)]">
-			<div class="contents text-center leading-9">
-				<div class="col-start-2">Monday</div>
-				<div class="col-start-3">Tuesday</div>
-				<div class="col-start-4">Wednesday</div>
-				<div class="col-start-5">Thursday</div>
-				<div class="col-start-6">Friday</div>
+				<p class="flex gap-2">
+					<span class="font-semibold">Name:</span>
+					<span>{{ room()?.name }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">Location: </span>
+					<span>{{ room()?.location }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">Capacity: </span>
+					<span>{{ room()?.capacity }}</span>
+				</p>
+				
+				<p class="flex gap-2 col-span-2">
+					<span class="font-semibold">Amenities: </span>
+					<span>{{ room()?.amenities }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">Created On: </span>
+					<span>{{ room()?.createdOn }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">Active: </span>
+					<span>{{ room()?.isActive }}</span>
+				</p>
 			</div>
 			
-			<div id="calendar"
-			     class="col-start-1 col-end-7 row-start-2 row-end-12
+			<div id="calendar-canvas"
+			     class="grid grid-cols-[repeat(6,8rem)] grid-rows-[2rem,repeat(10,4rem)]">
+				<div class="contents text-center leading-9">
+					<div class="col-start-2">Monday</div>
+					<div class="col-start-3">Tuesday</div>
+					<div class="col-start-4">Wednesday</div>
+					<div class="col-start-5">Thursday</div>
+					<div class="col-start-6">Friday</div>
+				</div>
+				
+				<div id="calendar"
+				     class="col-start-1 col-end-7 row-start-2 row-end-12
 									grid grid-cols-subgrid grid-rows-subgrid
 									z-10">
-				<div id="hours"
-				     class="contents text-right bg-primary-content">
-					<div class="col-start-1 col-end-2 p-2 leading-11">8:00am</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">9:00am</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">10:00am</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">11:00am</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">12:00am</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">1:00pm</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">2:00pm</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">3:00pm</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">4:00pm</div>
-					<hr class="calendar__hashmarks">
-					<div class="col-start-1 col-end-2 p-2 leading-11">5:00pm</div>
-					<hr class="calendar__hashmarks">
+					<div id="hours"
+					     class="contents text-right bg-primary-content">
+						<div class="col-start-1 col-end-2 p-2 leading-11">8:00am</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">9:00am</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">10:00am</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">11:00am</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">12:00am</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">1:00pm</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">2:00pm</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">3:00pm</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">4:00pm</div>
+						<hr class="calendar__hashmarks">
+						<div class="col-start-1 col-end-2 p-2 leading-11">5:00pm</div>
+						<hr class="calendar__hashmarks">
+					</div>
 				</div>
-			</div>
-			
-			<div class="col-start-2 col-end-7 row-start-2 row-end-12
+				
+				<div class="col-start-2 col-end-7 row-start-2 row-end-12
 									grid grid-cols-subgrid grid-rows-[repeat(40,1rem)]
 									bg-primary-content z-1 rounded-md">
-				<div  class="col-start-1 row-start-1">
+					<div class="col-start-1 row-start-1"></div>
 				</div>
+			
 			</div>
-		
-		</div>
+		} @else {
+			<span>Loading...</span>
+		}
 		
 		<div class="flex h-full items-end">
 			<button class="action-btn bottom-0"

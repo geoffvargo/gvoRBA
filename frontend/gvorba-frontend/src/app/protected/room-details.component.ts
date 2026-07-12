@@ -1,35 +1,46 @@
-import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import { Component, effect, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { Room } from '../models/room.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RoomStore } from '../stores/room-store';
+import { Booking } from '../models/booking.model';
 
 @Component({
 	selector: 'app-room-details',
 	imports: [],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
-	encapsulation: ViewEncapsulation.None
+	encapsulation: ViewEncapsulation.None,
 })
 export class RoomDetailsComponent implements OnInit {
 	private apiService = inject(ApiService);
+	private roomStore = inject(RoomStore);
 	private router = inject(Router);
 	private activatedRoute = inject(ActivatedRoute);
 	
-	roomId = signal<number>(this.activatedRoute.snapshot.params['id']);
+	protected roomId = signal<number>(this.activatedRoute.snapshot.params['id']);
 	
-	room = signal<Room>(new Room());
+	protected room = this.roomStore.selectedRoom;
+	protected isLoading = this.roomStore.isLoading;
+	protected roomBookings = this.roomStore.roomBookings;
+	protected selectedDate = this.roomStore.selectedDate;
 	
-	ngOnInit() {
-		this.apiService.getRoom(this.roomId()).subscribe({
-			next: (room: Room) => {
-				this.room.set(room);
-				console.log(room);
-			},
+	constructor() {
+		effect(() => {
+			let data: Booking[] = this.roomBookings();
+			console.log("roomBookings: {}", data);
 		});
 	}
 	
+	ngOnInit() {
+		if (!this.roomId()) {
+			return;
+		}
+		
+		this.roomStore.loadRoom(this.roomId());
+	}
+	
 	onBack() {
-		this.router.navigate(['..'],
+		void this.router.navigate(['..'],
 			{ relativeTo: this.activatedRoute },
 		);
 	}
