@@ -3,10 +3,13 @@ import { ApiService } from '../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoomStore } from '../stores/room-store';
 import { Booking } from '../models/booking.model';
+import { JsonPipe } from '@angular/common';
 
 @Component({
 	selector: 'app-room-details',
-	imports: [],
+	imports: [
+		JsonPipe,
+	],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
 	encapsulation: ViewEncapsulation.None,
@@ -39,9 +42,24 @@ export class RoomDetailsComponent implements OnInit {
 		this.roomStore.loadRoom(this.roomId());
 	}
 	
+	dateTimeMapper(date: Date) {
+		const time = date.toLocaleTimeString('en-GB');
+		
+		return this.rowGridMapper(time);
+	}
+	
+	protected rowGridMapper(time: string) {
+		const hours = Number(time.slice(0, 2));
+		const minutes = Number(time.slice(3, 5));
+		
+		return (hours - 7) * 4 + Math.round(minutes / 15) - 1;
+	}
+	
 	onBack() {
 		void this.router.navigate(['..'],
 			{ relativeTo: this.activatedRoute },
 		);
 	}
+	
+	protected readonly Date = Date;
 }

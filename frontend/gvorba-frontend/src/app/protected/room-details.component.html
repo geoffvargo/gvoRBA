@@ -43,6 +43,10 @@
 				</p>
 			</div>
 			
+			<!-- <div>
+				<span>{{ roomBookings()[0] |  json }}</span>
+			</div> -->
+			
 			<div id="calendar-canvas"
 			     class="grid grid-cols-[repeat(6,8rem)] grid-rows-[2rem,repeat(10,4rem)]">
 				<div class="contents text-center leading-9">
@@ -82,11 +86,21 @@
 					</div>
 				</div>
 				
-				<div class="col-start-2 col-end-7 row-start-2 row-end-12
+				<div id="schedule-grid"
+				     class="col-start-2 col-end-7 row-start-2 row-end-12
 									grid grid-cols-subgrid grid-rows-[repeat(40,1rem)]
 									bg-primary-content z-1 rounded-md">
-					<div class="col-start-1 row-start-1"></div>
+					<div class="col-start-1 bg-amber-900 text-amber-50 z-9999"
+					     [style.grid-row-start]="rowGridMapper('13:38:00')"
+					     [style.grid-row-end]="rowGridMapper('15:00:00')">
+						1:45pm
+					</div>
 				</div>
+				
+				<!-- @for (booking of roomBookings(); track booking.id) {
+					<div>
+					</div>
+				} -->
 			
 			</div>
 		} @else {

@@ -6,26 +6,38 @@ import { provideRouter } from '@angular/router';
 import { RoomDetailsComponent } from './room-details.component';
 
 describe('RoomDetailsComponent', () => {
-  let component: RoomDetailsComponent;
-  let fixture: ComponentFixture<RoomDetailsComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [RoomDetailsComponent],
-      providers: [
-        provideRouter([]),
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(RoomDetailsComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+	let component: RoomDetailsComponent;
+	let fixture: ComponentFixture<RoomDetailsComponent>;
+	
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+				imports: [RoomDetailsComponent],
+				providers: [
+					provideRouter([]),
+					provideHttpClient(),
+					provideHttpClientTesting(),
+				],
+			})
+			.compileComponents();
+		
+		fixture = TestBed.createComponent(RoomDetailsComponent);
+		component = fixture.componentInstance;
+		await fixture.whenStable();
+	});
+	
+	describe('dateTimeMapper', () => {
+		it('returns 25 from Date object', () => {
+			const date = new Date('2026-07-13T13:30:00');
+			expect(component.dateTimeMapper(date)).toBe(25);
+		});
+		
+		it('returns something', () => {
+			const date = new Date('2026-07-13T13:38:00');
+			expect(component.dateTimeMapper(date)).toBe(26);
+		});
+	});
+	
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 });
