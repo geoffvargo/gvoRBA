@@ -28,16 +28,24 @@ describe('RoomDetailsComponent', () => {
 	describe('dateTimeMapper', () => {
 		it('returns 25 from Date object', () => {
 			const date = new Date('2026-07-13T13:30:00');
-			expect(component.dateTimeMapper(date)).toBe(25);
+			expect(component.timeMapper(date)).toBe(25);
 		});
 		
 		it('returns something', () => {
 			const date = new Date('2026-07-13T13:38:00');
-			expect(component.dateTimeMapper(date)).toBe(26);
+			expect(component.timeMapper(date)).toBe(26);
 		});
 	});
 	
 	it('should create', () => {
 		expect(component).toBeTruthy();
+	});
+	
+	describe('dayMapper', () => {
+		it('actually runs', () => {
+			const date = new Date('2026-07-13T13:38:00');
+			const ans = component.dayMapper(date);
+			console.log("ans: {}", ans);
+		});
 	});
 });

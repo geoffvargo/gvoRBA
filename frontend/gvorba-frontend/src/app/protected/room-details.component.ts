@@ -3,13 +3,10 @@ import { ApiService } from '../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoomStore } from '../stores/room-store';
 import { Booking } from '../models/booking.model';
-import { JsonPipe } from '@angular/common';
 
 @Component({
 	selector: 'app-room-details',
-	imports: [
-		JsonPipe,
-	],
+	imports: [],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
 	encapsulation: ViewEncapsulation.None,
@@ -26,6 +23,7 @@ export class RoomDetailsComponent implements OnInit {
 	protected isLoading = this.roomStore.isLoading;
 	protected roomBookings = this.roomStore.roomBookings;
 	protected selectedDate = this.roomStore.selectedDate;
+	protected readonly Date = Date;
 	
 	constructor() {
 		effect(() => {
@@ -42,17 +40,24 @@ export class RoomDetailsComponent implements OnInit {
 		this.roomStore.loadRoom(this.roomId());
 	}
 	
-	dateTimeMapper(date: Date) {
+	timeMapper(date: Date) {
+		if (typeof date !== 'object') {
+			date = new Date(date);
+		}
+		
 		const time = date.toLocaleTimeString('en-GB');
 		
 		return this.rowGridMapper(time);
 	}
 	
-	protected rowGridMapper(time: string) {
-		const hours = Number(time.slice(0, 2));
-		const minutes = Number(time.slice(3, 5));
+	dayMapper(date: Date) {
+		if (typeof date !== 'object') {
+			date = new Date(date);
+		}
 		
-		return (hours - 7) * 4 + Math.round(minutes / 15) - 1;
+		const day = date.getDay();
+		
+		return day;
 	}
 	
 	onBack() {
@@ -61,5 +66,10 @@ export class RoomDetailsComponent implements OnInit {
 		);
 	}
 	
-	protected readonly Date = Date;
+	protected rowGridMapper(time: string) {
+		const hours = Number(time.slice(0, 2));
+		const minutes = Number(time.slice(3, 5));
+		
+		return (hours - 7) * 4 + Math.round(minutes / 15) - 1;
+	}
 }

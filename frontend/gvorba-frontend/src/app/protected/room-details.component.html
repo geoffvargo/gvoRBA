@@ -59,8 +59,7 @@
 				
 				<div id="calendar"
 				     class="col-start-1 col-end-7 row-start-2 row-end-12
-									grid grid-cols-subgrid grid-rows-subgrid
-									z-10">
+									grid grid-cols-subgrid grid-rows-subgrid">
 					<div id="hours"
 					     class="contents text-right bg-primary-content">
 						<div class="col-start-1 col-end-2 p-2 leading-11">8:00am</div>
@@ -89,18 +88,21 @@
 				<div id="schedule-grid"
 				     class="col-start-2 col-end-7 row-start-2 row-end-12
 									grid grid-cols-subgrid grid-rows-[repeat(40,1rem)]
-									bg-primary-content z-1 rounded-md">
-					<div class="col-start-1 bg-amber-900 text-amber-50 z-9999"
-					     [style.grid-row-start]="rowGridMapper('13:38:00')"
-					     [style.grid-row-end]="rowGridMapper('15:00:00')">
-						1:45pm
-					</div>
+									bg-primary-content rounded-md">
+					<!-- 					<div class="col-start-1 bg-amber-900 text-amber-50 z-9999" -->
+					<!-- 					     [style.grid-row-start]="rowGridMapper('13:38:00')" -->
+					<!-- 					     [style.grid-row-end]="rowGridMapper('15:00:00')"> -->
+					<!-- 						1:45pm -->
+					<!-- 					</div> -->
+					@for (booking of roomBookings(); track booking.id) {
+						<div class="bg-amber-900 text-amber-50 z-20"
+						     [style.grid-column]="dayMapper(booking.startsAt)"
+						     [style.grid-row-start]="timeMapper(booking.startsAt)"
+						     [style.grid-row-end]="timeMapper(booking.endsAt)">
+							{{ booking.purpose }}
+						</div>
+					}
 				</div>
-				
-				<!-- @for (booking of roomBookings(); track booking.id) {
-					<div>
-					</div>
-				} -->
 			
 			</div>
 		} @else {
