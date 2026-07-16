@@ -4,14 +4,14 @@
 
 @plugin "daisyui/theme" {
 	name: "cupcake";
-	default: false;
+	default: true;
 	prefersdark: false;
 	color-scheme: "light";
 	--color-base-100: oklch(98% 0 0);
 	--color-base-200: oklch(96% 0.001 286.375);
 	--color-base-300: oklch(92% 0.004 286.32);
 	--color-base-content: oklch(21% 0.006 285.885);
-	--color-primary: oklch(64% 0.222 41.116);
+	--color-primary: oklch(64% 0.125 41.116);
 	--color-primary-content: oklch(98% 0.016 73.684);
 	--color-secondary: oklch(54% 0.281 293.009);
 	--color-secondary-content: oklch(96% 0.016 293.756);
@@ -38,6 +38,7 @@
 }
 
 @theme {
+	/*--color-schedule: oklch(80% 0.125 293.0);*/
 	--height-headerHeight: 74px;
 	--max-height-navbarHeight: 420px;
 	--min-height-customHeight: 530px;
