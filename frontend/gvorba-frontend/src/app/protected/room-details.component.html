@@ -43,9 +43,11 @@
 				</p>
 			</div>
 			
-			<!-- <div>
-				<span>{{ roomBookings()[0] |  json }}</span>
-			</div> -->
+			<div id="selected-week"
+			     class="m-2 card bg-base-100 pt-3">
+				<span class="font-semibold text-center">Current Date:</span>
+				<span>{{ selectedDate() }}</span>
+			</div>
 			
 			<div id="calendar-canvas"
 			     class="grid grid-cols-[repeat(6,8rem)] grid-rows-[2rem,repeat(10,4rem)]">
