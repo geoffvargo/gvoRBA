@@ -8,7 +8,6 @@ import com.geoffvargo.gvorbabackend.security.jwt.*;
 import com.geoffvargo.gvorbabackend.services.*;
 import com.geoffvargo.gvorbabackend.utils.*;
 
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.*;
@@ -19,39 +18,37 @@ import org.springframework.security.crypto.password.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.logging.*;
 
 import jakarta.validation.*;
+import lombok.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
-	@Autowired
-	private JwtUtils jwtUtils;
+	public static final Logger LOGGER = Logger.getLogger(AuthController.class.getName());
 	
-	@Autowired
-	private AuthenticationManager authManager;
+	private final JwtUtils jwtUtils;
 	
-	@Autowired
-	private UserRepository userRepository;
+	private final AuthenticationManager authManager;
 	
-	@Autowired
-	private RoleRepository roleRepository;
+	private final UserRepository userRepository;
 	
-	@Autowired
-	private UserDetailsService userDetailsService;
+	private final RoleRepository roleRepository;
 	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final UserDetailsService userDetailsService;
 	
-	@Autowired
-	private UserService userService;
+	private final PasswordEncoder passwordEncoder;
 	
-	@Autowired
-	private AuthUtil authUtil;
+	private final UserService userService;
+	
+	private final AuthUtil authUtil;
 	
 	@PostMapping("/public/signin")
 	public ResponseEntity<?> signin(@RequestBody LoginRequest loginRequest) {
+		LOGGER.info("POST /public/signin starting...");
 		Authentication auth;
 		
 		try {

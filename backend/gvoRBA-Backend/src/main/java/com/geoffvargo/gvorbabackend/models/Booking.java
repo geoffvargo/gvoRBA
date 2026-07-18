@@ -20,7 +20,7 @@ public class Booking {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id", referencedColumnName = "id", nullable = false)
-	private Room roomId;
+	private Room room;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
@@ -32,12 +32,13 @@ public class Booking {
 	@Column(name = "ends_at", nullable = false)
 	private LocalDateTime endsAt;
 	
-	@Column(name = "cancelled_at", nullable = false)
+	@Column(name = "cancelled_at")
 	private LocalDateTime cancelledAt;
 	
 	@Column(name = "purpose")
 	private String purpose;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private BookingStatus status;
 }

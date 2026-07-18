@@ -46,4 +46,12 @@ public class Room {
 		this.isActive = isActive;
 		this.createdOn = createdOn;
 	}
+	
+	public void update(AddRoomRequest room) {
+		this.name = room.getName();
+		this.location = room.getLocation();
+		this.capacity = room.getCapacity();
+		this.amenities = room.getAmenities();
+		this.isActive = room.getIsActive();
+	}
 }
