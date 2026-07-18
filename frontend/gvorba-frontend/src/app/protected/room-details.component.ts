@@ -27,7 +27,7 @@ export class RoomDetailsComponent implements OnInit {
 	
 	constructor() {
 		effect(() => {
-			let data: Booking[] = this.roomBookings();
+			const data: Booking[] = this.roomBookings();
 			console.log("roomBookings: {}", data);
 		});
 	}
