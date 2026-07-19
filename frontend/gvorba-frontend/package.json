@@ -46,6 +46,7 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "@tailwindcss/postcss": "^4.1.12",
+    "@types/jasmine": "^6.0.0",
     "daisyui": "^5.5.23",
     "eslint": "^9.39.4",
     "jsdom": "^27.1.0",

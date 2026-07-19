@@ -47,6 +47,7 @@ public class BookingController {
 	
 	@PostMapping("/add-booking")
 	public ResponseEntity<Booking> addBooking(@RequestBody BookingRequest request) {
+		// TODO: make sure this returns 409 error on booking overlap error
 		User user = userRepository.findById(request.getUserId()).orElseThrow();
 		
 		Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
