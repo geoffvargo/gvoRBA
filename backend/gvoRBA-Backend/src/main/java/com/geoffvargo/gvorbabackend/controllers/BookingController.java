@@ -1,11 +1,11 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import com.geoffvargo.gvorbabackend.*;
+import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.repos.*;
 
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.dao.*;
 import org.springframework.http.*;
 import org.springframework.security.core.*;
@@ -47,6 +47,7 @@ public class BookingController {
 	
 	@PostMapping("/add-booking")
 	public ResponseEntity<Booking> addBooking(@RequestBody BookingRequest request) {
+		// TODO: make sure this returns 409 error on booking overlap error
 		User user = userRepository.findById(request.getUserId()).orElseThrow();
 		
 		Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
@@ -60,7 +61,12 @@ public class BookingController {
 			                  .status(request.getStatus())
 			                  .build();
 		
-		bookingRepository.save(booking);
+		try {
+			bookingRepository.save(booking);
+		} catch (DataIntegrityViolationException e) {
+			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
+		}
+		
 		return ResponseEntity.ok(booking);
 	}
 	

@@ -11,6 +11,7 @@ import { TokenStorageService } from './token-storage-service';
 import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
+import { BookingRequest } from '../models/booking-request.model';
 
 // const baseURL = '/api';
 
@@ -60,12 +61,17 @@ export class ApiService {
 		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings`);
 	}
 	
+	getMyBookings() {
+		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings/me`);
+	}
+	
 	getCurrentUser() {
 		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/me`);
 	}
 	
 	getRoomBookings(id: string, date: Date) {
-		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/rooms/${id}/bookings?date=${date.toISOString().slice(0, 19)}`);
+		return this.httpClient.get<Booking[]>(
+			`${this.baseUrl}/api/rooms/${id}/bookings?date=${date.toISOString().slice(0, 19)}`);
 	}
 	
 	createRoom(data: CreateRoomRequest) {
@@ -78,5 +84,13 @@ export class ApiService {
 	
 	deactivateRoom(id: number) {
 		return this.httpClient.delete<Room>(`${this.baseUrl}/api/rooms/${id}`);
+	}
+	
+	cancelBooking(id: number) {
+		return this.httpClient.delete<Booking>(`${this.baseUrl}/api/bookings/delete/${id}`);
+	}
+	
+	createBooking(payload: BookingRequest) {
+		return this.httpClient.post<Booking>(`${this.baseUrl}/api/add-booking`, payload);
 	}
 }

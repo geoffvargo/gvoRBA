@@ -1,0 +1,12 @@
+package com.geoffvargo.gvorbabackend.exceptions;
+
+public enum ErrorCode {
+	VALIDATION_FAILED,
+	AUTHENTICATION_REQUIRED,
+	FORBIDDEN,
+	NOT_FOUND,
+	BOOKING_CONFLICT,
+	OUT_OF_HOURS,
+	ROOM_INACTIVE,
+	INTERNAL_ERROR
+}
