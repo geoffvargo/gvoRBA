@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Booking } from '../models/booking.model';
-import { BookingRequest} from '../models/booking-request.model';
+import { BookingRequest } from '../models/booking-request.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -26,11 +26,10 @@ export class BookingStore {
 				this._isLoading.set(false);
 			},
 			error: err => {
-				// TODO: check for and handle 409 error
 				console.error(err);
 				this._isLoading.set(false);
-			}
-		})
+			},
+		});
 	}
 	
 	/** Create a new booking  */
@@ -43,9 +42,10 @@ export class BookingStore {
 			},
 			error: err => {
 				console.error(err);
+				this._conflictError.set(err);
 				this._isLoading.set(false);
-			}
-		})
+			},
+		});
 	}
 	
 	/** Cancels the `booking` with the supplied `id` */
@@ -59,7 +59,7 @@ export class BookingStore {
 			error: err => {
 				console.error(err);
 				this._isLoading.set(false);
-			}
-		})
+			},
+		});
 	}
 }
