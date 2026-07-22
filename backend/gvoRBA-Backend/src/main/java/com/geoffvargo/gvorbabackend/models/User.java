@@ -37,4 +37,7 @@ public class User {
 	
 	@Column(name = "created_on")
 	private Date createdOn;
+	
+	@Column(name = "enabled")
+	private Boolean enabled;
 }
