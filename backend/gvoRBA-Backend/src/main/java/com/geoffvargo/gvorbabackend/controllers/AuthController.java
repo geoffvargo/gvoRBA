@@ -108,10 +108,6 @@ public class AuthController {
 			() -> new UsernameNotFoundException("User not found!")
 		);
 
-//		List<String> roles = userDetails.getAuthorities().stream()
-//			                     .map(GrantedAuthority::getAuthority)
-//			                     .toList();
-		
 		return ResponseEntity.ok(UserDto.fromUser(user));
 	}
 	
