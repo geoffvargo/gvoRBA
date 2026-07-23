@@ -1,4 +1,4 @@
-import { inject, Injectable, OnInit, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
