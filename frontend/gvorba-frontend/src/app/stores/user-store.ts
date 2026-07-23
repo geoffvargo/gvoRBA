@@ -15,7 +15,7 @@ export class UserStore implements OnInit {
 	readonly users = this._users.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
 	
-	ngOnInit() {
+	constructor() {
 		this.loadUsers();
 	}
 	
