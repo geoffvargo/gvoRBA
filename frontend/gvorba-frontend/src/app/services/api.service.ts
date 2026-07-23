@@ -12,6 +12,7 @@ import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
 import { BookingRequest } from '../models/booking-request.model';
+import { Role } from '../models/role.model';
 
 // const baseURL = '/api';
 
@@ -92,5 +93,17 @@ export class ApiService {
 	
 	createBooking(payload: BookingRequest) {
 		return this.httpClient.post<Booking>(`${this.baseUrl}/api/add-booking`, payload);
+	}
+	
+	loadUsers() {
+		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users`);
+	}
+	
+	updateRole(id: number, payload: Role) {
+		return this.httpClient.patch<Role>(`${this.baseUrl}/api/users/${id}/roles`, payload);
+	}
+	
+	toggleActive(id: number) {
+		return this.httpClient.patch<Role>(`${this.baseUrl}/api/users/${id}/toggle-active`, '');
 	}
 }

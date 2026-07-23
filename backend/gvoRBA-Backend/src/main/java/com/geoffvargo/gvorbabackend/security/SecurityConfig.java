@@ -94,6 +94,7 @@ public class SecurityConfig {
 				user1.setPassword(passwordEncoder.encode("password1"));
 				user1.setRole(userRole);
 				user1.setCreatedOn(new Date());
+				user1.setEnabled(true);
 				
 				userRepository.save(user1);
 			}
@@ -105,6 +106,7 @@ public class SecurityConfig {
 				user2.setPassword(passwordEncoder.encode("password1"));
 				user2.setRole(adminRole);
 				user2.setCreatedOn(new Date());
+				user2.setEnabled(true);
 				userRepository.save(user2);
 			}
 			
