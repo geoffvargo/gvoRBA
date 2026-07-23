@@ -59,6 +59,7 @@ public class AdminController {
 	@PatchMapping("/{id}/toggle-active")
 	public ResponseEntity<User> toggleActive(@AuthenticationPrincipal UserDetails userDetails,
 	                                         @PathVariable Long id) {
+		
 		if (Objects.equals(((UserDetailsImpl) userDetails).getId(), id)) {
 			throw new DataIntegrityViolationException("Cannot self-activate/deactivate!");
 		}
@@ -66,8 +67,15 @@ public class AdminController {
 		User user = userRepository.findById(id).orElseThrow(
 			() -> new UsernameNotFoundException("User not found!")
 		);
-
-//		if (user.) {}
-		return null;
+		
+		if (!user.getEnabled()) {
+			user.setEnabled(true);
+			userRepository.save(user);
+		} else {
+			user.setEnabled(false);
+			userRepository.save(user);
+		}
+		
+		return ResponseEntity.ok(user);
 	}
 }
