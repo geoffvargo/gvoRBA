@@ -38,6 +38,6 @@ public class User {
 	@Column(name = "created_on")
 	private Date createdOn;
 	
-	@Column(name = "enabled")
+	@Column(name = "enabled", nullable = false)
 	private Boolean enabled;
 }
