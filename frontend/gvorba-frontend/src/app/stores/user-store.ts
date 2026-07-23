@@ -6,7 +6,7 @@ import { Role } from '../models/role.model';
 @Injectable({
 	providedIn: 'root',
 })
-export class UserStore implements OnInit {
+export class UserStore {
 	private apiService = inject(ApiService);
 	
 	private _users = signal<User[]>([]);
