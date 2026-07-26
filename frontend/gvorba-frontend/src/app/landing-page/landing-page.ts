@@ -5,6 +5,7 @@ import { ApiService } from '../services/api.service';
 import { LoginRequest } from '../models/login-request.model';
 import { emptyResponse, LoginResponse } from '../models/login-response.model';
 import { TokenStorageService } from '../services/token-storage-service';
+import { AuthStore } from '../stores/auth-store';
 
 @Component({
 	selector: 'app-landing-page',
@@ -17,6 +18,7 @@ export class LandingPage {
 	private apiService = inject(ApiService);
 	private tokenStorageService = inject(TokenStorageService);
 	private router = inject(Router);
+	private authStore = inject(AuthStore);
 	
 	loginRequest = signal<LoginRequest>({ username: '', password: '' });
 	loginResponse = signal<LoginResponse>(emptyResponse());
@@ -42,8 +44,8 @@ export class LandingPage {
 				console.log('logged in: ', response);
 				this.loginResponse.set(response);
 				this.tokenStorageService.saveToken(response.jwtToken);
-				this.apiService.notifyLoggedIn();
-				this.router.navigate(['/home']);
+				this.authStore.loadCurrentUser();
+				this.router.navigate(['/home']).then();
 			},
 			error: err => console.log(err),
 		});

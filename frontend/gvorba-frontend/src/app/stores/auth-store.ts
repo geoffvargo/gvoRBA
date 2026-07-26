@@ -21,7 +21,7 @@ export class AuthStore {
 	readonly error = this._error.asReadonly();
 	
 	role = computed(() => this._user()?.role.roleName ?? 'ROLE_GUEST');
-	isAuthenticated = computed(() => this.authToken() !== null);
+	isAuthenticated = computed(() => this.authToken() !== '');
 	isAdmin = computed(() => this.role() === 'ROLE_ADMIN');
 	isMember = computed(() => this.role() === 'ROLE_MEMBER');
 	
@@ -62,6 +62,15 @@ export class AuthStore {
 			next: data => {
 				this._authToken.set(data.jwtToken);
 				console.log(data);
+				this.apiService.getCurrentUser().subscribe({
+					next: (user: User) => {
+						this._user.set(user);
+					},
+					error: err => {
+						console.log(err);
+						this.resetState();
+					},
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
@@ -82,7 +91,7 @@ export class AuthStore {
 	
 	private resetState() {
 		sessionStorage.removeItem('auth-token');
-		this._user.set(new User());
+		this._user.set(null);
 		this._authToken.set('');
 	}
 }
