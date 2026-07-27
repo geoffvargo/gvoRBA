@@ -1,10 +1,8 @@
-import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
+import { Component, effect, inject, signal, ViewEncapsulation } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ApiService } from '../services/api.service';
 import { LoginRequest } from '../models/login-request.model';
 import { emptyResponse, LoginResponse } from '../models/login-response.model';
-import { TokenStorageService } from '../services/token-storage-service';
 import { AuthStore } from '../stores/auth-store';
 
 @Component({
@@ -15,8 +13,6 @@ import { AuthStore } from '../stores/auth-store';
 	encapsulation: ViewEncapsulation.None,
 })
 export class LandingPage {
-	private apiService = inject(ApiService);
-	private tokenStorageService = inject(TokenStorageService);
 	private router = inject(Router);
 	private authStore = inject(AuthStore);
 	
@@ -36,18 +32,26 @@ export class LandingPage {
 				password: value.password ?? '',
 			}));
 		});
+		
+		effect(() => {
+			if (this.authStore.isAuthenticated()) {
+				this.router.navigate(['/home']).then();
+			}
+		});
 	}
 	
 	onSubmit() {
-		this.apiService.loginUser(this.loginRequest()).subscribe({
-			next: (response: LoginResponse) => {
-				console.log('logged in: ', response);
-				this.loginResponse.set(response);
-				this.tokenStorageService.saveToken(response.jwtToken);
-				this.authStore.loadCurrentUser();
+		if (this.loginForm.invalid) {
+			return;
+		}
+		
+		this.authStore.login(this.loginRequest()).subscribe({
+			next: () => {
 				this.router.navigate(['/home']).then();
 			},
-			error: err => console.log(err),
+			error: err => {
+				console.error(err);
+			},
 		});
 	}
 }

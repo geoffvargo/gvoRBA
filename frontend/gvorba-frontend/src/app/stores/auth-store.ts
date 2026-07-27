@@ -3,12 +3,15 @@ import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
 import { LoginRequest } from '../models/login-request.model';
 import { SignupRequest } from '../models/signup-request.model';
+import { TokenStorageService } from '../services/token-storage-service';
+import { switchMap, tap } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class AuthStore {
 	private apiService = inject(ApiService);
+	private tokenStorage = inject(TokenStorageService);
 	
 	private _user = signal<User | null>(null);
 	private _authToken = signal('');
@@ -58,26 +61,44 @@ export class AuthStore {
 	
 	login(user: LoginRequest) {
 		this._isLoading.set(true);
-		this.apiService.loginUser(user).subscribe({
-			next: data => {
-				this._authToken.set(data.jwtToken);
-				console.log(data);
-				this.apiService.getCurrentUser().subscribe({
-					next: (user: User) => {
-						this._user.set(user);
-					},
-					error: err => {
-						console.log(err);
-						this.resetState();
-					},
-				});
-				this._isLoading.set(false);
-			},
-			error: err => {
-				console.log(err);
-				this._isLoading.set(false);
-			},
-		});
+		return this.apiService.loginUser(user).pipe(
+			tap(resp => {
+				this.tokenStorage.saveToken(resp.jwtToken);
+				this._authToken.set(resp.jwtToken);
+			}),
+			switchMap(() => this.apiService.getCurrentUser()),
+			tap({
+				next: currUser => {
+					this._user.set(currUser);
+					this._isLoading.set(false);
+				},
+				error: err => {
+					console.error(err);
+					this.resetState();
+					this._isLoading.set(false);
+				},
+			}),
+		);
+		// this.apiService.loginUser(user).subscribe({
+		// 	next: data => {
+		// 		this._authToken.set(data.jwtToken);
+		// 		console.log(data);
+		// 		this.apiService.getCurrentUser().subscribe({
+		// 			next: (user: User) => {
+		// 				this._user.set(user);
+		// 			},
+		// 			error: err => {
+		// 				console.log(err);
+		// 				this.resetState();
+		// 			},
+		// 		});
+		// 		this._isLoading.set(false);
+		// 	},
+		// 	error: err => {
+		// 		console.log(err);
+		// 		this._isLoading.set(false);
+		// 	},
+		// });
 	}
 	
 	logout() {
