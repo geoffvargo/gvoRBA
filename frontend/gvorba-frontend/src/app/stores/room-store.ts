@@ -4,6 +4,7 @@ import { Room } from '../models/room.model';
 import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
+import { tap } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
@@ -24,6 +25,14 @@ export class RoomStore {
 	readonly isLoading = this._isLoading.asReadonly();
 	
 	constructor() {
+		this.loadRooms().subscribe({
+			next: data => {
+				this._rooms.set(data);
+			},
+			error: err => {
+				console.error(err);
+			},
+		});
 		effect(() => {
 			const id = this._selectedRoom()?.id;
 			const date = this._selectedDate();
@@ -40,25 +49,27 @@ export class RoomStore {
 	
 	loadRooms(name?: string, minCapacity?: number) {
 		this._isLoading.set(true);
-		this.apiService.getRooms().subscribe({
-			next: rooms => {
-				const rmList = rooms;
-				if (name) {
-					rmList.filter((r) => r.name.includes(name));
-				}
-				
-				if (minCapacity) {
-					rmList.filter(r => r.capacity >= minCapacity);
-				}
-				
-				this._rooms.set(rmList);
-				this._isLoading.set(false);
-			},
-			error: err => {
-				console.error(err);
-				this._isLoading.set(false);
-			},
-		});
+		return this.apiService.getRooms().pipe(
+			tap({
+				next: rooms => {
+					const rmList = rooms;
+					if (name) {
+						rmList.filter((r) => r.name.includes(name));
+					}
+					
+					if (minCapacity) {
+						rmList.filter(r => r.capacity >= minCapacity);
+					}
+					
+					this._rooms.set(rmList);
+					this._isLoading.set(false);
+				},
+				error: err => {
+					console.error(err);
+					this._isLoading.set(false);
+				},
+			}),
+		);
 	}
 	
 	loadRoom(id: number) {
