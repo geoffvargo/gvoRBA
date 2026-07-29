@@ -1,10 +1,10 @@
-import { Component, inject, signal, viewChild, ViewEncapsulation, OnInit, AfterViewInit } from '@angular/core';
-import { ApiService } from '../services/api.service';
+import { AfterViewInit, Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
 import { Room } from '../models/room.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
+import { RoomStore } from '../stores/room-store';
 
 @Component({
 	selector: 'app-room-list',
@@ -28,12 +28,12 @@ import { MatPaginator } from '@angular/material/paginator';
 	encapsulation: ViewEncapsulation.None,
 })
 export class RoomListComponent implements OnInit, AfterViewInit {
-	private apiService = inject(ApiService);
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	
-	_rooms = signal<Room[]>([]);
-	readonly rooms = this._rooms.asReadonly();
+	protected roomStore = inject(RoomStore);
+	
+	protected readonly rooms = this.roomStore.rooms;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -50,13 +50,14 @@ export class RoomListComponent implements OnInit, AfterViewInit {
 		'action',
 	];
 	
-	ngOnInit() {
-		this.apiService.getRooms().subscribe({
-			next: data => {
-				this._rooms.set(data);
-				this.dataSource.data = [...data];
-			},
+	constructor() {
+		effect(() => {
+			this.dataSource.data = this.rooms();
 		});
+	}
+	
+	ngOnInit() {
+		this.roomStore.loadRooms();
 	}
 	
 	ngAfterViewInit() {
@@ -89,8 +90,9 @@ export class RoomListComponent implements OnInit, AfterViewInit {
 	}
 	
 	onView(id: number, room: Room) {
-		this.router.navigate([id],
-			{ relativeTo: this.route, state: { room, id } },
-		);
+		this.router.navigate([id], {
+				relativeTo: this.route, state: { room, id },
+			},
+		).then();
 	}
 }
