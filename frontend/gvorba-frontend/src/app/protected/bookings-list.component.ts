@@ -1,9 +1,9 @@
-import { Component, inject, signal, viewChild, ViewEncapsulation, OnInit, AfterViewInit } from '@angular/core';
-import { ApiService } from '../services/api.service';
+import { AfterViewInit, Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
 import { Booking } from '../models/booking.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { BookingStore } from '../stores/booking-store';
 
 @Component({
 	selector: 'app-bookings-list',
@@ -27,10 +27,9 @@ import { MatPaginator } from '@angular/material/paginator';
 	encapsulation: ViewEncapsulation.None,
 })
 export class BookingsListComponent implements OnInit, AfterViewInit {
-	private apiService = inject(ApiService);
+	protected bookingStore = inject(BookingStore);
 	
-	_bookings = signal<Booking[]>([]);
-	readonly bookings = this._bookings.asReadonly();
+	readonly bookings = this.bookingStore.myBookings;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -48,14 +47,14 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 		'action',
 	];
 	
-	ngOnInit() {
-		/** set the dataSource */
-		this.apiService.getBookings().subscribe({
-			next: data => {
-				this._bookings.set(data);
-				this.dataSource.data = [...data];
-			},
+	constructor() {
+		effect(() => {
+			this.dataSource.data = this.bookings();
 		});
+	}
+	
+	ngOnInit() {
+		this.bookingStore.loadMyBookings();
 	}
 	
 	ngAfterViewInit() {
