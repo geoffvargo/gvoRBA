@@ -11,9 +11,11 @@ export class UserStore {
 	
 	private _users = signal<User[]>([]);
 	private _isLoading = signal<boolean>(false);
+	private _loadedUser = signal<User | null>(null);
 	
 	readonly users = this._users.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
+	readonly loadedUser = this._loadedUser.asReadonly();
 	
 	constructor() {
 		this.loadUsers();
@@ -31,6 +33,21 @@ export class UserStore {
 				console.log(err);
 				this._isLoading.set(false);
 			},
+		});
+	}
+	
+	loadUser(id: number) {
+		this._isLoading.set(false);
+		this.apiService.loadUser(id).subscribe({
+			next: data => {
+				this._loadedUser.set(data);
+				console.log(this.loadedUser());
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.log(err);
+				this._isLoading.set(false);
+			}
 		});
 	}
 	

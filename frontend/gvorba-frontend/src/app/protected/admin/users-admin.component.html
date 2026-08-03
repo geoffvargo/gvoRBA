@@ -1,7 +1,7 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex flex-col justify-center content-center w-auto items-center">
 	<div class="card shadow-lg bg-base-100 flex flex-col py-4 overflow-x-auto w-fit justify-center">
 		<h1 class="text-center text-2xl font-bold">
-			All Bookings
+			All Users
 		</h1>
 		<div class="card-body flex justify-center items-center">
 			<table class="mat-elevation-x8 mx-16 w-max"
@@ -13,95 +13,71 @@
 					<th mat-header-cell
 					    *matHeaderCellDef
 					    mat-sort-header="id">
-						Booking Number
-					</th>
-					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.id }}
-					</td>
-				</ng-container>
-				
-				<ng-container matColumnDef="roomId">
-					<th mat-header-cell
-					    *matHeaderCellDef
-					    mat-sort-header="roomId">
-						Room Id
-					</th>
-					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.room.id }}
-					</td>
-				</ng-container>
-				
-				<ng-container matColumnDef="userId">
-					<th mat-header-cell
-					    *matHeaderCellDef
-					    mat-sort-header="userId">
 						User Id
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.userId.id }}
+					    *matCellDef="let user">
+						{{ user.id }}
 					</td>
 				</ng-container>
 				
-				<ng-container matColumnDef="startsAt">
+				<ng-container matColumnDef="name">
 					<th mat-header-cell
 					    *matHeaderCellDef
-					    mat-sort-header="startsAt">
-						Starts At
+					    mat-sort-header="name">
+						User Name
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.startsAt }}
+					    *matCellDef="let user">
+						{{ user.name }}
 					</td>
 				</ng-container>
 				
-				<ng-container matColumnDef="endsAt">
+				<ng-container matColumnDef="email">
 					<th mat-header-cell
 					    *matHeaderCellDef
-					    mat-sort-header="endsAt">
-						Ends At
+					    mat-sort-header="email">
+						User Email
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.endsAt }}
+					    *matCellDef="let user">
+						{{ user.email }}
 					</td>
 				</ng-container>
 				
-				<ng-container matColumnDef="cancelledAt">
+				<ng-container matColumnDef="role">
 					<th mat-header-cell
 					    *matHeaderCellDef
-					    mat-sort-header="cancelledAt">
-						Cancelled At
+					    mat-sort-header="role">
+						User Role
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.cancelledAt }}
+					    *matCellDef="let user">
+						{{ user.role.roleName }}
 					</td>
 				</ng-container>
 				
-				<ng-container matColumnDef="purpose">
+				<ng-container matColumnDef="created_on">
 					<th mat-header-cell
 					    *matHeaderCellDef
-					    mat-sort-header="purpose">
-						Purpose
+					    mat-sort-header="created_on">
+						User Created On
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.purpose }}
+					    *matCellDef="let user">
+						{{ user.createdOn }}
 					</td>
 				</ng-container>
 				
-				<ng-container matColumnDef="status">
+				<ng-container matColumnDef="enabled">
 					<th mat-header-cell
 					    *matHeaderCellDef
-					    mat-sort-header="status">
-						Status
+					    mat-sort-header="enabled">
+						User Enabled
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
-						{{ booking.status }}
+					    *matCellDef="let user">
+						{{ user.enabled }}
 					</td>
 				</ng-container>
 				
@@ -112,9 +88,9 @@
 						Action
 					</th>
 					<td mat-cell
-					    *matCellDef="let booking">
+					    *matCellDef="let user">
 						<button class="action-btn"
-						        (click)="onView(booking.id, booking)">
+						        (click)="onView(user.id)">
 							View
 						</button>
 					</td>
@@ -124,16 +100,14 @@
 				    *matHeaderRowDef="displayedColumns"></tr>
 				<tr mat-row
 				    *matRowDef="let row; columns: displayedColumns;"></tr>
-			
 			</table>
 			
-			<mat-paginator [pageSizeOptions]="[10,25,50]"
-			               [selectConfig]="{ panelClass: 'paginator'}"
+			<mat-paginator [pageSizeOptions]="[10,20,50]"
+			               [selectConfig]="{panelClass: 'paginator'}"
 			               class="m-4 rounded-box!"
 			               showFirstLastButtons
-			               aria-label="List of All Bookings"></mat-paginator>
-			<!-- 			               style="border-radius: 1rem; overflow: hidden" -->
-		
+			               aria-label="List All Users"></mat-paginator>
 		</div>
 	</div>
+
 </div>

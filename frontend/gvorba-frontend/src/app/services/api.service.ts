@@ -99,7 +99,11 @@ export class ApiService {
 	
 	/* for user-store */
 	loadUsers() {
-		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users`);
+		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users/`);
+	}
+	
+	loadUser(id: number) {
+		return this.httpClient.get<User>(`${this.baseUrl}/api/users/${id}`);
 	}
 	
 	updateRole(id: number, payload: Role) {

@@ -79,26 +79,6 @@ export class AuthStore {
 				},
 			}),
 		);
-		// this.apiService.loginUser(user).subscribe({
-		// 	next: data => {
-		// 		this._authToken.set(data.jwtToken);
-		// 		console.log(data);
-		// 		this.apiService.getCurrentUser().subscribe({
-		// 			next: (user: User) => {
-		// 				this._user.set(user);
-		// 			},
-		// 			error: err => {
-		// 				console.log(err);
-		// 				this.resetState();
-		// 			},
-		// 		});
-		// 		this._isLoading.set(false);
-		// 	},
-		// 	error: err => {
-		// 		console.log(err);
-		// 		this._isLoading.set(false);
-		// 	},
-		// });
 	}
 	
 	logout() {

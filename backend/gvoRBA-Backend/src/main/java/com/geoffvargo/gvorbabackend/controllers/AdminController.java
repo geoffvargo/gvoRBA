@@ -33,6 +33,15 @@ public class AdminController {
 		return ResponseEntity.ok(userRepository.findAll());
 	}
 	
+	@GetMapping("/{id}")
+	public ResponseEntity<UserDto> getUser(@PathVariable long id) {
+		User user = userRepository.findById(id).orElseThrow(
+			() -> new UsernameNotFoundException("User not found with id " + id)
+		);
+		
+		return ResponseEntity.ok(UserDto.fromUser(user));
+	}
+	
 	@PatchMapping("/{id}/role")
 	public ResponseEntity<Role> updateRole(@AuthenticationPrincipal UserDetails userDetails,
 	                                       @PathVariable Long id,
