@@ -42,6 +42,25 @@ public class AdminController {
 		return ResponseEntity.ok(UserDto.fromUser(user));
 	}
 	
+	@PatchMapping("/{id}/update")
+	public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
+	                                          @RequestBody UserUpdateRequest updateRequest) { //TODO: replace UserDto with custom request object
+		User user = userRepository.findById(id).orElseThrow(
+			() -> new UsernameNotFoundException("User not found!")
+		);
+		
+		user.setEmail(updateRequest.getEmail());
+		user.setName(updateRequest.getName());
+		user.setRole(updateRequest.getRole());
+		user.setEnabled(updateRequest.getEnabled());
+		
+		userRepository.save(user);
+		
+		UserDto updatedUserDto = UserDto.fromUser(user);
+		
+		return ResponseEntity.ok(updatedUserDto);
+	}
+	
 	@PatchMapping("/{id}/role")
 	public ResponseEntity<Role> updateRole(@AuthenticationPrincipal UserDetails userDetails,
 	                                       @PathVariable Long id,

@@ -14,4 +14,10 @@ public record RoleDto(Long id, AppRole roleName) implements Serializable {
 			role.getRoleName()
 		);
 	}
+	
+	public static Role toRole() {
+		return new Role(
+		
+		);
+	}
 }

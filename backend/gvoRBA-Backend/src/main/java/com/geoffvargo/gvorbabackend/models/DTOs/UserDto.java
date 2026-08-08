@@ -8,14 +8,21 @@ import java.util.*;
 /**
  * DTO for {@link User}
  */
-public record UserDto(Long id, String email, String name, RoleDto role, Date createdOn) implements Serializable {
+public record UserDto(
+	String email,
+	String name,
+	RoleDto role,
+	Date createdOn,
+	Boolean enabled
+
+) implements Serializable {
 	public static UserDto fromUser(User user) {
 		return new UserDto(
-			user.getId(),
 			user.getEmail(),
 			user.getName(),
 			RoleDto.fromRole(user.getRole()),
-			user.getCreatedOn()
+			user.getCreatedOn(),
+			user.getEnabled()
 		);
 	}
 }
