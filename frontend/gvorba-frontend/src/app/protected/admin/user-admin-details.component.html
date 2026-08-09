@@ -1,0 +1,119 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
+	@if (isLoading()) {
+		<span>Loading...</span>
+	} @else {
+		<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md items-center">
+			<div class="card-title">
+				<h1 class="text-xl font-bold p-2 m2">
+					User Details
+				</h1>
+			</div>
+			
+			<div class="card-body grid grid-cols-1 gap-x-16 sm:gap-x-6 gap-y-2 content-start max-h-fit">
+				<p class="flex gap-2">
+					<span class="font-semibold">User Id: </span>
+					<span>{{ id() }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">User Name: </span>
+					<span>{{ user()?.name }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">User Email</span>
+					<span>{{ user()?.email }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">User Role</span>
+					<span>{{ user()?.role?.roleName }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">Created On:</span>
+					<span>{{ user()?.createdOn }}</span>
+				</p>
+				
+				<p class="flex gap-2">
+					<span class="font-semibold">Enabled: </span>
+					<span>{{ user()?.enabled }}</span>
+				</p>
+			</div>
+			
+			<div class="p-4 flex h-full items-start">
+				@if (!isEditing()) {
+					<button class="action-btn top-0"
+					        (click)="toggleEdit()">
+						Edit
+					</button>
+				} @else {
+					<div>
+						<form [formGroup]="editingForm">
+							<div class="px-4 py-2 m-2 flex gap-2 items-center">
+								<label for="name">
+									Name:
+								</label>
+								<input type="text"
+								       name="name"
+								       class="input"
+								       id="name"
+								       formControlName="name">
+							</div>
+							
+							<div class="px-4 py-2 m-2 flex gap-2 items-center">
+								<label for="email">
+									Email:
+								</label>
+								<input type="text"
+								       name="email"
+								       id="email"
+								       class="input"
+								       formControlName="email">
+							</div>
+							
+							<div class="px-4 py-2 m-2 flex gap-2 items-center">
+								<mat-label>Role:</mat-label>
+								<mat-select formControlName="role"
+								            class="text-center">
+									<mat-option value="ROLE_GUEST">Guest</mat-option>
+									<mat-option value="ROLE_USER">User</mat-option>
+									<mat-option value="ROLE_ADMIN">Admin</mat-option>
+								</mat-select>
+							</div>
+							
+							<div class="px-4 py-2 m-2 flex gap-2 itmes-center">
+								<mat-label>Enabled:</mat-label>
+								<mat-slide-toggle id="enabled"
+								                  class="justify-center"
+								                  formControlName="enabled" />
+							</div>
+							
+							<div class="flex flex-row gap-2">
+								<button class="action-btn"
+								        (click)="onSave()">
+									Save
+								</button>
+								<button class="action-btn"
+								        (click)="onReset()">
+									Reset
+								</button>
+								<button class="action-btn"
+								        (click)="onCancel()">
+									Cancel
+								</button>
+							</div>
+						</form>
+					</div>
+				}
+			</div>
+			
+			<div class="flex items-end">
+				<button class="action-btn bottom-0"
+				        (click)="onBack()">
+					Back
+				</button>
+			</div>
+		</div>
+	}
+</div>

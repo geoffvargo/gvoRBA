@@ -3,7 +3,7 @@ import { CanActivateFn, RedirectCommand, Router } from '@angular/router';
 import { TokenStorageService } from '../services/token-storage-service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-export const adminGuard: CanActivateFn = (route, state) => {
+export const adminGuard: CanActivateFn = () => {
 	const router = inject(Router);
 	const tokenService = inject(TokenStorageService);
 	const jwtHelper = inject(JwtHelperService);

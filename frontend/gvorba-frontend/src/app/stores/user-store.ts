@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
+import { UserUpdate } from '../models/user-update.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -47,7 +48,7 @@ export class UserStore {
 			error: err => {
 				console.log(err);
 				this._isLoading.set(false);
-			}
+			},
 		});
 	}
 	
@@ -70,6 +71,21 @@ export class UserStore {
 		this.apiService.toggleActive(id).subscribe({
 			next: data => {
 				console.log(data);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.log(err);
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	updateUser(id: number, user: UserUpdate) {
+		this._isLoading.set(true);
+		this.apiService.updateUser(id, user).subscribe({
+			next: data => {
+				console.log(data);
+				this.loadUser(id);
 				this._isLoading.set(false);
 			},
 			error: err => {

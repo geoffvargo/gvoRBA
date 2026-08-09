@@ -13,12 +13,12 @@ export class User {
 	            name = '',
 	            role: Role = new Role(),
 	            createdOn: Date = new Date(),
-	            enabled: boolean = true) {
+	            isEnabled = true) {
 		this.id = id;
 		this.email = email;
 		this.name = name;
 		this.role = role;
 		this.createdOn = createdOn;
-		this.enabled = enabled;
+		this.enabled = isEnabled;
 	}
 }

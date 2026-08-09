@@ -13,6 +13,7 @@ import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
 import { BookingRequest } from '../models/booking-request.model';
 import { Role } from '../models/role.model';
+import { UserUpdate } from '../models/user-update.model';
 
 // const baseURL = '/api';
 
@@ -112,5 +113,9 @@ export class ApiService {
 	
 	toggleActive(id: number) {
 		return this.httpClient.patch<Role>(`${this.baseUrl}/api/users/${id}/toggle-active`, '');
+	}
+	
+	updateUser(id: number, payload: UserUpdate) {
+		return this.httpClient.patch<User>(`${this.baseUrl}/api/users/${id}/update`, payload);
 	}
 }
