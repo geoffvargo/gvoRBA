@@ -44,7 +44,7 @@ public class AdminController {
 	
 	@PatchMapping("/{id}/update")
 	public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
-	                                          @RequestBody UserUpdateRequest updateRequest) { //TODO: replace UserDto with custom request object
+	                                          @RequestBody UserUpdateRequest updateRequest) {
 		User user = userRepository.findById(id).orElseThrow(
 			() -> new UsernameNotFoundException("User not found!")
 		);
