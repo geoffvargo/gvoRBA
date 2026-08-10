@@ -8,6 +8,7 @@ import java.io.*;
  * DTO for {@link com.geoffvargo.gvorbabackend.models.Role}
  */
 public record RoleDto(Long id, AppRole roleName) implements Serializable {
+	
 	public static RoleDto fromRole(Role role) {
 		return new RoleDto(
 			role.getId(),
@@ -15,9 +16,7 @@ public record RoleDto(Long id, AppRole roleName) implements Serializable {
 		);
 	}
 	
-	public static Role toRole() {
-		return new Role(
-		
-		);
+	public Role toRole() {
+		return new Role(roleName);
 	}
 }
