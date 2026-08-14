@@ -14,6 +14,7 @@ import { UpdateRoomRequest } from '../models/update-room.request';
 import { BookingRequest } from '../models/booking-request.model';
 import { Role } from '../models/role.model';
 import { UserUpdate } from '../models/user-update.model';
+import { UserCreationModel } from '../models/user-creation.model';
 
 // const baseURL = '/api';
 
@@ -117,5 +118,9 @@ export class ApiService {
 	
 	updateUser(id: number, payload: UserUpdate) {
 		return this.httpClient.patch<User>(`${this.baseUrl}/api/users/${id}/update`, payload);
+	}
+	
+	createUser(data: UserCreationModel) {
+		return this.httpClient.put<User>(`${this.baseUrl}/api/users/create`, data);
 	}
 }

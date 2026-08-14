@@ -3,6 +3,8 @@ import { ApiService } from '../services/api.service';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
 import { UserUpdate } from '../models/user-update.model';
+import { UserCreationModel } from '../models/user-creation.model';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
@@ -93,5 +95,37 @@ export class UserStore {
 				this._isLoading.set(false);
 			},
 		});
+	}
+	
+	roleChooser(roleName: string) {
+		switch (roleName) {
+			case 'ROLE_GUEST':
+				return { id: 0, roleName: 'ROLE_GUEST' };
+			case 'ROLE_USER':
+				return { id: 1, roleName: 'ROLE_USER' };
+			case 'ROLE_ADMIN':
+				return { id: 2, roleName: 'ROLE_ADMIN' };
+			default:
+				throw Error('not a valid role');
+		}
+	}
+	
+	// createUser(data: UserCreationModel) {
+	// 	this._isLoading.set(true);
+	// 	this.apiService.createUser(data).subscribe({
+	// 		next: data => {
+	// 			console.log(data);
+	// 			this._isLoading.set(false);
+	// 		},
+	// 		error: err => {
+	// 			console.log(err);
+	// 			this._isLoading.set(false);
+	// 		}
+	// 	});
+	// }
+	async createUser(user: UserCreationModel): Promise<User> {
+		const created = await firstValueFrom(this.apiService.createUser(user)); // your existing Observable call
+		this._users.update(list => [...list, created]);                  // your backing signal
+		return created;
 	}
 }

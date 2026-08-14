@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
 			withComponentInputBinding(),
 			withRouterConfig({
 				onSameUrlNavigation: 'reload',
-			})
+			}),
 		),
 		provideHttpClient(),
 		provideHttpClient(withInterceptors([authInterceptor])),

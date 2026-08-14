@@ -1,0 +1,77 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex justify-center content-center w-auto items-start">
+	@if (isLoading()) {
+		<span>Loading...</span>
+	} @else {
+		<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md items-center">
+			<div class="card-title">
+				<h1 class="text-xl font-bold p-2">
+					Create User
+				</h1>
+			</div>
+			
+			<div class="card-body">
+				<form [formGroup]="userForm">
+					<div class="px-4 py-2 m-2 flex gap-2 items-center">
+						<label for="name">
+							Name:
+						</label>
+						<input type="text"
+						       name="name"
+						       id="name"
+						       class="input"
+						       formControlName="name">
+					</div>
+					
+					<div class="px-4 py-2 m-2 flex gap-2 items-center">
+						<label for="email">
+							Email:
+						</label>
+						<input type="text"
+						       name="email"
+						       id="email"
+						       class="input"
+						       formControlName="email">
+					</div>
+					
+					<div class="px-4 py-2 m-2 flex gap-2 items-center">
+						<mat-label>Role:</mat-label>
+						<mat-select formControlName="role"
+						            class="text-center">
+							<mat-option value="ROLE_GUEST">Guest</mat-option>
+							<mat-option value="ROLE_USER">User</mat-option>
+							<mat-option value="ROLE_ADMIN">Admin</mat-option>
+						</mat-select>
+					</div>
+					
+					<div class="px-4 py-2 flex gap-2 items-center">
+						<label for="password">Password:</label>
+						<input type="password"
+						       name="password"
+						       id="password"
+						       class="input"
+						       formControlName="password">
+					</div>
+					
+					<div class="px-4 py-2 m-2 flex gap-2 items-center">
+						<mat-label>Enabled:</mat-label>
+						<mat-slide-toggle id="enabled"
+						                  class="justify-center"
+						                  formControlName="enabled" />
+					</div>
+					
+					<div class="card-body self-center flex-row justify-center items-center">
+						<button class="action-btn w-fit!"
+						        (click)="onSave()">
+							Save
+						</button>
+						
+						<button class="action-btn w-fit!"
+						        (click)="onCancel()">
+							Cancel
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+</div>

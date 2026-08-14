@@ -68,7 +68,7 @@ export class UserAdminDetailsComponent implements OnInit {
 			// ...curr,
 			email: this.editingForm.controls['email'].value ?? curr.email,
 			name: this.editingForm.controls['name'].value ?? curr.name,
-			role: this.roleChooser(this.editingForm.controls['role'].value ?? ''),
+			role: this.userStore.roleChooser(this.editingForm.controls['role'].value ?? ''),
 			enabled: this.editingForm.controls['enabled'].value ?? curr.enabled,
 		}));
 		
@@ -95,18 +95,5 @@ export class UserAdminDetailsComponent implements OnInit {
 			enabled: this.user()?.enabled,
 		});
 		console.log(this.editingForm.get('role')!.value, typeof this.editingForm.get('role')!.value);
-	}
-	
-	roleChooser(roleName: string) {
-		switch (roleName) {
-			case 'ROLE_GUEST':
-				return { id: 0, roleName: 'ROLE_GUEST' };
-			case 'ROLE_USER':
-				return { id: 1, roleName: 'ROLE_USER' };
-			case 'ROLE_ADMIN':
-				return { id: 2, roleName: 'ROLE_ADMIN' };
-			default:
-				throw Error('not a valid role');
-		}
 	}
 }

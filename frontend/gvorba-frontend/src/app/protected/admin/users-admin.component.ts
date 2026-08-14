@@ -93,4 +93,8 @@ export class UsersAdminComponent implements OnInit, AfterViewInit {
 			relativeTo: this.route,
 		}).then();
 	}
+	
+	onAddUser() {
+		this.router.navigate(['/admin/users/create'] ).then();
+	}
 }
