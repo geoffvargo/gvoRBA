@@ -13,6 +13,8 @@ import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
 import { BookingRequest } from '../models/booking-request.model';
 import { Role } from '../models/role.model';
+import { UserUpdate } from '../models/user-update.model';
+import { UserCreationModel } from '../models/user-creation.model';
 
 // const baseURL = '/api';
 
@@ -99,7 +101,11 @@ export class ApiService {
 	
 	/* for user-store */
 	loadUsers() {
-		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users`);
+		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users/`);
+	}
+	
+	loadUser(id: number) {
+		return this.httpClient.get<User>(`${this.baseUrl}/api/users/${id}`);
 	}
 	
 	updateRole(id: number, payload: Role) {
@@ -108,5 +114,13 @@ export class ApiService {
 	
 	toggleActive(id: number) {
 		return this.httpClient.patch<Role>(`${this.baseUrl}/api/users/${id}/toggle-active`, '');
+	}
+	
+	updateUser(id: number, payload: UserUpdate) {
+		return this.httpClient.patch<User>(`${this.baseUrl}/api/users/${id}/update`, payload);
+	}
+	
+	createUser(data: UserCreationModel) {
+		return this.httpClient.put<User>(`${this.baseUrl}/api/users/create`, data);
 	}
 }

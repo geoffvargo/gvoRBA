@@ -6,29 +6,19 @@ export class User {
 	name = '';
 	role: Role = new Role();
 	createdOn: Date = new Date();
+	enabled: boolean;
 	
 	constructor(id = -1,
 	            email = '',
 	            name = '',
 	            role: Role = new Role(),
-	            createdOn: Date = new Date()) {
+	            createdOn: Date = new Date(),
+	            isEnabled = true) {
 		this.id = id;
 		this.email = email;
 		this.name = name;
 		this.role = role;
 		this.createdOn = createdOn;
+		this.enabled = isEnabled;
 	}
 }
-
-// export function emptyUser(overrides: Partial<User> = {}): User {
-// 	return {
-// 		id: 0,
-// 		email: '',
-// 		name: '',
-// 		role: '',
-// 		createdOn: new Date(),
-// 		...overrides,
-// 	};
-// }
-
-// export function

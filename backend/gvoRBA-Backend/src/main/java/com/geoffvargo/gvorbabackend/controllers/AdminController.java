@@ -10,6 +10,7 @@ import org.springframework.dao.*;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.*;
 import org.springframework.security.core.userdetails.*;
+import org.springframework.security.crypto.password.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -28,9 +29,59 @@ public class AdminController {
 	
 	private final RoleRepository roleRepository;
 	
+	private final PasswordEncoder passwordEncoder;
+	
 	@GetMapping("/")
 	public ResponseEntity<List<User>> loadAllUsers() {
 		return ResponseEntity.ok(userRepository.findAll());
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<UserDto> getUser(@PathVariable long id) {
+		User user = userRepository.findById(id).orElseThrow(
+			() -> new UsernameNotFoundException("User not found with id " + id)
+		);
+		
+		return ResponseEntity.ok(UserDto.fromUser(user));
+	}
+	
+	@PutMapping("/create")
+	public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+		Role role = roleRepository.findByRoleName(userDto.role().roleName()).orElseThrow(
+			() -> new UsernameNotFoundException("Role " + userDto.role().roleName() + " not found")
+		);
+		
+		User user = User.builder()
+			            .name(userDto.name())
+			            .email(userDto.email())
+			            .role(role)
+			            .createdOn(new Date())
+			            .enabled(true)
+			            .password(passwordEncoder.encode(userDto.password()))
+			            .build();
+		
+		userRepository.save(user);
+		
+		return ResponseEntity.ok(UserDto.fromUser(user));
+	}
+	
+	@PatchMapping("/{id}/update")
+	public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
+	                                          @RequestBody UserUpdateRequest updateRequest) {
+		User user = userRepository.findById(id).orElseThrow(
+			() -> new UsernameNotFoundException("User not found!")
+		);
+		
+		user.setEmail(updateRequest.getEmail());
+		user.setName(updateRequest.getName());
+		user.setRole(updateRequest.getRole());
+		user.setEnabled(updateRequest.getEnabled());
+		
+		userRepository.save(user);
+		
+		UserDto updatedUserDto = UserDto.fromUser(user);
+		
+		return ResponseEntity.ok(updatedUserDto);
 	}
 	
 	@PatchMapping("/{id}/role")

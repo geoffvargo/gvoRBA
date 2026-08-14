@@ -10,6 +10,7 @@
 	--color-base-100: oklch(98% 0 0);
 	--color-base-200: oklch(96% 0.001 286.375);
 	--color-base-300: oklch(92% 0.004 286.32);
+	--color-base-400: oklch(90% 0.006 286.32);
 	--color-base-content: oklch(21% 0.006 285.885);
 	--color-primary: oklch(64% 0.125 41.116);
 	--color-primary-content: oklch(98% 0.016 73.684);
@@ -44,6 +45,10 @@
 	--min-height-customHeight: 530px;
 }
 
+.cdk-overlay-pane, .mat-mdc-select-panel, .mat-mdc-select-panel-above {
+	--mdc-menu-container-color: var(--color-base-200) !important;
+}
+
 .action-btn {
 	@apply flex bg-info shadow-md justify-center text-white w-full py-2 px-6 transition-colors duration-100 rounded-sm my-3 cursor-pointer;
 }
@@ -55,7 +60,9 @@
 }
 
 :root {
-	/* Forces the underlying Material Design token engine to process a rounded shape */
+	--mat-select-panel-background-color: var(--color-base-100);
+	--mat-select-panel-enabled-trigger-text-color: var(--color-base-content);
+	--mat-select-panel-disabled-trigger-text-color: var(--color-base-content);
 	--mat-paginator-container-shape: 24px !important;
 	--mdc-filled-button-container-shape: 24px !important;
 }
@@ -64,31 +71,3 @@
 mat-paginator {
 	--mat-paginator-container-shape: 24px !important;
 }
-
-/* src/styles.css */
-
-/*:root ::ng-deep .mat-mdc-paginator .mat-mdc-form-field {*/
-/*	--mdc-filled-text-field-container-shape: 12px;*/
-/*	--mdc-outlined-text-field-container-shape: 12px;*/
-/*}*/
-
-/*.mat-mdc-paginator {*/
-/*	--mat-sys-corner-small: 12px;*/
-/*}*/
-
-/*.mat-mdc-paginator * {*/
-/*	border-radius: 8px !important;*/
-/*}*/
-
-/*.mat-mdc-paginator .mat-mdc-form-field {*/
-/*	--mdc-outlined-text-field-container-shape: 24px;*/
-/*}*/
-/**/
-/*.mat-mdc-paginator .mdc-notched-outline {*/
-/*	border-radius: 24px !important;*/
-/*}*/
-
-/*:root .mat-mdc-form-field {*/
-/*	--mdc-outlined-text-field-container-shape: 16px !important;*/
-/*	--mdc-filled-text-field-container-shape: 16px !important;*/
-/*}*/

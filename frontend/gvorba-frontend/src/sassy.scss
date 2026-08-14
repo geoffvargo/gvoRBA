@@ -1,0 +1,58 @@
+@mixin toggle-states($who, $what, $value) {
+  @each $s in ('', 'hover-', 'focus-', 'pressed-') {
+    --mat-slide-toggle-#{$who}-#{$s}#{$what}: #{$value};
+  }
+}
+
+@mixin horizontal-track-sizes($names, $value) {
+  @each $name in $names {
+    --mat-slide-toggle-#{$name}: #{$value};
+  }
+}
+
+@mixin multi-setter($is, $names, $value) {
+  @each $name in $names {
+    --mat-slide-toggle-#{$is}-#{$name}: #{$value};
+  }
+}
+
+.mat-mdc-slide-toggle.mat-mdc-slide-toggle {
+  /* --- repeating 4-state groups: one edit point each --- */
+  @include toggle-states(selected, track-color, "rgb(25 118 210 / 0.5)");
+  @include toggle-states(selected, handle-color, "#1565c0");
+  @include toggle-states(unselected, handle-color, "var(--color-base-200)");
+
+  /* Label */
+  --mat-slide-toggle-label-text-weight: normal;
+  --mat-slide-toggle-label-text-font: "Montserrat", sans-serif;
+  --mat-slide-toggle-label-text-line-height: 24px;
+  --mat-slide-toggle-label-text-size: 16px;
+
+  /* Track */
+  --mat-slide-toggle-track-width: 85px;
+  --mat-slide-toggle-handle-width: 30px;
+  --mat-slide-toggle-track-height: 14px;
+  --mat-slide-toggle-track-shape: 999px;
+
+  /* make sure the handle starts and ends at the proper positions */
+  @include multi-setter(unselected, [handle-horizontal-margin, with-icon-handle-horizontal-margin], '0 0 0 -4px');
+
+  /* Unselected track (default + hover only, as in your snippet) */
+  @include multi-setter(unselected, [track-color, hover-track-color], 'var(--color-base-400)');
+
+  /* Remove track border */
+  --mat-slide-toggle-track-outline-width: 0;
+  --mat-slide-toggle-selected-track-outline-width: 0;
+  --mat-slide-toggle-disabled-unselected-track-outline-width: 0;
+
+  /* Thumb size (overflows track) */
+  --mat-slide-toggle-handle-shape: 50%;
+
+  /* Hide icon */
+  @include horizontal-track-sizes([selected-icon-size, unselected-icon-size], 0);
+
+  /* handle shadow */
+  --mat-slide-toggle-handle-elevation-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+
