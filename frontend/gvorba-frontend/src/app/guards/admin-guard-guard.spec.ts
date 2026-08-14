@@ -1,6 +1,6 @@
 // frontend/gvorba-frontend/src/app/guards/admin-guard-guard.spec.ts
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, provideRouter, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, provideRouter, RedirectCommand, RouterStateSnapshot } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,10 +18,10 @@ describe('adminGuardGuard', () => {
 	const state = {} as RouterStateSnapshot;
 	
 	// The guard uses inject(); this wrapper supplies the required context.
-	const runGuard = (): boolean =>
+	const runGuard = () =>
 		TestBed.runInInjectionContext(() =>
 			adminGuard(route, state),
-		) as boolean;
+		);
 	
 	let tokenService: { getToken: ReturnType<typeof vi.fn> };
 	let jwtHelper: JwtHelperService;
@@ -46,24 +46,24 @@ describe('adminGuardGuard', () => {
 	
 	it('denies access when a valid token carries only ROLE_USER', () => {
 		tokenService.getToken.mockReturnValue(USER_TOKEN);
-		expect(runGuard()).toBe(false);
+		expect(runGuard()).toBeInstanceOf(RedirectCommand);
 	});
 	
 	it('denies access when the token is expired', () => {
 		tokenService.getToken.mockReturnValue(EXPIRED_ADMIN_TOKEN);
-		expect(runGuard()).toBe(false);
+		expect(runGuard()).toBeInstanceOf(RedirectCommand);
 	});
 	
 	it('denies access when no token is stored', () => {
 		const isExpired = vi.spyOn(jwtHelper, 'isTokenExpired');
 		tokenService.getToken.mockReturnValue(null);
-		expect(runGuard()).toBe(false);
+		expect(runGuard()).toBeInstanceOf(RedirectCommand);
 		expect(isExpired).not.toHaveBeenCalled(); // existence checked first
 	});
 	
 	it('denies access when the token omits the roles claim', () => {
 		tokenService.getToken.mockReturnValue(NO_ROLES_TOKEN);
-		expect(runGuard()).toBe(false);
+		expect(runGuard()).toBeInstanceOf(RedirectCommand);
 	});
 	
 	// it('denies access without crashing on a malformed token', () => {
