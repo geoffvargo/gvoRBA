@@ -60,7 +60,6 @@
 }
 
 :root {
-	/* Forces the underlying Material Design token engine to process a rounded shape */
 	--mat-select-panel-background-color: var(--color-base-100);
 	--mat-select-panel-enabled-trigger-text-color: var(--color-base-content);
 	--mat-select-panel-disabled-trigger-text-color: var(--color-base-content);

@@ -1,0 +1,40 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex justify-center content-center w-auto items-start">
+	<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md items-center">
+		<h1 class="text-center text-2xl font-bold">
+			Create Room
+		</h1>
+		
+		<div class="card-body flex justify-center items-center">
+			<form [formGroup]="roomCreateForm">
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label for="name">
+						Name:
+					</label>
+					<input type="text"
+					       name="name"
+					       id="name"
+					       class="input"
+					       formControlName="name">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label for="location">Location:</label>
+					<input type="text"
+					       name="location"
+					       id="location"
+					       class="input"
+					       formControlName="location">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label for="capacity">Capacity:</label>
+					<input type="number"
+					       name="capacity"
+					       id="capacity"
+					       class="input"
+					       formControlName="capacity">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
+import { Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
 import { Room } from '../models/room.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -27,13 +27,14 @@ import { RoomStore } from '../stores/room-store';
 	styleUrl: './room-list.component.css',
 	encapsulation: ViewEncapsulation.None,
 })
-export class RoomListComponent implements OnInit, AfterViewInit {
+export class RoomListComponent implements OnInit {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	
 	protected roomStore = inject(RoomStore);
 	
 	protected readonly rooms = this.roomStore.rooms;
+	readonly isLoading = this.roomStore.isLoading;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -54,14 +55,19 @@ export class RoomListComponent implements OnInit, AfterViewInit {
 		effect(() => {
 			this.dataSource.data = this.rooms();
 		});
-	}
-	
-	ngOnInit() {
-		this.roomStore.loadRooms();
-	}
-	
-	ngAfterViewInit() {
-		this.dataSource.sort = this.sorter();
+		
+		effect(() => {
+			const sort = this.sorter();
+			const paginator = this.paginator();
+			
+			if (sort) {
+				this.dataSource.sort = sort;
+			}
+			
+			if (paginator) {
+				this.dataSource.paginator = paginator;
+			}
+		});
 		
 		this.dataSource.sortingDataAccessor = (item: Room, property: string): string | number => {
 			switch (property) {
@@ -84,9 +90,11 @@ export class RoomListComponent implements OnInit, AfterViewInit {
 			}
 		};
 		
-		if (this.paginator) {
-			this.dataSource.paginator = this.paginator();
-		}
+	}
+	
+	ngOnInit() {
+		/* necessary to make sure that isLoading flips to false in time so that our list populates reliably */
+		this.roomStore.loadRooms().subscribe();
 	}
 	
 	onView(id: number, room: Room) {
