@@ -31,13 +31,13 @@ public class RoomController {
 		
 		if (name != null) {
 			rooms = rooms.stream()
-				.filter(room -> room.getName().contains(name))
-				.toList();
+				        .filter(room -> room.getName().contains(name))
+				        .toList();
 		}
 		if (minCapacity != null) {
 			rooms = rooms.stream()
-				.filter(r -> r.getCapacity() >= minCapacity)
-				.toList();
+				        .filter(r -> r.getCapacity() >= minCapacity)
+				        .toList();
 		}
 		
 		return ResponseEntity.ok(rooms);
@@ -70,6 +70,8 @@ public class RoomController {
 			            .isActive(request.getIsActive())
 			            .createdOn(LocalDateTime.now())
 			            .build();
+		
+		roomRepository.save(room);
 		
 		return ResponseEntity.ok(room);
 	}

@@ -34,6 +34,60 @@
 					       class="input"
 					       formControlName="capacity">
 				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label for="description">Description:</label>
+					<input type="text"
+					       name="description"
+					       id="description"
+					       class="input"
+					       formControlName="description">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex flex-col gap-2">
+					<span class="text-left! self-left!">Amenities:</span>
+					<div class="grid w-fit grid-cols-[max-content_auto_max-content_auto] gap-x-10 gap-y-2"
+					     formGroupName="amenities">
+						@for (a of amenityOptions; track a) {
+							<label class="col-span-2 grid grid-cols-subgrid items-center gap-x-2">
+							<span class="text-right">
+								{{ a }}
+							</span>
+								<input type="checkbox"
+								       [formControlName]="a">
+							</label>
+						}
+					</div>
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-4 items-center">
+					<label for="isActive">
+						Active:
+					</label>
+					<mat-slide-toggle style="--mat-slide-toggle-track-width: 200px"
+					                  formControlName="isActive" />
+				</div>
+				
+				<!-- 					<input type="checkbox" -->
+				<!-- 					       name="isActive" -->
+				<!-- 					       id="isActive" -->
+				<!-- 					       class="toggle toggle-info [&#45;&#45;radius-selector:1rem]" -->
+				<!-- 					       formControlName="isActive"> -->
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<button class="action-btn"
+					        (click)="onSave()">
+						Save
+					</button>
+					<button class="action-btn"
+					        (click)="onReset()">
+						Reset
+					</button>
+					<button class="action-btn"
+					        (click)="onCancel()">
+						Cancel
+					</button>
+				</div>
 			</form>
 		</div>
 	</div>

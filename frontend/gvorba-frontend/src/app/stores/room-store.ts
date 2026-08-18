@@ -5,6 +5,7 @@ import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
 import { tap } from 'rxjs';
+import { Amenities } from '../models/amenities.enum';
 
 @Injectable({
 	providedIn: 'root',
@@ -17,12 +18,14 @@ export class RoomStore {
 	private _roomBookings = signal<Booking[]>([]);
 	private _selectedDate = signal<Date>(new Date());
 	private _isLoading = signal<boolean>(false);
+	private _amenities = signal(Object.values(Amenities));
 	
 	readonly rooms = this._rooms.asReadonly();
 	readonly selectedRoom = this._selectedRoom.asReadonly();
 	readonly roomBookings = this._roomBookings.asReadonly();
 	readonly selectedDate = this._selectedDate.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
+	readonly amenities = this._amenities.asReadonly();
 	
 	constructor() {
 		this.loadRooms().subscribe({
