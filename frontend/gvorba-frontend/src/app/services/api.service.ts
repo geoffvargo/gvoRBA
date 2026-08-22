@@ -79,7 +79,7 @@ export class ApiService {
 	}
 	
 	createRoom(data: CreateRoomRequest) {
-		return this.httpClient.post<Room>(`${this.baseUrl}/api/add-room`, data);
+		return this.httpClient.post<Room>(`${this.baseUrl}/api/rooms/add-room`, data);
 	}
 	
 	updateRoom(id: number, payload: UpdateRoomRequest) {

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthStore } from '../stores/auth-store';
 
@@ -16,10 +16,7 @@ export class NavbarComponent {
 	
 	protected readonly isLoggedIn = this.authStore.isAuthenticated;
 	protected readonly isAdmin = this.authStore.isAdmin;
-	protected readonly isMember = this.authStore.isMember;
 	protected readonly role = this.authStore.role;
-	
-	protected menuVisible = signal(false);
 	
 	onLogout() {
 		this.authStore.logout();

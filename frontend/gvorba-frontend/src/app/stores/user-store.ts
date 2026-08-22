@@ -25,7 +25,7 @@ export class UserStore {
 	}
 	
 	loadUsers() {
-		this._isLoading.set(false);
+		this._isLoading.set(true);
 		this.apiService.loadUsers().subscribe({
 			next: data => {
 				this._users.set(data);
@@ -40,7 +40,7 @@ export class UserStore {
 	}
 	
 	loadUser(id: number) {
-		this._isLoading.set(false);
+		this._isLoading.set(true);
 		this.apiService.loadUser(id).subscribe({
 			next: data => {
 				this._loadedUser.set(data);
@@ -55,7 +55,7 @@ export class UserStore {
 	}
 	
 	updateRole(id: number, role: Role) {
-		this._isLoading.set(false);
+		this._isLoading.set(true);
 		this.apiService.updateRole(id, role).subscribe({
 			next: data => {
 				console.log(data);
@@ -69,7 +69,7 @@ export class UserStore {
 	}
 	
 	toggleActive(id: number) {
-		this._isLoading.set(false);
+		this._isLoading.set(true);
 		this.apiService.toggleActive(id).subscribe({
 			next: data => {
 				console.log(data);

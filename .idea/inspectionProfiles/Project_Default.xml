@@ -244,6 +244,18 @@
         <language minSize="70" name="TypeScript" />
       </Languages>
     </inspection_tool>
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="3">
+            <item index="0" class="java.lang.String" itemvalue="matColumnDef" />
+            <item index="1" class="java.lang.String" itemvalue="mat-header-cell" />
+            <item index="2" class="java.lang.String" itemvalue="mat-cell" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
     <inspection_tool class="PermissionUsageInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="R8IgnoredFlags" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
+import { Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
 import { UserStore } from '../../stores/user-store';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -27,7 +27,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 	styleUrl: './users-admin.component.css',
 	encapsulation: ViewEncapsulation.None,
 })
-export class UsersAdminComponent implements OnInit, AfterViewInit {
+export class UsersAdminComponent implements OnInit {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	
@@ -55,15 +55,20 @@ export class UsersAdminComponent implements OnInit, AfterViewInit {
 			this.dataSource.data = this.users();
 			console.log(this.dataSource);
 		});
-	}
-	
-	public ngOnInit() {
-		this.userStore.loadUsers();
-		console.log(this.users);
-	}
-	
-	public ngAfterViewInit() {
-		this.dataSource.sort = this.sorter();
+		
+		effect(() => {
+			const sort = this.sorter();
+			const paginator = this.paginator();
+			
+			if (sort) {
+				this.dataSource.sort = sort;
+			}
+			
+			if (paginator) {
+				this.dataSource.paginator = paginator;
+			}
+		});
+		
 		this.dataSource.sortingDataAccessor = (item: User, property: string) => {
 			switch (property) {
 				case 'id':
@@ -82,10 +87,11 @@ export class UsersAdminComponent implements OnInit, AfterViewInit {
 					return '';
 			}
 		};
-		
-		if (this.paginator) {
-			this.dataSource.paginator = this.paginator();
-		}
+	}
+	
+	public ngOnInit() {
+		this.userStore.loadUsers();
+		console.log(this.users);
 	}
 	
 	onView(id: string) {
@@ -95,6 +101,6 @@ export class UsersAdminComponent implements OnInit, AfterViewInit {
 	}
 	
 	onAddUser() {
-		this.router.navigate(['/admin/users/create'] ).then();
+		this.router.navigate(['/admin/users/create']).then();
 	}
 }

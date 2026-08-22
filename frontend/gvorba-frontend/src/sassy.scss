@@ -19,8 +19,12 @@
 .mat-mdc-slide-toggle.mat-mdc-slide-toggle {
   /* --- repeating 4-state groups: one edit point each --- */
   @include toggle-states(selected, track-color, "rgb(25 118 210 / 0.5)");
-  @include toggle-states(selected, handle-color, "#1565c0");
+  @include toggle-states(selected, handle-color, "var(--color-info)");
   @include toggle-states(unselected, handle-color, "var(--color-base-200)");
+  @include toggle-states(unselected, track-color, "var(--color-black-300)");
+  @include toggle-states(after, track-color, "var(--color-black-300)");
+  @include toggle-states(unselected-pressed, track-color, "var(--color-gray-300)");
+
 
   /* Label */
   --mat-slide-toggle-label-text-weight: normal;
@@ -29,7 +33,7 @@
   --mat-slide-toggle-label-text-size: 16px;
 
   /* Track */
-  --mat-slide-toggle-track-width: 85px;
+  --mat-slide-toggle-track-width: 100px;
   --mat-slide-toggle-handle-width: 30px;
   --mat-slide-toggle-track-height: 14px;
   --mat-slide-toggle-track-shape: 999px;

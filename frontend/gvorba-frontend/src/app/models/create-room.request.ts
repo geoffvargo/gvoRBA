@@ -1,7 +1,8 @@
-export interface CreateRoomRequest {
-	name: string;
-	location: string;
-	capacity: number;
-	description: string;
-	amenities: string[];
+export class CreateRoomRequest {
+	name = '';
+	location = '';
+	capacity = Number();
+	description = '';
+	amenities = [];
+	isActive = true;
 }
