@@ -12,6 +12,7 @@ import { UserAdminDetailsComponent } from './protected/admin/user-admin-details.
 import { AdminAddUserComponent } from './protected/admin/admin-add-user.component';
 import { RoomsAdminComponent } from './protected/admin/rooms-admin.component';
 import { RoomsCreateComponent } from './protected/admin/rooms-create.component';
+import { RoomManageComponent } from './protected/admin/room-manage.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
@@ -19,6 +20,7 @@ export const routes: Routes = [
 	{ path: 'home', component: UserHomeComponent, canActivate: [authGuard] },
 	{ path: 'admin/rooms', component: RoomsAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/create', component: RoomsCreateComponent, canActivate: [adminGuard] },
+	{ path: 'admin/rooms/:id', component: RoomManageComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users', component: UsersAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms', component: RoomListComponent, canActivate: [adminGuard] },
 	{ path: 'admin/bookings', component: BookingsListComponent, canActivate: [adminGuard] },

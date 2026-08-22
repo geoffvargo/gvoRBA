@@ -91,7 +91,12 @@ export class RoomsAdminComponent implements OnInit {
 		console.log(this.roomStore.rooms());
 	}
 	
-	onView(id: number, room: Room) {}
+	onManage(id: number, room: Room) {
+		this.router.navigate([id], {
+			relativeTo: this.route,
+			state: { room, id },
+		}).then();
+	}
 	
 	onAddRoom() {
 		this.router.navigate(['/admin/rooms/create']).then();

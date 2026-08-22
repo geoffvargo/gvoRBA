@@ -67,7 +67,9 @@ export class RoomsCreateComponent {
 		}).then();
 	}
 	
-	onReset() {}
+	onReset() {
+		this.roomCreateForm.reset();
+	}
 	
 	onCancel() {
 		this.router.navigate(['..'], {

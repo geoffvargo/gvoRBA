@@ -1,0 +1,122 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
+	<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md">
+		<h1 class="text-center text-2xl font-bold">
+			Manage Room
+		</h1>
+		
+		<div class="card-body flex justify-center items-center">
+			@if (isLoading()) {
+				<span>Loading...</span>
+			} @else if (!isEditing()) {
+				<div class="px-14 py-2 m-2 w-fit grid grid-cols-[max-content_max-content] gap-2">
+					<span>Name:</span>
+					<span>{{ room()?.name }}</span>
+					
+					<span>Location:</span>
+					<span>{{ room()?.location }}</span>
+					
+					<span>Capacity:</span>
+					<span>{{ room()?.capacity }}</span>
+					
+					<span>Amenities:</span>
+					<span>{{ room()?.amenities }}</span>
+					
+					<span>Created On:</span>
+					<span>{{ room()?.createdOn }}</span>
+					
+					<span>Active:</span>
+					<span>{{ room()?.isActive }}</span>
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<button class="action-btn"
+					        (click)="onEdit()">
+						Edit
+					</button>
+				</div>
+			} @else {
+				<div class="px-4 py-2 m-2 flex gap-2 justify-center items-center">
+					<form [formGroup]="roomEditForm">
+						<div class="px-4 py-2 m-2 flex gap-2 items-center">
+							<label for="name">
+								Name:
+							</label>
+							<input type="text"
+							       name="name"
+							       id="name"
+							       class="input"
+							       formControlName="name">
+						</div>
+						
+						<div class="px-4 py-2 m-2 flex gap-2 items-center">
+							<label for="location">Location:</label>
+							<input type="text"
+							       name="location"
+							       id="location"
+							       class="input"
+							       formControlName="location">
+						</div>
+						
+						<div class="px-4 py-2 m-2 flex gap-2 items-center">
+							<label for="capacity">Capacity:</label>
+							<input type="number"
+							       name="capacity"
+							       id="capacity"
+							       class="input"
+							       formControlName="capacity">
+						</div>
+						
+						<div class="px-4 py-2 m-2 flex flex-col gap-2">
+							<span class="text-left! self-left!">Amenities:</span>
+							<div class="grid w-fit grid-cols-[max-content_auto_max-content_auto] gap-x-10 gap-y-2"
+							     formGroupName="amenities">
+								@for (a of amenityOptions; track a) {
+									<label class="col-span-2 grid grid-cols-subgrid items-center gap-x-2">
+							<span class="text-right">
+								{{ a }}
+							</span>
+										<input type="checkbox"
+										       [formControlName]="a">
+									</label>
+								}
+							</div>
+						</div>
+						
+						<div class="px-4 py-2 m-2 flex gap-4 items-center">
+							<label for="isActive">
+								Active:
+							</label>
+							<mat-slide-toggle style="--mat-slide-toggle-track-width: 200px"
+							                  formControlName="isActive" />
+						</div>
+					</form>
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 justify-center items-center">
+					<button class="action-btn"
+					        (click)="onSave()">
+						Save
+					</button>
+					
+					<button class="action-btn"
+					        (click)="onEdit()">
+						Cancel
+					</button>
+					
+					<button class="action-btn"
+					        (click)="onReset()">
+						Reset
+					</button>
+				</div>
+			}
+			
+			<div class="px-4 py-2 m-2 flex gap-2 justify-center">
+				<button class="action-btn"
+				        (click)="onBack()">
+					Back
+				</button>
+			</div>
+		</div>
+	</div>
+
+</div>

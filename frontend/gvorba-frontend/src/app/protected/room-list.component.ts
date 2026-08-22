@@ -99,8 +99,8 @@ export class RoomListComponent implements OnInit {
 	
 	onView(id: number, room: Room) {
 		this.router.navigate([id], {
-				relativeTo: this.route, state: { room, id },
-			},
-		).then();
+			relativeTo: this.route,
+			state: { room, id },
+		}).then();
 	}
 }

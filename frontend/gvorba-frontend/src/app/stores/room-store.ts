@@ -132,6 +132,8 @@ export class RoomStore {
 				this._isLoading.set(false);
 			},
 		});
+		
+		this.loadRooms();
 	}
 	
 	deactivateRoom(id: number) {
