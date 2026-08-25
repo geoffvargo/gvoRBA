@@ -1,14 +1,14 @@
 name: frontend.yml
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   push:
-    branches: [master]
+    branches: [ master ]
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend.yml'
   pull_request:
-    branches: [master]
+    branches: [ master ]
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend.yml'
@@ -40,3 +40,39 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull request'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend/gvorba-frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync bundle to S3
+        run: aws s3 sync dist/gvorba-frontend/browser s3://${{ secrets.S3_BUCKET }}
+
+      - name: Invalidate Cloudfront cache
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
