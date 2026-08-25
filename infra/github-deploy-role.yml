@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  IAM role assumed by GitHub Actions for the gvoRBA deploy workflow.
+  Grants the permissions required to push a Docker image to ECR
+  (including ecr:BatchGetImage / ecr:GetDownloadUrlForLayer, which
+  docker buildx --push needs to deduplicate layers) and to pull/run
+  the image on EC2 via AWS CLI.
+
+Parameters:
+  GitHubOrg:
+    Type: String
+    Default: geoffvargo
+  GitHubRepo:
+    Type: String
+    Default: gvoRBA
+  EcrRepositoryArn:
+    Type: String
+    Description: >
+      Full ARN of the ECR repository that the workflow pushes to,
+      e.g. arn:aws:ecr:us-east-1:123456789012:repository/gvorba-backend
+
+Resources:
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gvorba-github-deploy
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+              # Intentionally restricted to the master branch because the
+              # deploy job only runs on master (see backend.yml:62).
+              # To permit other refs, replace the value with a wildcard, e.g.
+              # "repo:OWNER/REPO:*".
+              StringLike:
+                "token.actions.githubusercontent.com:sub":
+                  !Sub "repo:${GitHubOrg}/${GitHubRepo}:ref:refs/heads/master"
+      Policies:
+        - PolicyName: EcrPushPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # GetAuthorizationToken is account-scoped (no resource restriction).
+              - Sid: EcrAuth
+                Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              # All repository-scoped permissions needed by docker buildx --push.
+              #
+              # Root cause of CI failure (job 97671057497):
+              #   ecr:BatchGetImage was missing from the role policy.
+              #   docker buildx calls BatchGetImage to check for existing image
+              #   manifests before pushing layers, so the push was rejected with
+              #   "not authorized to perform: ecr:BatchGetImage".
+              - Sid: EcrPush
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !Ref EcrRepositoryArn
+
+Outputs:
+  RoleArn:
+    Value: !GetAtt GitHubDeployRole.Arn
+    Export:
+      Name: GvoRbaGitHubDeployRoleArn
