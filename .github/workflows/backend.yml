@@ -89,7 +89,6 @@ jobs:
           context: backend/gvoRBA-Backend
           platforms: linux/arm64
           push: true
-          provenance: false
           tags: |
             ${{ steps.ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
             ${{ steps.ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
@@ -100,8 +99,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          script:
-            aws ecr get-login-password --region ${{secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.ecr.outputs.registry }}
+          script: |
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.ecr.outputs.registry }}
             cd /home/ec2-user/app
             docker compose pull
             docker compose up -d
