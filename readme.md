@@ -4,4 +4,4 @@ gvoRBA
 ![Backend CI](https://github.com/geoffvargo/gvoRBA/actions/workflows/backend.yml/badge.svg)
 ![Frontend CI](https://github.com/geoffvargo/gvoRBA/actions/workflows/frontend.yml/badge.svg)
 
-Live URL: https://gvorba-frontend.onrender.com/
+Live URL: https://d38ts9jzxh4ijl.cloudfront.net/
