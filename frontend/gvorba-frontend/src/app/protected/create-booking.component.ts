@@ -1,0 +1,195 @@
+import { Component, computed, inject, linkedSignal, signal, Signal, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { RoomStore } from '../stores/room-store';
+import { UserStore } from '../stores/user-store';
+import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
+import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import { MatOption, provideNativeDateAdapter } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { BookingStore } from '../stores/booking-store';
+import { toSignal } from '@angular/core/rxjs-interop';
+
+const DAY_START = 480;    // 08:00  (FR-4.3)
+const DAY_END = 1080;     // 18:00  (FR-4.3)
+const STEP = 15;          // FR-3.1 slot quantum
+const MIN_DUR = 15;       // FR-3.1
+const MAX_DUR = 240;      // FR-3.1 (4h)
+const DEFAULT_DUR = 60;
+const HORIZON_DAYS = 30;  //FR-3.1
+
+const timerange = (from: number, to: number, step: number) => {
+	const ans = [];
+	for (let i = from; i <= to; i += step) {
+		ans.push(i);
+	}
+	return ans;
+};
+
+const pad2 = (num: number) => {
+	return String.prototype.padStart(2, String(num));
+};
+
+const timeLabel = (minutes: number) => {
+	const h = Math.floor(minutes / 60);
+	const m = minutes % 60;
+	
+	return pad2(h) + ':' + pad2(m);
+};
+
+const durationLabel = (minutes: number) => {
+	const h = Math.floor(minutes / 60);
+	return (h > 0 ? h + 'h ' : '') + (h < 10 ? '0' : '');
+};
+
+const START_VALUES = timerange(DAY_START, DAY_END, STEP);
+const DURATION_VALUES = timerange(MIN_DUR, MAX_DUR, STEP);
+
+const START_OPTIONS: { value: number, label: string }[] = START_VALUES.map(v => ({
+	value: v,
+	label: timeLabel(v),
+}));
+
+const DURATION_OPTIONS: { value: number, label: string }[] = DURATION_VALUES.map(v => ({
+	value: v,
+	label: durationLabel(v),
+}));
+
+/** Output: Returns a 19-character local wall-clock timestamp in YYYY-MM-DDTHH:mm:ss form, carrying no timezone designator. */
+const composePayload = (date: Date, minutes: number) => {
+	return date.getDate() + "T" + pad2(minutes / 60) + ':' + pad2(minutes % 60) + ':00';
+};
+
+/** Returns value when it lies within the inclusive bounds, otherwise returns whichever bound it exceeded. */
+const clamp = (value: number, min: number, max: number) => {
+	return (value < min) ? min : (value > max) ? max : value;
+};
+
+const maxDurationFor = (minutes: number) => {
+	return Math.min(MAX_DUR, DAY_END - minutes);
+};
+
+export const isWeekday = (d: Date | null): boolean => {
+	const day = (d ?? new Date()).getDay();
+	return day !== 0 && day !== 6;   // 0 = Sunday, 6 = Saturday
+};
+
+export const nextWeekdayFrom = (from: Date) => {
+	const day = new Date(new Date(from).setDate(from.getDate() + 1));
+	while (!isWeekday(day)) {
+		day.setDate(day.getDate() + 1);
+	}
+	
+	return day;
+};
+
+const startOfToday = () => {
+	return new Date(new Date().setHours(0, 0, 0, 0));
+};
+
+const addDays = (date: Date, days: number) => {
+	return new Date(date.getDate() + days);
+};
+
+export const isSameLocalDay = (a: Date, b: Date) => {
+	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+};
+
+export const formatLocalDate = (date: Date) => {
+	return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+};
+
+@Component({
+	selector: 'app-create-booking',
+	imports: [
+		ReactiveFormsModule,
+		MatFormField,
+		MatLabel,
+		MatInput,
+		MatDatepickerInput,
+		MatDatepicker,
+		MatSuffix,
+		MatDatepickerToggle,
+		MatSelect,
+		MatOption,
+	],
+	providers: [provideNativeDateAdapter()],
+	templateUrl: './create-booking.component.html',
+	styleUrl: './create-booking.component.css',
+	encapsulation: ViewEncapsulation.None,
+})
+export class CreateBookingComponent {
+	private router = inject(Router);
+	private route = inject(ActivatedRoute);
+	
+	private readonly fb = inject(NonNullableFormBuilder);
+	
+	protected roomStore = inject(RoomStore);
+	protected userStore = inject(UserStore);
+	protected bookingStore = inject(BookingStore);
+	
+	protected readonly rooms = this.roomStore.rooms;
+	protected readonly users = this.userStore.users;
+	protected readonly isWeekday = isWeekday;
+	protected readonly startOptions = signal(START_OPTIONS);
+	protected readonly durationOptions = signal(DURATION_OPTIONS);
+	protected readonly isWeekdayFilter = isWeekday;
+	
+	private readonly endWithinWorkingHours: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+		const group = control as FormGroup<{
+			duration: AbstractControl<number>;
+			start: AbstractControl<number>;
+		}>;
+		
+		const { start, duration } = group.getRawValue();
+		
+		if (start == null || duration == null) {
+			return null;
+		}
+		
+		const end = start + duration;
+		
+		return end > DAY_END ? { endAfterClass: { end, limit: DAY_END, overBy: end - DAY_END } } : null;
+	};
+	
+	bookingCreateForm = this.fb.group({
+			roomId: this.fb.control('', [Validators.required]),
+			userId: this.fb.control('', [Validators.required]),
+			startsAt: this.fb.control(DAY_START, [Validators.required]),
+			duration: this.fb.control(DEFAULT_DUR, [Validators.required]),
+			purpose: this.fb.control('', [Validators.required]),
+			bookingStatus: this.fb.control(true, [Validators.required]),
+		}, {
+			validators: [this.endWithinWorkingHours],
+		},
+	);
+	
+	today = signal(startOfToday());
+	minDate = computed(() => this.today());
+	maxDate = computed(() => addDays(this.today(), HORIZON_DAYS));
+	maxDuration = computed(() => maxDurationFor(this.startMinutes()));
+	endMinutes = computed(() => this.startMinutes() + this.selectedDuration());
+	endLabel = computed(() => timeLabel(this.endMinutes()));
+	
+	selectedDuration = linkedSignal<number, number>({
+		source: () => this.startMinutes(),
+		computation: (start, previous) =>
+			clamp(previous?.value ?? 60, MIN_DUR, maxDurationFor(start)),
+	});
+	
+	onCancel() {
+		this.router.navigate(['..'], {
+			relativeTo: this.route,
+			replaceUrl: true,
+		}).then();
+	}
+	
+	startMinutes: Signal<number> = toSignal(this.bookingCreateForm.controls.startsAt.valueChanges, {
+		initialValue: this.bookingCreateForm.controls.startsAt.value,
+	});
+}
+
+function setDate(arg0: number) {
+	throw new Error('Function not implemented.');
+}
+

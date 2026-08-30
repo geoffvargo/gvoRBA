@@ -1,0 +1,18 @@
+:root {
+	--mat-form-field-container-height: 40px;
+	--mat-form-field-filled-with-label-container-padding-top: 6px;
+	--mat-form-field-filled-with-label-container-padding-bottom: 2px;
+	--mat-form-field-filled-container-padding-top: 16px;
+	--mat-form-field-filled-container-padding-bottom: 2px;
+	
+	--mat-datepicker-calendar-background-color: var(--color-base-100);
+}
+
+.mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label--float-above {
+	display: none;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-infix {
+	padding-top: 16px !important;
+	padding-bottom: 2px !important;
+}
