@@ -1,17 +1,17 @@
 export interface BookingRequest {
 	roomId: number;
 	userId: number;
-	startsAt: Date;
-	endsAt: Date;
+	startsAt: string;
+	endsAt: string;
 	purpose: string;
-	bookingStatus: boolean
+	status: string;
 }
 
 export class BookingRequestImpl implements BookingRequest {
 	public roomId = 0;
 	public userId = 0;
-	public startsAt = new Date();
-	public endsAt = new Date();
+	public startsAt = '';
+	public endsAt = '';
 	public purpose = '';
-	public bookingStatus: boolean = true;
+	public status = '';
 }

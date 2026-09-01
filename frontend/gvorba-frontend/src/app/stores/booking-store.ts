@@ -10,10 +10,12 @@ export class BookingStore {
 	private apiService = inject(ApiService);
 	
 	private _myBookings = signal<Booking[]>([]);
+	private _bookings = signal<Booking[]>([]);
 	private _conflictError = signal<string | null>(null);
 	private _isLoading = signal<boolean>(false);
 	
 	readonly myBookings = this._myBookings.asReadonly();
+	readonly bookings = this._bookings.asReadonly();
 	readonly conflictError = this._conflictError.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
 	
@@ -22,7 +24,22 @@ export class BookingStore {
 		this.apiService.getMyBookings().subscribe({
 			next: data => {
 				this._myBookings.set(data);
-				console.log(this.myBookings);
+				console.log(this.myBookings());
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.error(err);
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	loadBookings() {
+		this._isLoading.set(true);
+		this.apiService.getBookings().subscribe({
+			next: data => {
+				this._bookings.set(data);
+				console.log(this.bookings());
 				this._isLoading.set(false);
 			},
 			error: err => {
@@ -35,7 +52,7 @@ export class BookingStore {
 	/** Create a new booking  */
 	create(payload: BookingRequest) {
 		this._isLoading.set(true);
-		this.apiService.createBooking(payload).subscribe({
+		return this.apiService.createBooking(payload).subscribe({
 			next: data => {
 				console.log(data);
 				this._isLoading.set(false);

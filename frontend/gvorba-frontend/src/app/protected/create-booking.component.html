@@ -15,7 +15,7 @@
 				        class="border rounded-sm py-0.5"
 				        formControlName="roomId">
 					@for (room of rooms(); track room.id) {
-						<option value="room.id">
+						<option [ngValue]="room.id">
 							{{ room.name }}
 						</option>
 					}
@@ -29,7 +29,7 @@
 				        class="border rounded-sm py-0.5"
 				        formControlName="userId">
 					@for (user of users(); track user.id) {
-						<option value="user.id"
+						<option [ngValue]="user.id"
 						        class="p-4">
 							{{ user.name }}
 						</option>
@@ -43,6 +43,7 @@
 					<mat-form-field appearance="outline">
 						<input matInput
 						       placeholder="Select a Date"
+						       formControlName="date"
 						       [matDatepickerFilter]="isWeekday"
 						       [max]="maxDate()"
 						       [min]="minDate()"

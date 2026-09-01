@@ -32,7 +32,7 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	
 	protected bookingStore = inject(BookingStore);
 	
-	readonly bookings = this.bookingStore.myBookings;
+	readonly bookings = this.bookingStore.bookings;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -58,6 +58,7 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	
 	ngOnInit() {
 		this.bookingStore.loadMyBookings();
+		this.bookingStore.loadBookings();
 	}
 	
 	ngAfterViewInit() {

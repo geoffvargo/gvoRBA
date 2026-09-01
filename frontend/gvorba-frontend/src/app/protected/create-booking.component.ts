@@ -1,4 +1,4 @@
-import { Component, computed, inject, linkedSignal, signal, Signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, effect, inject, signal, Signal, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { RoomStore } from '../stores/room-store';
@@ -10,6 +10,8 @@ import { MatSelect } from '@angular/material/select';
 import { BookingStore } from '../stores/booking-store';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { CreateBookingRequest } from '../models/create-booking.request';
+import { BookingRequest } from '../models/booking-request.model';
 
 const DAY_START = 480;    // 08:00  (FR-4.3)
 const DAY_END = 1080;     // 18:00  (FR-4.3)
@@ -60,9 +62,11 @@ const DURATION_OPTIONS: { value: number, label: string }[] = DURATION_VALUES.map
 	label: durationLabel(v),
 }));
 
-/** Output: Returns a 19-character local wall-clock timestamp in YYYY-MM-DDTHH:mm:ss form, carrying no timezone designator. */
-const composePayload = (date: Date, minutes: number) => {
-	return date.getDate() + "T" + pad2(minutes / 60) + ':' + pad2(minutes % 60) + ':00';
+/** Returns a copy of date with its time-of-day set to the given minutes since midnight. */
+const combineDateAndMinutes = (date: Date, minutes: number): Date => {
+	const combined = new Date(date);
+	combined.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+	return combined;
 };
 
 /** Returns value when it lies within the inclusive bounds, otherwise returns whichever bound it exceeded. */
@@ -161,30 +165,70 @@ export class CreateBookingComponent {
 		return end > DAY_END ? { endAfterClass: { end, limit: DAY_END, overBy: end - DAY_END } } : null;
 	};
 	
+	protected readonly bookingReq = signal<CreateBookingRequest>(new CreateBookingRequest());
+	
 	bookingCreateForm = this.fb.group({
-			roomId: this.fb.control('', [Validators.required]),
-			userId: this.fb.control('', [Validators.required]),
-			startsAt: this.fb.control(0, [Validators.required]),
-			duration: this.fb.control('', [Validators.required]),
+			roomId: this.fb.control<number>(0, [Validators.required]),
+			userId: this.fb.control<number>(0, [Validators.required]),
+			date: this.fb.control<Date | null>(null, [Validators.required]),
+			startsAt: this.fb.control<number | null>(null, [Validators.required]),
+			duration: this.fb.control<number | null>(null, [Validators.required]),
 			purpose: this.fb.control('', [Validators.required]),
 			bookingStatus: this.fb.control(true, [Validators.required]),
 		}, {
 			validators: [this.endWithinWorkingHours],
 		},
 	);
+	
+	private readonly bookingPayload = computed((): BookingRequest | null => {
+		console.log(this.bookingCreateForm.controls.roomId.value);
+		
+		const { roomId, userId, date, purpose, bookingStatus } = this.formValue();
+		const start = this.startMinutes();
+		
+		if (!roomId || !userId || !date || start == null || !purpose) {
+			return null;
+		}
+		
+		console.log('this.endMinutes(): ', this.endMinutes());
+		
+		return {
+			roomId,
+			userId,
+			startsAt: combineDateAndMinutes(date, start).toISOString().slice(0, -5),
+			endsAt: combineDateAndMinutes(date, this.endMinutes()).toISOString().slice(0, -5),
+			purpose,
+			status: bookingStatus && bookingStatus ? 'CONFIRMED' : 'CANCELLED',
+		} as BookingRequest;
+	});
+	
+	protected readonly formValue = toSignal(
+		this.bookingCreateForm.valueChanges, {
+			initialValue: this.bookingCreateForm.value,
+		},
+	);
+	
 	today = signal(startOfToday());
 	minDate = computed(() => this.today());
 	maxDate = computed(() => addDays(this.today(), HORIZON_DAYS));
-	maxDuration = computed(() => maxDurationFor(this.startMinutes()));
-	endMinutes = computed(() => this.startMinutes() + this.selectedDuration());
-	
+	maxDuration = computed(() => maxDurationFor(this.startMinutes() ?? DAY_START));
+	endMinutes = computed(() => (this.startMinutes() ?? DAY_START) + (this.durationMinutes() ?? DEFAULT_DUR));
 	endLabel = computed(() => timeLabel(this.endMinutes()));
 	
-	selectedDuration = linkedSignal<number, number>({
-		source: () => this.startMinutes(),
-		computation: (start, previous) =>
-			clamp(previous?.value ?? DEFAULT_DUR, MIN_DUR, maxDurationFor(start)),
+	durationMinutes: Signal<number | null> = toSignal(this.bookingCreateForm.controls.duration.valueChanges, {
+		initialValue: this.bookingCreateForm.controls.duration.value,
 	});
+	
+	constructor() {
+		effect(() => {
+			const max = this.maxDuration();
+			const current = this.bookingCreateForm.controls.duration.value;
+			
+			if (current != null && current > max) {
+				this.bookingCreateForm.controls.duration.setValue(clamp(current, MIN_DUR, max));
+			}
+		});
+	}
 	
 	onCancel() {
 		this.onReset();
@@ -198,9 +242,24 @@ export class CreateBookingComponent {
 		this.bookingCreateForm.reset();
 	}
 	
-	onSave() {}
+	onSave() {
+		const payload = this.bookingPayload();
+		if (!payload) {
+			return;
+		}
+		
+		console.log(this.bookingPayload());
+		
+		this.bookingStore.create(payload);
+		
+		this.onReset();
+		this.router.navigate(['..'], {
+			relativeTo: this.route,
+			replaceUrl: true,
+		}).then();
+	}
 	
-	startMinutes: Signal<number> = toSignal(this.bookingCreateForm.controls.startsAt.valueChanges, {
+	startMinutes: Signal<number | null> = toSignal(this.bookingCreateForm.controls.startsAt.valueChanges, {
 		initialValue: this.bookingCreateForm.controls.startsAt.value,
 	});
 }

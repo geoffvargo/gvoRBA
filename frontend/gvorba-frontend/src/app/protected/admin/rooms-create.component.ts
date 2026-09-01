@@ -21,6 +21,7 @@ export class RoomsCreateComponent {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	private readonly fb = inject(NonNullableFormBuilder);
+	
 	private readonly roomPayload = computed(() => {
 		const { amenities, ...rest } = this.formValue();
 		
@@ -29,9 +30,12 @@ export class RoomsCreateComponent {
 			amenities: Object.values(Amenities).filter(a => amenities?.[a]),
 		} as CreateRoomRequest;
 	});
+	
 	protected roomStore = inject(RoomStore);
+	
 	readonly amenityOptions = Object.values(Amenities);
 	readonly createReq = signal<CreateRoomRequest>(new CreateRoomRequest());
+	
 	roomCreateForm = new FormGroup({
 			name: new FormControl(''),
 			location: new FormControl(''),
@@ -49,6 +53,7 @@ export class RoomsCreateComponent {
 			isActive: new FormControl(true),
 		},
 	);
+	
 	private readonly formValue = toSignal(
 		this.roomCreateForm.valueChanges, {
 			initialValue: this.roomCreateForm.value,
