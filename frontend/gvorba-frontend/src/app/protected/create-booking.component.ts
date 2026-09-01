@@ -4,11 +4,12 @@ import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule
 import { RoomStore } from '../stores/room-store';
 import { UserStore } from '../stores/user-store';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
-import { MatFormField, MatInput, MatLabel, MatSuffix } from '@angular/material/input';
+import { MatFormField, MatInput, MatSuffix } from '@angular/material/input';
 import { MatOption, provideNativeDateAdapter } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { BookingStore } from '../stores/booking-store';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 const DAY_START = 480;    // 08:00  (FR-4.3)
 const DAY_END = 1080;     // 18:00  (FR-4.3)
@@ -20,21 +21,25 @@ const HORIZON_DAYS = 30;  //FR-3.1
 
 const timerange = (from: number, to: number, step: number) => {
 	const ans = [];
-	for (let i = from; i <= to; i += step) {
+	for (let i = from; i < to; i += step) {
 		ans.push(i);
 	}
 	return ans;
 };
 
 const pad2 = (num: number) => {
-	return String.prototype.padStart(2, String(num));
+	return String(num).padStart(2, '0');
 };
 
 const timeLabel = (minutes: number) => {
 	const h = Math.floor(minutes / 60);
 	const m = minutes % 60;
 	
-	return pad2(h) + ':' + pad2(m);
+	const hh: string = pad2(h);
+	const mm: string = pad2(m);
+	const str: string = hh + ':' + mm;
+	console.log(str);
+	return str;
 };
 
 const durationLabel = (minutes: number) => {
@@ -45,7 +50,7 @@ const durationLabel = (minutes: number) => {
 const START_VALUES = timerange(DAY_START, DAY_END, STEP);
 const DURATION_VALUES = timerange(MIN_DUR, MAX_DUR, STEP);
 
-const START_OPTIONS: { value: number, label: string }[] = START_VALUES.map(v => ({
+export const START_OPTIONS: { value: number, label: string }[] = START_VALUES.map(v => ({
 	value: v,
 	label: timeLabel(v),
 }));
@@ -88,7 +93,9 @@ const startOfToday = () => {
 };
 
 const addDays = (date: Date, days: number) => {
-	return new Date(date.getDate() + days);
+	const copy = new Date(date);
+	copy.setDate(copy.getDate() + days);
+	return copy;
 };
 
 export const isSameLocalDay = (a: Date, b: Date) => {
@@ -104,7 +111,6 @@ export const formatLocalDate = (date: Date) => {
 	imports: [
 		ReactiveFormsModule,
 		MatFormField,
-		MatLabel,
 		MatInput,
 		MatDatepickerInput,
 		MatDatepicker,
@@ -112,6 +118,8 @@ export const formatLocalDate = (date: Date) => {
 		MatDatepickerToggle,
 		MatSelect,
 		MatOption,
+		MatSlideToggle,
+	
 	],
 	providers: [provideNativeDateAdapter()],
 	templateUrl: './create-booking.component.html',
@@ -134,6 +142,7 @@ export class CreateBookingComponent {
 	protected readonly startOptions = signal(START_OPTIONS);
 	protected readonly durationOptions = signal(DURATION_OPTIONS);
 	protected readonly isWeekdayFilter = isWeekday;
+	protected readonly MIN_DUR = MIN_DUR;
 	
 	private readonly endWithinWorkingHours: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 		const group = control as FormGroup<{
@@ -155,34 +164,41 @@ export class CreateBookingComponent {
 	bookingCreateForm = this.fb.group({
 			roomId: this.fb.control('', [Validators.required]),
 			userId: this.fb.control('', [Validators.required]),
-			startsAt: this.fb.control(DAY_START, [Validators.required]),
-			duration: this.fb.control(DEFAULT_DUR, [Validators.required]),
+			startsAt: this.fb.control(0, [Validators.required]),
+			duration: this.fb.control('', [Validators.required]),
 			purpose: this.fb.control('', [Validators.required]),
 			bookingStatus: this.fb.control(true, [Validators.required]),
 		}, {
 			validators: [this.endWithinWorkingHours],
 		},
 	);
-	
 	today = signal(startOfToday());
 	minDate = computed(() => this.today());
 	maxDate = computed(() => addDays(this.today(), HORIZON_DAYS));
 	maxDuration = computed(() => maxDurationFor(this.startMinutes()));
 	endMinutes = computed(() => this.startMinutes() + this.selectedDuration());
+	
 	endLabel = computed(() => timeLabel(this.endMinutes()));
 	
 	selectedDuration = linkedSignal<number, number>({
 		source: () => this.startMinutes(),
 		computation: (start, previous) =>
-			clamp(previous?.value ?? 60, MIN_DUR, maxDurationFor(start)),
+			clamp(previous?.value ?? DEFAULT_DUR, MIN_DUR, maxDurationFor(start)),
 	});
 	
 	onCancel() {
+		this.onReset();
 		this.router.navigate(['..'], {
 			relativeTo: this.route,
 			replaceUrl: true,
 		}).then();
 	}
+	
+	onReset() {
+		this.bookingCreateForm.reset();
+	}
+	
+	onSave() {}
 	
 	startMinutes: Signal<number> = toSignal(this.bookingCreateForm.controls.startsAt.valueChanges, {
 		initialValue: this.bookingCreateForm.controls.startsAt.value,

@@ -6,9 +6,11 @@ import { routes } from './app.routes';
 import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 import { authInterceptor } from './interceptors/auth.intercepter-interceptor';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
+		{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
 		provideBrowserGlobalErrorListeners(),
 		provideRouter(routes,
 			withComponentInputBinding(),
