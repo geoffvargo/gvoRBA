@@ -36,7 +36,7 @@
 					}
 				</select>
 				
-				<label>
+				<label for="date">
 					Time Slot:
 				</label>
 				<div class="grid grid-cols-3 gap-2 items-center">
@@ -44,7 +44,7 @@
 						<input matInput
 						       placeholder="Select a Date"
 						       formControlName="date"
-						       [matDatepickerFilter]="isWeekday"
+						       [matDatepickerFilter]="isWeekdayFilter"
 						       [max]="maxDate()"
 						       [min]="minDate()"
 						       [matDatepicker]="picker1">

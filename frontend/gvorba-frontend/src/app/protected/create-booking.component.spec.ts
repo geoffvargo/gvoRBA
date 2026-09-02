@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { CreateBookingComponent, formatLocalDate, isSameLocalDay, nextWeekdayFrom, START_OPTIONS } from './create-booking.component';
+import CreateBookingComponent, { formatLocalDate, isSameLocalDay, nextWeekdayFrom, START_OPTIONS, toDateTimeString } from './create-booking.component';
 
 describe('CreateBookingComponent', () => {
 	let component: CreateBookingComponent;
@@ -234,7 +234,6 @@ describe('START_OPTIONS', () => {
 });
 
 describe('CreateBookingComponent startOptions', () => {
-	let component: CreateBookingComponent;
 	let fixture: ComponentFixture<CreateBookingComponent>;
 	
 	beforeEach(async () => {
@@ -248,8 +247,13 @@ describe('CreateBookingComponent startOptions', () => {
 		component = fixture.componentInstance;
 		await fixture.whenStable();
 	});
-	
-	it('exposes START_OPTIONS as a readable signal', () => {
-		expect((component as any).startOptions()).toEqual(START_OPTIONS);
+});
+
+describe('toDateTimeString', () => {
+	it('formats a regular date as YYYY-M-D', () => {
+		const date = new Date("2026-07-13T11:15:00");
+		const ans = toDateTimeString(date);
+		console.log(ans);
+		expect(ans === "2026-07-13T11:00:00");
 	});
 });

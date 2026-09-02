@@ -13,7 +13,7 @@ import { AdminAddUserComponent } from './protected/admin/admin-add-user.componen
 import { RoomsAdminComponent } from './protected/admin/rooms-admin.component';
 import { RoomsCreateComponent } from './protected/admin/rooms-create.component';
 import { RoomManageComponent } from './protected/admin/room-manage.component';
-import { CreateBookingComponent } from './protected/create-booking.component';
+import CreateBookingComponent from './protected/create-booking.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },

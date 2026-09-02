@@ -31,6 +31,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	
 	// "optional" third parameter — omit it and get a single day
 	default List<Booking> findForRoomInRange(Long roomId, LocalDateTime startInclusive) {
-		return findForRoomInRange(roomId, startInclusive, startInclusive.plusDays(1));
+		return findForRoomInRange(roomId, startInclusive, startInclusive.plusDays(5));
 	}
 }

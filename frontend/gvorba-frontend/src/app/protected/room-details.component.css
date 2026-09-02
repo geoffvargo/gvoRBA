@@ -1,5 +1,14 @@
 @reference "../../styles.css";
 
+#calendar-canvas {
+	/* Single source of truth for calendar grid scale — change these to resize the whole layout. */
+	--calendar-col-width: 8rem;
+	--calendar-header-height: 2rem;
+	--calendar-hour-height: 8rem;
+	--calendar-subrow-count: 4;
+	--calendar-subrow-height: calc(var(--calendar-hour-height) / var(--calendar-subrow-count));
+}
+
 .calendar__hashmarks {
 	@apply col-start-2 col-end-7 self-center mx-2 rounded-full text-neutral z-10;
 }

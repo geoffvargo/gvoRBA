@@ -10,8 +10,8 @@ import { MatSelect } from '@angular/material/select';
 import { BookingStore } from '../stores/booking-store';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { CreateBookingRequest } from '../models/create-booking.request';
 import { BookingRequest } from '../models/booking-request.model';
+import { formatDate } from '@angular/common';
 
 const DAY_START = 480;    // 08:00  (FR-4.3)
 const DAY_END = 1080;     // 18:00  (FR-4.3)
@@ -44,23 +44,23 @@ const timeLabel = (minutes: number) => {
 	return str;
 };
 
-const durationLabel = (minutes: number) => {
-	const h = Math.floor(minutes / 60);
-	return (h > 0 ? h + 'h ' : '') + (h < 10 ? '0' : '');
-};
+/* const durationLabel = (minutes: number) => {
+ const h = Math.floor(minutes / 60);
+ return (h > 0 ? h + 'h ' : '') + (h < 10 ? '0' : '');
+ }; */
 
 const START_VALUES = timerange(DAY_START, DAY_END, STEP);
-const DURATION_VALUES = timerange(MIN_DUR, MAX_DUR, STEP);
+// const DURATION_VALUES = timerange(MIN_DUR, MAX_DUR, STEP);
 
 export const START_OPTIONS: { value: number, label: string }[] = START_VALUES.map(v => ({
 	value: v,
 	label: timeLabel(v),
 }));
 
-const DURATION_OPTIONS: { value: number, label: string }[] = DURATION_VALUES.map(v => ({
-	value: v,
-	label: durationLabel(v),
-}));
+/* const DURATION_OPTIONS: { value: number, label: string }[] = DURATION_VALUES.map(v => ({
+ value: v,
+ label: durationLabel(v),
+ })); */
 
 /** Returns a copy of date with its time-of-day set to the given minutes since midnight. */
 const combineDateAndMinutes = (date: Date, minutes: number): Date => {
@@ -83,14 +83,14 @@ export const isWeekday = (d: Date | null): boolean => {
 	return day !== 0 && day !== 6;   // 0 = Sunday, 6 = Saturday
 };
 
-export const nextWeekdayFrom = (from: Date) => {
-	const day = new Date(new Date(from).setDate(from.getDate() + 1));
-	while (!isWeekday(day)) {
-		day.setDate(day.getDate() + 1);
-	}
-	
-	return day;
-};
+/* export const nextWeekdayFrom = (from: Date) => {
+ const day = new Date(new Date(from).setDate(from.getDate() + 1));
+ while (!isWeekday(day)) {
+ day.setDate(day.getDate() + 1);
+ }
+ 
+ return day;
+ }; */
 
 const startOfToday = () => {
 	return new Date(new Date().setHours(0, 0, 0, 0));
@@ -102,12 +102,16 @@ const addDays = (date: Date, days: number) => {
 	return copy;
 };
 
-export const isSameLocalDay = (a: Date, b: Date) => {
-	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-};
+/* export const isSameLocalDay = (a: Date, b: Date) => {
+ return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+ }; */
 
 export const formatLocalDate = (date: Date) => {
 	return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+};
+
+export const toDateTimeString = (date: Date) => {
+	return formatDate(date, 'yyyy-MM-ddTHH:mm:ss', 'en-US');
 };
 
 @Component({
@@ -130,7 +134,7 @@ export const formatLocalDate = (date: Date) => {
 	styleUrl: './create-booking.component.css',
 	encapsulation: ViewEncapsulation.None,
 })
-export class CreateBookingComponent {
+class CreateBookingComponent {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	
@@ -142,9 +146,7 @@ export class CreateBookingComponent {
 	
 	protected readonly rooms = this.roomStore.rooms;
 	protected readonly users = this.userStore.users;
-	protected readonly isWeekday = isWeekday;
 	protected readonly startOptions = signal(START_OPTIONS);
-	protected readonly durationOptions = signal(DURATION_OPTIONS);
 	protected readonly isWeekdayFilter = isWeekday;
 	protected readonly MIN_DUR = MIN_DUR;
 	
@@ -164,8 +166,6 @@ export class CreateBookingComponent {
 		
 		return end > DAY_END ? { endAfterClass: { end, limit: DAY_END, overBy: end - DAY_END } } : null;
 	};
-	
-	protected readonly bookingReq = signal<CreateBookingRequest>(new CreateBookingRequest());
 	
 	bookingCreateForm = this.fb.group({
 			roomId: this.fb.control<number>(0, [Validators.required]),
@@ -192,11 +192,14 @@ export class CreateBookingComponent {
 		
 		console.log('this.endMinutes(): ', this.endMinutes());
 		
+		const startsAt: string = toDateTimeString(combineDateAndMinutes(date, start));
+		const endsAt: string = toDateTimeString(combineDateAndMinutes(date, this.endMinutes()));
+		
 		return {
 			roomId,
 			userId,
-			startsAt: combineDateAndMinutes(date, start).toISOString().slice(0, -5),
-			endsAt: combineDateAndMinutes(date, this.endMinutes()).toISOString().slice(0, -5),
+			startsAt: startsAt,
+			endsAt: endsAt,
 			purpose,
 			status: bookingStatus && bookingStatus ? 'CONFIRMED' : 'CANCELLED',
 		} as BookingRequest;
@@ -213,7 +216,6 @@ export class CreateBookingComponent {
 	maxDate = computed(() => addDays(this.today(), HORIZON_DAYS));
 	maxDuration = computed(() => maxDurationFor(this.startMinutes() ?? DAY_START));
 	endMinutes = computed(() => (this.startMinutes() ?? DAY_START) + (this.durationMinutes() ?? DEFAULT_DUR));
-	endLabel = computed(() => timeLabel(this.endMinutes()));
 	
 	durationMinutes: Signal<number | null> = toSignal(this.bookingCreateForm.controls.duration.valueChanges, {
 		initialValue: this.bookingCreateForm.controls.duration.value,
@@ -264,7 +266,4 @@ export class CreateBookingComponent {
 	});
 }
 
-function setDate(arg0: number) {
-	throw new Error('Function not implemented.');
-}
-
+export default CreateBookingComponent;
