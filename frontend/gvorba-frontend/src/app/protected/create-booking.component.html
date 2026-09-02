@@ -1,0 +1,111 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
+	<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md items-center">
+		<h1 class="text-center text-2xl font-bold">
+			Create Booking
+		</h1>
+		
+		<div class="card-body flex justify-center items-center">
+			<form [formGroup]="bookingCreateForm"
+			      class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 p-4 items-center">
+				<label for="roomId">
+					Roomd Id:
+				</label>
+				<select name="roomId"
+				        id="roomId"
+				        class="border rounded-sm py-0.5"
+				        formControlName="roomId">
+					@for (room of rooms(); track room.id) {
+						<option [ngValue]="room.id">
+							{{ room.name }}
+						</option>
+					}
+				</select>
+				
+				<label for="userId">
+					User Id:
+				</label>
+				<select name="userId"
+				        id="userId"
+				        class="border rounded-sm py-0.5"
+				        formControlName="userId">
+					@for (user of users(); track user.id) {
+						<option [ngValue]="user.id"
+						        class="p-4">
+							{{ user.name }}
+						</option>
+					}
+				</select>
+				
+				<label for="date">
+					Time Slot:
+				</label>
+				<div class="grid grid-cols-3 gap-2 items-center">
+					<mat-form-field appearance="outline">
+						<input matInput
+						       placeholder="Select a Date"
+						       formControlName="date"
+						       [matDatepickerFilter]="isWeekdayFilter"
+						       [max]="maxDate()"
+						       [min]="minDate()"
+						       [matDatepicker]="picker1">
+						<mat-datepicker-toggle matIconSuffix
+						                       startView="year"
+						                       [for]="picker1"></mat-datepicker-toggle>
+						<mat-datepicker #picker1
+						                panelClass="shadow-lg rounded-lg"></mat-datepicker>
+					</mat-form-field>
+					
+					<mat-form-field appearance="outline">
+						<mat-select formControlName="startsAt"
+						            placeholder="Select a Start Time">
+							@for (value of startOptions(); track value.value) {
+								<mat-option [value]="value.value">{{ value.label }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+					
+					<mat-form-field appearance="outline">
+						<input matInput
+						       placeholder="Enter a Duration"
+						       formControlName="duration"
+						       type="number"
+						       id="duration"
+						       step="15"
+						       [min]="MIN_DUR"
+						       [max]="maxDuration()">
+					</mat-form-field>
+				</div>
+				
+				<label for="purpose"
+				       class="self-start">
+					Purpose:
+				</label>
+				<textarea name="purpose"
+				          placeholder="Enter a description."
+				          id="purpose"
+				          rows="1"
+				          class="px-2 border items-start rounded-sm w-full h-10"
+				          formControlName="purpose"></textarea>
+				
+				<label for="bookingStatus">Status:</label>
+				<mat-slide-toggle style="--mat-slide-toggle-track-width: 400px"
+				                  formControlName="bookingStatus"></mat-slide-toggle>
+			</form>
+		</div>
+		
+		<div class="card-body self-center flex flex-row justify-center items-center">
+			<button class="action-btn"
+			        (click)="onSave()">
+				Save
+			</button>
+			<button class="action-btn"
+			        (click)="onReset()">
+				Reset
+			</button>
+			<button class="action-btn"
+			        (click)="onCancel()">
+				Cancel
+			</button>
+		</div>
+	</div>
+</div>

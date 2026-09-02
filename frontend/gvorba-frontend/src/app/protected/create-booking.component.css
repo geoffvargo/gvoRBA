@@ -1,0 +1,36 @@
+:root {
+	--mat-form-field-container-height: 28px;
+	--mat-form-field-filled-with-label-container-padding-top: 4px;
+	--mat-form-field-filled-with-label-container-padding-bottom: 2px;
+	--mat-form-field-filled-container-padding-top: 8px;
+	--mat-form-field-filled-container-padding-bottom: 2px;
+	--mat-form-field-outlined-infix: 0 0 0 0 !important;
+	--mat-form-field-outlined-container-shape: 4px;
+	
+	--mat-datepicker-calendar-container-background-color: var(--color-base-200);
+}
+
+.mat-mdc-form-field .mdc-notched-outline__notch {
+	max-width: 0 !important;
+	width: 0 !important;
+	padding: 0 !important;
+	border-top: none !important;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-infix {
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+	height: 28px;
+	align-items: center !important;
+	padding-left: .5rem;
+}
+
+.mat-mdc-form-field .mat-mdc-icon-button {
+	--mdc-icon-button-state-layer-size: 28px;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+}

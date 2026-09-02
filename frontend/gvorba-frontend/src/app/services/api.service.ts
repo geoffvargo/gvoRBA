@@ -96,7 +96,7 @@ export class ApiService {
 	}
 	
 	createBooking(payload: BookingRequest) {
-		return this.httpClient.post<Booking>(`${this.baseUrl}/api/add-booking`, payload);
+		return this.httpClient.post<Booking>(`${this.baseUrl}/api/bookings/add-booking`, payload);
 	}
 	
 	/* for user-store */

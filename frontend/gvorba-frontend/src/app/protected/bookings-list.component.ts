@@ -4,6 +4,7 @@ import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, Mat
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { BookingStore } from '../stores/booking-store';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-bookings-list',
@@ -27,9 +28,11 @@ import { BookingStore } from '../stores/booking-store';
 	encapsulation: ViewEncapsulation.None,
 })
 export class BookingsListComponent implements OnInit, AfterViewInit {
+	private router = inject(Router);
+	
 	protected bookingStore = inject(BookingStore);
 	
-	readonly bookings = this.bookingStore.myBookings;
+	readonly bookings = this.bookingStore.bookings;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -55,6 +58,7 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	
 	ngOnInit() {
 		this.bookingStore.loadMyBookings();
+		this.bookingStore.loadBookings();
 	}
 	
 	ngAfterViewInit() {
@@ -90,5 +94,9 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	
 	onView(id: number, bookings: Booking) {
 		console.log(id, bookings);
+	}
+	
+	onNewBooking() {
+		this.router.navigate(['bookings/create']).then();
 	}
 }

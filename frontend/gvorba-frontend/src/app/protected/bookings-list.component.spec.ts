@@ -15,7 +15,8 @@ describe('BookingsListComponent', () => {
         {
           provide: ApiService,
           useValue: {
-            getMyBookings: () => of([])
+            getMyBookings: () => of([]),
+            getBookings: () => of([])
           }
         }
       ]

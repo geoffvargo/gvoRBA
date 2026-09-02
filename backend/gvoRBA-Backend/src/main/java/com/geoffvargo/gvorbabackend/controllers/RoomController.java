@@ -107,13 +107,18 @@ public class RoomController {
 	}
 	
 	@GetMapping("/{id}/bookings")
-	public ResponseEntity<?> getBookings(@PathVariable Long id, @RequestParam LocalDateTime date) {
+	public ResponseEntity<?> getBookings(@PathVariable Long id,
+	                                     @RequestParam(required = false) LocalDateTime date) {
 		List<Booking> bookings;
 		try {
 //			bookings = bookingRepository.findByRoom_Id(id).stream()
 //				           .filter(b -> b.getStartsAt().isEqual(date))
 //				           .toList();
-			bookings = bookingRepository.findForRoomInRange(id, date);
+			if (date != null) {
+				bookings = bookingRepository.findForRoomInRange(id, date);
+			} else {
+				bookings = bookingRepository.findAllByRoom_Id(id);
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -50,7 +50,8 @@
 			</div>
 			
 			<div id="calendar-canvas"
-			     class="grid grid-cols-[repeat(6,8rem)] grid-rows-[2rem,repeat(10,4rem)]">
+			     class="grid grid-cols-[repeat(6,var(--calendar-col-width))]
+			            grid-rows-[var(--calendar-header-height),repeat(10,var(--calendar-hour-height))]">
 				<div class="contents text-center leading-9">
 					<div class="col-start-2">Monday</div>
 					<div class="col-start-3">Tuesday</div>
@@ -64,32 +65,32 @@
 									grid grid-cols-subgrid grid-rows-subgrid">
 					<div id="hours"
 					     class="contents text-right bg-primary-content">
-						<div class="col-start-1 col-end-2 p-2 leading-11">8:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-2">8:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">9:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-2">9:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">10:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-2">10:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">11:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-2">11:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">12:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-2">12:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">1:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-2">1:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">2:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-2">2:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">3:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-2">3:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">4:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-2">4:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 p-2 leading-11">5:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-2">5:00pm</div>
 						<hr class="calendar__hashmarks">
 					</div>
 				</div>
 				
 				<div id="schedule-grid"
 				     class="col-start-2 col-end-7 row-start-2 row-end-12
-									grid grid-cols-subgrid grid-rows-[repeat(40,1rem)]
+									grid grid-cols-subgrid grid-rows-[repeat(40,var(--calendar-subrow-height))]
 									rounded-md">
 					@for (booking of roomBookings(); track booking.id) {
 						<div class="bg-primary text-base-300 z-20 p-2 text-sm shadow-lg shadow-base-content"
