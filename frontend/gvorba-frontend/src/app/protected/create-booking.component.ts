@@ -83,14 +83,14 @@ export const isWeekday = (d: Date | null): boolean => {
 	return day !== 0 && day !== 6;   // 0 = Sunday, 6 = Saturday
 };
 
-/* export const nextWeekdayFrom = (from: Date) => {
- const day = new Date(new Date(from).setDate(from.getDate() + 1));
- while (!isWeekday(day)) {
- day.setDate(day.getDate() + 1);
- }
- 
- return day;
- }; */
+export const nextWeekdayFrom = (from: Date) => {
+	const day = new Date(new Date(from).setDate(from.getDate() + 1));
+	while (!isWeekday(day)) {
+		day.setDate(day.getDate() + 1);
+	}
+
+	return day;
+};
 
 const startOfToday = () => {
 	return new Date(new Date().setHours(0, 0, 0, 0));
@@ -102,9 +102,9 @@ const addDays = (date: Date, days: number) => {
 	return copy;
 };
 
-/* export const isSameLocalDay = (a: Date, b: Date) => {
- return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
- }; */
+export const isSameLocalDay = (a: Date, b: Date) => {
+	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+};
 
 export const formatLocalDate = (date: Date) => {
 	return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
@@ -134,7 +134,7 @@ export const toDateTimeString = (date: Date) => {
 	styleUrl: './create-booking.component.css',
 	encapsulation: ViewEncapsulation.None,
 })
-class CreateBookingComponent {
+export class CreateBookingComponent {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import CreateBookingComponent, { formatLocalDate, isSameLocalDay, nextWeekdayFrom, START_OPTIONS, toDateTimeString } from './create-booking.component';
+import { CreateBookingComponent, formatLocalDate, isSameLocalDay, nextWeekdayFrom, START_OPTIONS, toDateTimeString } from './create-booking.component';
 
 describe('CreateBookingComponent', () => {
 	let component: CreateBookingComponent;
@@ -202,10 +202,10 @@ describe('formatLocalDate', () => {
 });
 
 describe('START_OPTIONS', () => {
-	it('spans the working day in 15-minute increments (08:00-18:00 inclusive)', () => {
-		expect(START_OPTIONS.length).toBe(41);
+	it('spans the bookable day in 15-minute increments (08:00-17:45)', () => {
+		expect(START_OPTIONS.length).toBe(40);
 		expect(START_OPTIONS[0].value).toBe(480);
-		expect(START_OPTIONS[START_OPTIONS.length - 1].value).toBe(1080);
+		expect(START_OPTIONS[START_OPTIONS.length - 1].value).toBe(1065);
 	});
 	
 	it('has values in strictly ascending order with a 15-minute step', () => {
@@ -218,8 +218,8 @@ describe('START_OPTIONS', () => {
 		expect(START_OPTIONS[0].label).toBe('08:00');
 	});
 	
-	it('labels the last slot as 18:00', () => {
-		expect(START_OPTIONS[START_OPTIONS.length - 1].label).toBe('18:00');
+	it('labels the last slot as 17:45', () => {
+		expect(START_OPTIONS[START_OPTIONS.length - 1].label).toBe('17:45');
 	});
 	
 	it('labels a single-digit-minute slot correctly, e.g. 09:15', () => {
@@ -234,6 +234,7 @@ describe('START_OPTIONS', () => {
 });
 
 describe('CreateBookingComponent startOptions', () => {
+	let component: CreateBookingComponent;
 	let fixture: ComponentFixture<CreateBookingComponent>;
 	
 	beforeEach(async () => {
@@ -247,13 +248,16 @@ describe('CreateBookingComponent startOptions', () => {
 		component = fixture.componentInstance;
 		await fixture.whenStable();
 	});
+
+	it('exposes START_OPTIONS as a readable signal', () => {
+		expect((component as unknown as { startOptions: () => typeof START_OPTIONS }).startOptions()).toEqual(START_OPTIONS);
+	});
 });
 
 describe('toDateTimeString', () => {
-	it('formats a regular date as YYYY-M-D', () => {
+	it('formats a regular date as a local ISO-like datetime', () => {
 		const date = new Date("2026-07-13T11:15:00");
-		const ans = toDateTimeString(date);
-		console.log(ans);
-		expect(ans === "2026-07-13T11:00:00");
+
+		expect(toDateTimeString(date)).toBe("2026-07-13T11:15:00");
 	});
 });
