@@ -15,6 +15,7 @@ import { BookingRequest } from '../models/booking-request.model';
 import { Role } from '../models/role.model';
 import { UserUpdate } from '../models/user-update.model';
 import { UserCreationModel } from '../models/user-creation.model';
+import { BookingResponse } from '../models/booking.response';
 
 // const baseURL = '/api';
 
@@ -93,6 +94,10 @@ export class ApiService {
 	/* for booking-store */
 	cancelBooking(id: number) {
 		return this.httpClient.delete<Booking>(`${this.baseUrl}/api/bookings/delete/${id}`);
+	}
+	
+	getBooking(id: number) {
+		return this.httpClient.get<BookingResponse>(`${this.baseUrl}/api/bookings/${id}`);
 	}
 	
 	createBooking(payload: BookingRequest) {

@@ -1,0 +1,46 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
+	<div class="card m-4 flex bg-base-200 w-full shadow-md items-center">
+		<div class="card-title">
+			<h1 class="p-2 m-2 font-semibold text-center text-2xl">
+				Booking Details
+			</h1>
+		</div>
+		@if (isLoading()) {
+			<span>Loading...</span>
+		} @else {
+			<div class="p-2 m-2 grid grid-cols-2 gap-2 w-fit">
+				<span class="font-semibold">Booking Id:</span>
+				<span>{{ booking().id }}</span>
+				
+				<span class="font-semibold">Room:</span>
+				<span>{{ booking().room.name }}</span>
+				
+				<span class="font-semibold">User:</span>
+				<span>{{ booking().userId.name }}</span>
+				
+				<span class="font-semibold">Starts At:</span>
+				<span>{{ booking().startsAt }}</span>
+				
+				<span class="font-semibold">Ends At:</span>
+				<span>{{ booking().endsAt }}</span>
+				
+				<span class="font-semibold">Cancelled At:</span>
+				<span>{{ booking().cancelledAt }}</span>
+				
+				<span class="font-semibold">Purpose:</span>
+				<span>{{ booking().purpose }}</span>
+				
+				<span class="font-semibold">Status:</span>
+				<span>{{ booking().status }}</span>
+			
+			</div>
+		}
+		
+		<div class="flex h-full items-end">
+			<button class="action-btn"
+			        (click)="onBack()">
+				Back
+			</button>
+		</div>
+	</div>
+</div>

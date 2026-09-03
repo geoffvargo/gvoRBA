@@ -4,7 +4,7 @@ import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, Mat
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { BookingStore } from '../stores/booking-store';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
 	selector: 'app-bookings-list',
@@ -29,6 +29,7 @@ import { Router } from '@angular/router';
 })
 export class BookingsListComponent implements OnInit, AfterViewInit {
 	private router = inject(Router);
+	private route = inject(ActivatedRoute);
 	
 	protected bookingStore = inject(BookingStore);
 	
@@ -92,8 +93,11 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 		}
 	}
 	
-	onView(id: number, bookings: Booking) {
-		console.log(id, bookings);
+	onView(id: number, booking: Booking) {
+		this.router.navigate([id], {
+			relativeTo: this.route,
+			state: { booking, id },
+		}).then();
 	}
 	
 	onNewBooking() {
