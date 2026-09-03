@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { Booking } from '../models/booking.model';
 import { BookingRequest } from '../models/booking-request.model';
+import { BookingResponse } from '../models/booking.response';
 
 @Injectable({
 	providedIn: 'root',
@@ -18,6 +19,23 @@ export class BookingStore {
 	readonly bookings = this._bookings.asReadonly();
 	readonly conflictError = this._conflictError.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
+	
+	currentBooking = signal<BookingResponse>(new BookingResponse());
+	
+	loadBooking(id: number) {
+		this._isLoading.set(true);
+		this.apiService.getBooking(id).subscribe({
+			next: booking => {
+				this.currentBooking.set(booking);
+				console.log(booking);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.error(err);
+				this._isLoading.set(false);
+			}
+		});
+	}
 	
 	loadMyBookings() {
 		this._isLoading.set(true);
