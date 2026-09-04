@@ -51,8 +51,18 @@ export class AuthStore {
 		}
 	}
 	
-	register(payload: SignupRequest) {
-		console.log(payload);
+	signUp(payload: SignupRequest) {
+		this._isLoading.set(true);
+		this.apiService.signup(payload).subscribe({
+			next: (data: string) => {
+				console.log(data);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.log(err);
+				this._isLoading.set(false);
+			},
+		});
 	}
 	
 	refresh() {

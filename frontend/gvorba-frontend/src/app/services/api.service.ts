@@ -16,6 +16,7 @@ import { Role } from '../models/role.model';
 import { UserUpdate } from '../models/user-update.model';
 import { UserCreationModel } from '../models/user-creation.model';
 import { BookingResponse } from '../models/booking.response';
+import { SignupRequest } from '../models/signup-request.model';
 
 // const baseURL = '/api';
 
@@ -37,6 +38,10 @@ export class ApiService {
 	
 	loginUser(data: LoginRequest) {
 		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/signin`, data);
+	}
+	
+	signup(payload: SignupRequest) {
+		return this.httpClient.post<string>(`${this.baseUrl}/api/auth/public/signup`, payload);
 	}
 	
 	logout() {
