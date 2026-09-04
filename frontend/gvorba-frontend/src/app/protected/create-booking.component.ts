@@ -127,7 +127,6 @@ export const toDateTimeString = (date: Date) => {
 		MatSelect,
 		MatOption,
 		MatSlideToggle,
-	
 	],
 	providers: [provideNativeDateAdapter()],
 	templateUrl: './create-booking.component.html',

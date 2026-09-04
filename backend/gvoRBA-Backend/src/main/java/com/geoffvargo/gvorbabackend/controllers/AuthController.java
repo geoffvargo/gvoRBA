@@ -95,6 +95,7 @@ public class AuthController {
 			            .role(parseRole())
 			            .password(passwordEncoder.encode(request.getPassword()))
 			            .createdOn(new Date())
+			            .enabled(true)
 			            .build();
 		
 		userRepository.save(user);

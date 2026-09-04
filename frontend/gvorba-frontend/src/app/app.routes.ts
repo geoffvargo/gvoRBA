@@ -15,10 +15,12 @@ import { RoomsCreateComponent } from './protected/admin/rooms-create.component';
 import { RoomManageComponent } from './protected/admin/room-manage.component';
 import CreateBookingComponent from './protected/create-booking.component';
 import { BookingDetailsComponent } from './protected/booking-details.component';
+import { SignUpComponent } from './sign-up.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
 	{ path: 'access-denied', component: AccessDenied },
+	{ path: 'signup', component: SignUpComponent },
 	{ path: 'home', component: UserHomeComponent, canActivate: [authGuard] },
 	{ path: 'admin/rooms', component: RoomsAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/create', component: RoomsCreateComponent, canActivate: [adminGuard] },

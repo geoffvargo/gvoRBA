@@ -1,0 +1,59 @@
+<div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
+	<div class="card m-4 p-2 flex w-4xl bg-base-200 shadow-md items-center">
+		<h1 class="text-center text-2xl font-bold">
+			Sign Up
+		</h1>
+		
+		<div class="card-body m-2 flex justify-center items-center content-start fixed">
+			<form [formGroup]="signUpForm">
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label class="font-semibold"
+					       for="username">
+						Username:
+					</label>
+					<input type="text"
+					       name="username"
+					       id="username"
+					       class="input"
+					       formControlName="username">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label class="font-semibold"
+					       for="email">
+						Email:
+					</label>
+					<input type="text"
+					       name="email"
+					       id="email"
+					       class="input"
+					       formControlName="email">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<label class="font-semibold"
+					       for="password">
+						Password:
+					</label>
+					<input type="password"
+					       name="password"
+					       id="password"
+					       class="input"
+					       formControlName="password">
+				</div>
+				
+				<div class="px-4 py-2 m-2 flex gap-2 items-center">
+					<button class="action-btn"
+					        (click)="onSubmit()">
+						Submit
+					</button>
+					<button class="action-btn"
+					        (click)="onReset()">
+						Reset
+					</button>
+				</div>
+			
+			</form>
+		</div>
+	</div>
+</div>
