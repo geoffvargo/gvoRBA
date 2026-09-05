@@ -33,6 +33,6 @@ export const routes: Routes = [
 	{ path: 'rooms', component: RoomListComponent, canActivate: [authGuard] },
 	{ path: 'rooms/:id', component: RoomDetailsComponent, canActivate: [authGuard] },
 	{ path: 'bookings', component: BookingsListComponent, canActivate: [authGuard] },
-	{ path: 'bookings/create', component: CreateBookingComponent, canActivate: [adminGuard] },
+	{ path: 'bookings/create', component: CreateBookingComponent, canActivate: [authGuard] },
 	{ path: 'bookings/:id', component: BookingDetailsComponent, canActivate: [authGuard] },
 ];

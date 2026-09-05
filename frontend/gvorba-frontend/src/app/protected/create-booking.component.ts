@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { BookingRequest } from '../models/booking-request.model';
 import { formatDate } from '@angular/common';
+import { AuthStore } from '../stores/auth-store';
 
 const DAY_START = 480;    // 08:00  (FR-4.3)
 const DAY_END = 1080;     // 18:00  (FR-4.3)
@@ -44,23 +45,12 @@ const timeLabel = (minutes: number) => {
 	return str;
 };
 
-/* const durationLabel = (minutes: number) => {
- const h = Math.floor(minutes / 60);
- return (h > 0 ? h + 'h ' : '') + (h < 10 ? '0' : '');
- }; */
-
 const START_VALUES = timerange(DAY_START, DAY_END, STEP);
-// const DURATION_VALUES = timerange(MIN_DUR, MAX_DUR, STEP);
 
 export const START_OPTIONS: { value: number, label: string }[] = START_VALUES.map(v => ({
 	value: v,
 	label: timeLabel(v),
 }));
-
-/* const DURATION_OPTIONS: { value: number, label: string }[] = DURATION_VALUES.map(v => ({
- value: v,
- label: durationLabel(v),
- })); */
 
 /** Returns a copy of date with its time-of-day set to the given minutes since midnight. */
 const combineDateAndMinutes = (date: Date, minutes: number): Date => {
@@ -88,7 +78,7 @@ export const nextWeekdayFrom = (from: Date) => {
 	while (!isWeekday(day)) {
 		day.setDate(day.getDate() + 1);
 	}
-
+	
 	return day;
 };
 
@@ -142,9 +132,13 @@ export class CreateBookingComponent {
 	protected roomStore = inject(RoomStore);
 	protected userStore = inject(UserStore);
 	protected bookingStore = inject(BookingStore);
+	protected authStore = inject(AuthStore);
 	
+	protected readonly isLoading = computed(this.roomStore.isLoading || this.userStore.isLoading || this.authStore.isLoading);
 	protected readonly rooms = this.roomStore.rooms;
 	protected readonly users = this.userStore.users;
+	protected readonly isAdmin = this.authStore.isAdmin;
+	protected readonly currentUser = this.authStore.user;
 	protected readonly startOptions = signal(START_OPTIONS);
 	protected readonly isWeekdayFilter = isWeekday;
 	protected readonly MIN_DUR = MIN_DUR;
@@ -168,7 +162,7 @@ export class CreateBookingComponent {
 	
 	bookingCreateForm = this.fb.group({
 			roomId: this.fb.control<number>(0, [Validators.required]),
-			userId: this.fb.control<number>(0, [Validators.required]),
+			userId: this.fb.control<number>(this.currentUser()?.id ?? 0, [Validators.required]),
 			date: this.fb.control<Date | null>(null, [Validators.required]),
 			startsAt: this.fb.control<number | null>(null, [Validators.required]),
 			duration: this.fb.control<number | null>(null, [Validators.required]),
@@ -186,6 +180,9 @@ export class CreateBookingComponent {
 		const start = this.startMinutes();
 		
 		if (!roomId || !userId || !date || start == null || !purpose) {
+			console.log('[bookingPayload] guard failed on:', {
+				roomId: !roomId, userId: !userId, date: !date, start: start == null, purpose: !purpose,
+			});
 			return null;
 		}
 		
@@ -221,6 +218,16 @@ export class CreateBookingComponent {
 	});
 	
 	constructor() {
+		this.authStore.loadCurrentUser();
+		effect(() => {
+			if (!this.isAdmin()) {
+				const currentUserId = this.authStore.user()?.id;
+				if (currentUserId != null) {
+					this.bookingCreateForm.controls.userId.setValue(currentUserId);
+				}
+			}
+		});
+		
 		effect(() => {
 			const max = this.maxDuration();
 			const current = this.bookingCreateForm.controls.duration.value;

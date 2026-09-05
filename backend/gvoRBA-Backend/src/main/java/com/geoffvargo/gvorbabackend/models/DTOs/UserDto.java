@@ -10,6 +10,7 @@ import java.util.*;
  * DTO for {@link User}
  */
 public record UserDto(
+	Long id,
 	String email,
 	String name,
 	RoleDto role,
@@ -18,24 +19,27 @@ public record UserDto(
 	@JsonInclude(JsonInclude.Include.NON_NULL) String password
 
 ) implements Serializable {
-	public UserDto(String email,
+	public UserDto(Long id,
+	               String email,
 	               String name,
 	               RoleDto role,
 	               Date createdOn,
 	               Boolean enabled) {
-		this(email, name, role, createdOn, enabled, null);
+		this(id, email, name, role, createdOn, enabled, null);
 	}
-	
-	public UserDto(String email,
+
+	public UserDto(Long id,
+	               String email,
 	               String name,
 	               RoleDto role,
 	               Boolean enabled,
 	               String password) {
-		this(email, name, role, null, enabled, password);
+		this(id, email, name, role, null, enabled, password);
 	}
-	
+
 	public static UserDto fromUser(User user) {
 		return new UserDto(
+			user.getId(),
 			user.getEmail(),
 			user.getName(),
 			RoleDto.fromRole(user.getRole()),
