@@ -14,10 +14,13 @@ import { RoomsAdminComponent } from './protected/admin/rooms-admin.component';
 import { RoomsCreateComponent } from './protected/admin/rooms-create.component';
 import { RoomManageComponent } from './protected/admin/room-manage.component';
 import CreateBookingComponent from './protected/create-booking.component';
+import { BookingDetailsComponent } from './protected/booking-details.component';
+import { SignUpComponent } from './sign-up.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
 	{ path: 'access-denied', component: AccessDenied },
+	{ path: 'signup', component: SignUpComponent },
 	{ path: 'home', component: UserHomeComponent, canActivate: [authGuard] },
 	{ path: 'admin/rooms', component: RoomsAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/create', component: RoomsCreateComponent, canActivate: [adminGuard] },
@@ -30,5 +33,6 @@ export const routes: Routes = [
 	{ path: 'rooms', component: RoomListComponent, canActivate: [authGuard] },
 	{ path: 'rooms/:id', component: RoomDetailsComponent, canActivate: [authGuard] },
 	{ path: 'bookings', component: BookingsListComponent, canActivate: [authGuard] },
-	{ path: 'bookings/create', component: CreateBookingComponent, canActivate: [adminGuard] },
+	{ path: 'bookings/create', component: CreateBookingComponent, canActivate: [authGuard] },
+	{ path: 'bookings/:id', component: BookingDetailsComponent, canActivate: [authGuard] },
 ];
