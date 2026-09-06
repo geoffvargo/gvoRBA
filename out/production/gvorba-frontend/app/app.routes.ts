@@ -16,6 +16,7 @@ import { RoomManageComponent } from './protected/admin/room-manage.component';
 import CreateBookingComponent from './protected/create-booking.component';
 import { BookingDetailsComponent } from './protected/booking-details.component';
 import { SignUpComponent } from './sign-up.component';
+import { BookingsListAdminComponent } from './protected/admin/bookings-list-admin.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
@@ -27,7 +28,7 @@ export const routes: Routes = [
 	{ path: 'admin/rooms/:id', component: RoomManageComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users', component: UsersAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms', component: RoomListComponent, canActivate: [adminGuard] },
-	{ path: 'admin/bookings', component: BookingsListComponent, canActivate: [adminGuard] },
+	{ path: 'admin/bookings', component: BookingsListAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users/create', component: AdminAddUserComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users/:id', component: UserAdminDetailsComponent, canActivate: [adminGuard] },
 	{ path: 'rooms', component: RoomListComponent, canActivate: [authGuard] },

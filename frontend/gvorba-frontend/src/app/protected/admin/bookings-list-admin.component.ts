@@ -95,8 +95,7 @@ export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 	}
 	
 	onView(id: number, booking: Booking) {
-		this.router.navigate([id], {
-			relativeTo: this.route,
+		this.router.navigate(['bookings/' + id], {
 			state: { booking, id },
 		}).then();
 	}

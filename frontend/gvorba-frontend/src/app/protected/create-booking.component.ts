@@ -240,10 +240,16 @@ export class CreateBookingComponent {
 	
 	onCancel() {
 		this.onReset();
-		this.router.navigate(['..'], {
-			relativeTo: this.route,
-			replaceUrl: true,
-		}).then();
+		if (this.isAdmin()) {
+			this.router.navigate(['admin/bookings'], {
+				replaceUrl: true,
+			}).then();
+		} else {
+			this.router.navigate(['..'], {
+				relativeTo: this.route,
+				replaceUrl: true,
+			}).then();
+		}
 	}
 	
 	onReset() {
