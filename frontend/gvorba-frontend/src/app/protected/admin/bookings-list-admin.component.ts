@@ -55,6 +55,13 @@ export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 	constructor() {
 		effect(() => {
 			this.dataSource.data = this.bookings();
+			
+			if (this.paginator()) {
+				this.dataSource.paginator = this.paginator();
+			}
+			if (this.sorter()) {
+				this.dataSource.sort = this.sorter();
+			}
 		});
 	}
 	
@@ -89,9 +96,7 @@ export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 			}
 		};
 		
-		if (this.paginator) {
-			this.dataSource.paginator = this.paginator();
-		}
+		
 	}
 	
 	onView(id: number, booking: Booking) {
