@@ -84,7 +84,7 @@ export class BookingStore {
 	}
 	
 	/** Cancels the `booking` with the supplied `id` */
-	cancel(id: number) {
+	cancelBooking(id: number) {
 		this._isLoading.set(true);
 		this.apiService.cancelBooking(id).subscribe({
 			next: data => {

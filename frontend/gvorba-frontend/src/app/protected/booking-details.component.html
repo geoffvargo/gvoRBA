@@ -32,7 +32,13 @@
 				
 				<span class="font-semibold">Status:</span>
 				<span>{{ booking().status }}</span>
-			
+				
+				<div class="col-span-2 flex h-full justify-center">
+					<button class="action-btn w-auto! self-start"
+					        (click)="onCancelBooking()">
+						Cancel Booking
+					</button>
+				</div>
 			</div>
 		}
 		

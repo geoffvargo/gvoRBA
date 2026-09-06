@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -141,5 +142,27 @@ public class BookingController {
 		
 		return ResponseEntity.notFound()
 			       .build();
+	}
+	
+	@PatchMapping("/cancel/{id}")
+	public ResponseEntity<?> cancelBooking(@PathVariable Long id,
+	                                       @AuthenticationPrincipal UserDetails userDetails) {
+		Booking booking = bookingRepository.findById(id).orElseThrow(
+			() -> new BookingNotFoundException("Booking with id {} not found.", id)
+		);
+		
+		List<String> authList = userDetails.getAuthorities().stream()
+			                        .map(GrantedAuthority::getAuthority)
+			                        .toList();
+		
+		if (booking.getUserId().getName().equals(userDetails.getUsername()) ||
+		    authList.contains("ROLE_ADMIN")) {
+			booking.setStatus(BookingStatus.CANCELLED);
+			booking.setCancelledAt(LocalDateTime.now());
+			bookingRepository.save(booking);
+			return ResponseEntity.ok(booking);
+		}
+		
+		throw new SecurityException("You do not have the appropriate rights to cancel this booking");
 	}
 }

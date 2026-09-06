@@ -23,6 +23,12 @@ export class BookingDetailsComponent implements OnInit {
 		console.log('currentBooking', this.booking());
 	}
 	
+	onCancelBooking() {
+		this.bookingStore.cancelBooking(this.bookingId());
+		this.bookingStore.loadBookings();
+		this.onBack();
+	}
+	
 	onBack() {
 		this.router.navigate(['..'], {
 			relativeTo: this.route,

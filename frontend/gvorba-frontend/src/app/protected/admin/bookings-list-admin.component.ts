@@ -1,40 +1,39 @@
-import { AfterViewInit, Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
-import { Booking } from '../models/booking.model';
-import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
+import { AfterViewInit, Component, effect, inject, OnInit, viewChild } from '@angular/core';
+import { BookingStore } from '../../stores/booking-store';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { BookingStore } from '../stores/booking-store';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
+import { Booking } from '../../models/booking.model';
 
 @Component({
-	selector: 'app-bookings-list',
+	selector: 'app-bookings-admin',
 	imports: [
-		MatTable,
-		MatSort,
-		MatSortHeader,
-		MatHeaderCell,
-		MatHeaderCellDef,
-		MatColumnDef,
 		MatCell,
 		MatCellDef,
+		MatColumnDef,
+		MatHeaderCell,
 		MatHeaderRow,
 		MatHeaderRowDef,
+		MatPaginator,
 		MatRow,
 		MatRowDef,
-		MatPaginator,
+		MatSort,
+		MatSortHeader,
+		MatTable,
+		MatHeaderCellDef,
 	],
-	templateUrl: './bookings-list.component.html',
-	styleUrl: './bookings-list.component.css',
-	encapsulation: ViewEncapsulation.None,
+	templateUrl: './bookings-list-admin.component.html',
+	styleUrl: './bookings-list-admin.component.css',
 })
-export class BookingsListComponent implements OnInit, AfterViewInit {
+export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	
 	protected bookingStore = inject(BookingStore);
 	
 	readonly bookings = this.bookingStore.bookings;
-	readonly myBookings = this.bookingStore.myBookings;
+	readonly isLoading = this.bookingStore.isLoading;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -43,6 +42,7 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	displayedColumns = [
 		'id',
 		'roomId',
+		'userId',
 		'startsAt',
 		'endsAt',
 		'cancelledAt',
@@ -53,7 +53,7 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	
 	constructor() {
 		effect(() => {
-			this.dataSource.data = this.myBookings();
+			this.dataSource.data = this.bookings();
 		});
 	}
 	
@@ -71,6 +71,8 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 					return item.id;
 				case 'roomId':
 					return item.roomId;
+				case 'userId':
+					return item.userId;
 				case 'startsAt':
 					return item.startsAt.getTime();
 				case 'endsAt':
@@ -101,4 +103,5 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	onNewBooking() {
 		this.router.navigate(['bookings/create']).then();
 	}
+	
 }
