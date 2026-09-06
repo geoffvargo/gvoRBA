@@ -21,6 +21,8 @@ export class BookingDetailsComponent implements OnInit {
 	protected isLoading = this.bookingStore.isLoading;
 	protected isAdmin = this.authStore.isAdmin;
 	
+	readonly isCancelled = this.bookingStore.isCancelled;
+	
 	ngOnInit() {
 		this.bookingStore.loadBooking(this.bookingId());
 		console.log('currentBooking', this.booking());
