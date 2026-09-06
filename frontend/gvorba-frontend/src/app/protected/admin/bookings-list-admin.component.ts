@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, effect, inject, OnInit, viewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, inject, OnInit, viewChild, ViewEncapsulation } from '@angular/core';
 import { BookingStore } from '../../stores/booking-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -25,6 +25,7 @@ import { Booking } from '../../models/booking.model';
 	],
 	templateUrl: './bookings-list-admin.component.html',
 	styleUrl: './bookings-list-admin.component.css',
+	encapsulation: ViewEncapsulation.None,
 })
 export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 	private router = inject(Router);

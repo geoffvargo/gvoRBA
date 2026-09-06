@@ -7,27 +7,6 @@
 	--mat-option-label-text-color: var(--color-base-content);
 }
 
-/*.mat-mdc-select {*/
-/*	text-align: center;*/
-/*	border-radius: 2rem !important;*/
-/*}*/
-
-/*::ng-deep .mat-mdc-paginator {*/
-/*	border-radius: 24px;*/
-/*	overflow: hidden;*/
-/*	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* Optional for a softer look *!*/
-/*}*/
-
-/*!* Round the navigation buttons *!*/
-/*::ng-deep .mat-mdc-paginator-navigation-previous,*/
-/*::ng-deep .mat-mdc-paginator-navigation-next {*/
-/*	border-radius: 50% !important;*/
-/*}*/
-
-/*!* Round the page size select dropdown *!*/
-/*::ng-deep .mat-mdc-select-panel {*/
-/*	border-radius: 12px !important;*/
-/*}*/
 
 .mat-mdc-select-arrow-wrapper {
 	padding: 6px;
