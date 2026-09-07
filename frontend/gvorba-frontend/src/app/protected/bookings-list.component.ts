@@ -33,8 +33,8 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	
 	protected bookingStore = inject(BookingStore);
 	
-	readonly bookings = this.bookingStore.bookings;
 	readonly myBookings = this.bookingStore.myBookings;
+	readonly isLoading = this.bookingStore.isLoading;
 	
 	sorter = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -54,6 +54,13 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	constructor() {
 		effect(() => {
 			this.dataSource.data = this.myBookings();
+			
+			if (this.paginator()) {
+				this.dataSource.paginator = this.paginator();
+			}
+			if (this.sorter()) {
+				this.dataSource.sort = this.sorter();
+			}
 		});
 	}
 	

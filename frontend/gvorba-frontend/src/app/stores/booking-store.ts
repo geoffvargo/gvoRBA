@@ -36,7 +36,7 @@ export class BookingStore {
 			error: err => {
 				console.error(err);
 				this._isLoading.set(false);
-			}
+			},
 		});
 	}
 	
@@ -76,6 +76,8 @@ export class BookingStore {
 		return this.apiService.createBooking(payload).subscribe({
 			next: data => {
 				console.log(data);
+				this.loadBookings();
+				this.loadMyBookings();
 				this._isLoading.set(false);
 			},
 			error: err => {
@@ -92,6 +94,8 @@ export class BookingStore {
 		this.apiService.cancelBooking(id).subscribe({
 			next: data => {
 				console.log(data);
+				this.loadBookings();
+				this.loadMyBookings();
 				this._isLoading.set(false);
 			},
 			error: err => {
