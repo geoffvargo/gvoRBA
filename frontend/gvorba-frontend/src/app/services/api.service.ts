@@ -101,6 +101,10 @@ export class ApiService {
 		return this.httpClient.patch<Booking>(`${this.baseUrl}/api/bookings/cancel/${id}`, null);
 	}
 	
+	uncancelBooking(id: number) {
+		return this.httpClient.patch<Booking>(`${this.baseUrl}/api/bookings/uncancel/${id}`, null);
+	}
+	
 	getBooking(id: number) {
 		return this.httpClient.get<BookingResponse>(`${this.baseUrl}/api/bookings/${id}`);
 	}

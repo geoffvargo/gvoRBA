@@ -97,7 +97,11 @@
 						     [style.grid-column]="dayMapper(booking.startsAt)"
 						     [style.grid-row-start]="timeMapper(booking.startsAt)"
 						     [style.grid-row-end]="timeMapper(booking.endsAt)">
-							{{ booking.purpose }}
+							<button class="cursor-pointer bg-transparent border-none p-0 text-left"
+							        [style.text-decoration-line]="booking.status === 'CANCELLED' ? 'line-through' : 'none'"
+							        (click)="onBookingClick(booking.id)">
+								{{ booking.purpose }}
+							</button>
 						</div>
 					}
 				</div>
