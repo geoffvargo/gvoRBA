@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 describe('BookingStore', () => {
 	let store: BookingStore;
 	let apiSpy: {
+		getBookings: Mock,
 		getMyBookings: Mock,
 		createBooking: Mock,
 		cancelBooking: Mock,
@@ -18,7 +19,8 @@ describe('BookingStore', () => {
 	
 	beforeEach(() => {
 		apiSpy = {
-			getMyBookings: vi.fn(),
+			getBookings: vi.fn().mockReturnValue(of(MOCK_BOOKINGS)),
+			getMyBookings: vi.fn().mockReturnValue(of(MOCK_BOOKINGS)),
 			createBooking: vi.fn(),
 			cancelBooking: vi.fn(),
 		};

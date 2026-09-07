@@ -14,11 +14,13 @@ export class BookingStore {
 	private _bookings = signal<Booking[]>([]);
 	private _conflictError = signal<string | null>(null);
 	private _isLoading = signal<boolean>(false);
+	private _isCancelled = signal<boolean>(false);
 	
 	readonly myBookings = this._myBookings.asReadonly();
 	readonly bookings = this._bookings.asReadonly();
 	readonly conflictError = this._conflictError.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
+	readonly isCancelled = this._isCancelled.asReadonly();
 	
 	currentBooking = signal<BookingResponse>(new BookingResponse());
 	
@@ -27,13 +29,14 @@ export class BookingStore {
 		this.apiService.getBooking(id).subscribe({
 			next: booking => {
 				this.currentBooking.set(booking);
+				this._isCancelled.set(this.currentBooking().status === 'CANCELLED');
 				console.log(booking);
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
 				this._isLoading.set(false);
-			}
+			},
 		});
 	}
 	
@@ -73,6 +76,8 @@ export class BookingStore {
 		return this.apiService.createBooking(payload).subscribe({
 			next: data => {
 				console.log(data);
+				this.loadBookings();
+				this.loadMyBookings();
 				this._isLoading.set(false);
 			},
 			error: err => {
@@ -84,11 +89,13 @@ export class BookingStore {
 	}
 	
 	/** Cancels the `booking` with the supplied `id` */
-	cancel(id: number) {
+	cancelBooking(id: number) {
 		this._isLoading.set(true);
 		this.apiService.cancelBooking(id).subscribe({
 			next: data => {
 				console.log(data);
+				this.loadBookings();
+				this.loadMyBookings();
 				this._isLoading.set(false);
 			},
 			error: err => {

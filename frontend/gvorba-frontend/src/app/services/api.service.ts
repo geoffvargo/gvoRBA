@@ -98,7 +98,7 @@ export class ApiService {
 	
 	/* for booking-store */
 	cancelBooking(id: number) {
-		return this.httpClient.delete<Booking>(`${this.baseUrl}/api/bookings/delete/${id}`);
+		return this.httpClient.patch<Booking>(`${this.baseUrl}/api/bookings/cancel/${id}`, null);
 	}
 	
 	getBooking(id: number) {

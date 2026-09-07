@@ -1,7 +1,7 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex flex-col justify-center content-center w-auto max-w-full items-center">
 	<div class="card shadow-lg bg-base-100 flex flex-col py-4 overflow-x-auto w-fit justify-center max-w-full">
 		<h1 class="text-center text-2xl font-bold">
-			My Bookings
+			All Bookings
 		</h1>
 		
 		@if (isLoading()) {
@@ -34,6 +34,18 @@
 						<td mat-cell
 						    *matCellDef="let booking">
 							{{ booking.room.id }}
+						</td>
+					</ng-container>
+					
+					<ng-container matColumnDef="userId">
+						<th mat-header-cell
+						    *matHeaderCellDef
+						    mat-sort-header="userId">
+							User Id
+						</th>
+						<td mat-cell
+						    *matCellDef="let booking">
+							{{ booking.userId.id }}
 						</td>
 					</ng-container>
 					
