@@ -93,16 +93,15 @@
 									grid grid-cols-subgrid grid-rows-[repeat(40,var(--calendar-subrow-height))]
 									rounded-md">
 					@for (booking of roomBookings(); track booking.id) {
-						<div class="bg-primary text-base-300 z-20 p-2 text-sm shadow-lg shadow-base-content"
-						     [style.grid-column]="dayMapper(booking.startsAt)"
-						     [style.grid-row-start]="timeMapper(booking.startsAt)"
-						     [style.grid-row-end]="timeMapper(booking.endsAt)">
-							<button class="cursor-pointer bg-transparent border-none p-0 text-left"
-							        [style.text-decoration-line]="booking.status === 'CANCELLED' ? 'line-through' : 'none'"
-							        (click)="onBookingClick(booking.id)">
-								{{ booking.purpose }}
-							</button>
-						</div>
+						<button class="flex flex-col bg-primary text-base-300 z-20 p-2 text-sm shadow-lg shadow-base-content cursor-pointer text-left"
+						        [style.grid-column]="dayMapper(booking.startsAt)"
+						        [style.grid-row-start]="timeMapper(booking.startsAt)"
+						        [style.grid-row-end]="timeMapper(booking.endsAt)"
+						        [style.text-decoration-line]="booking.status === 'CANCELLED' ? 'line-through' : 'none'"
+						        (click)="onBookingClick(booking.id)">
+							<p>{{ booking.purpose }}</p>
+							<p class="mt-auto">Duration: {{ duration(booking) }} minutes</p>
+						</button>
 					}
 				</div>
 			

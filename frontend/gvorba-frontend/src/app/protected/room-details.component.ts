@@ -67,9 +67,7 @@ export class RoomDetailsComponent implements OnInit {
 	}
 	
 	onBookingClick(id: number) {
-		this.router.navigate(['bookings/', id], {
-			replaceUrl: true,
-		}).then();
+		this.router.navigate(['bookings/', id]).then();
 	}
 	
 	protected rowGridMapper(time: string) {
@@ -77,5 +75,11 @@ export class RoomDetailsComponent implements OnInit {
 		const minutes = Number(time.slice(3, 5));
 		
 		return (hours - 7) * 4 + Math.round(minutes / 15) - 1;
+	}
+	
+	protected duration(booking: Booking) {
+		const time1: number = new Date(booking.endsAt).getTime();
+		const time2: number = new Date(booking.startsAt).getTime();
+		return (time1 - time2) / 60_000;
 	}
 }
