@@ -165,4 +165,27 @@ public class BookingController {
 		
 		throw new SecurityException("You do not have the appropriate rights to cancel this booking");
 	}
+	
+	@PatchMapping("/uncancel/{id}")
+	public ResponseEntity<?> uncancelBooking(@PathVariable Long id,
+	                                         @AuthenticationPrincipal UserDetails userDetails) {
+		Booking booking = bookingRepository.findById(id).orElseThrow(
+			() -> new BookingNotFoundException("Booking with id {} not found.", id)
+		);
+		
+		List<String> authList = userDetails.getAuthorities().stream()
+			                        .map(GrantedAuthority::getAuthority)
+			                        .toList();
+		
+		if (booking.getUserId().getName().equals(userDetails.getUsername()) ||
+		    authList.contains("ROLE_ADMIN")) {
+			booking.setStatus(BookingStatus.CONFIRMED);
+			booking.setCancelledAt(null);
+			bookingRepository.save(booking);
+			
+			return ResponseEntity.ok(booking);
+		}
+		
+		throw new SecurityException("You do not have the appropriate rights to uncancel this booking");
+	}
 }

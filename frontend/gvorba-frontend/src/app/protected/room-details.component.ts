@@ -1,11 +1,13 @@
 import { Component, effect, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RoomStore } from '../stores/room-store';
 import { Booking } from '../models/booking.model';
 
 @Component({
 	selector: 'app-room-details',
-	imports: [],
+	imports: [
+		RouterLink,
+	],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
 	encapsulation: ViewEncapsulation.None,
@@ -64,10 +66,20 @@ export class RoomDetailsComponent implements OnInit {
 		);
 	}
 	
+	onBookingClick(id: number) {
+		this.router.navigate(['bookings/', id]).then();
+	}
+	
 	protected rowGridMapper(time: string) {
 		const hours = Number(time.slice(0, 2));
 		const minutes = Number(time.slice(3, 5));
 		
 		return (hours - 7) * 4 + Math.round(minutes / 15) - 1;
+	}
+	
+	protected duration(booking: Booking) {
+		const time1: number = new Date(booking.endsAt).getTime();
+		const time2: number = new Date(booking.startsAt).getTime();
+		return (time1 - time2) / 60_000;
 	}
 }

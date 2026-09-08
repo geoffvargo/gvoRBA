@@ -104,4 +104,20 @@ export class BookingStore {
 			},
 		});
 	}
+	
+	uncancelBooking(id: number) {
+		this._isLoading.set(true);
+		this.apiService.uncancelBooking(id).subscribe({
+			next: data => {
+				console.log(data);
+				this.loadBookings();
+				this.loadMyBookings();
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.error(err);
+				this._isLoading.set(false);
+			},
+		});
+	}
 }
