@@ -1,12 +1,18 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex flex-col justify-center content-center w-auto max-w-full items-center">
 	<div class="card shadow-lg bg-base-100 flex flex-col py-4 overflow-x-auto w-fit justify-center max-w-full">
-		<h1 class="text-center text-2xl font-bold">
-			My Bookings
-		</h1>
 		
 		@if (isLoading()) {
-			<span>Loading...</span>
+			<h1 class="px-4 text-center text-2xl font-bold">
+				My Bookings
+			</h1>
+			<mat-spinner diameter="48"
+			             class="self-center m-4"
+			             aria-label="loading"></mat-spinner>
 		} @else {
+			<h1 class="text-center text-2xl font-bold">
+				My Bookings
+			</h1>
+			
 			<div class="card-body flex justify-center items-center self-start">
 				<table class="mat-elevation-x8 mx-16 w-max"
 				       mat-table

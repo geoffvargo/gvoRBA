@@ -53,6 +53,7 @@ export class RoomStore {
 	loadRooms(name?: string, minCapacity?: number) {
 		this._isLoading.set(true);
 		return this.apiService.getRooms().pipe(
+			// delay(10_000),
 			tap({
 				next: rooms => {
 					const rmList = rooms;
@@ -77,7 +78,9 @@ export class RoomStore {
 	
 	loadRoom(id: number) {
 		this._isLoading.set(true);
-		this.apiService.getRoom(id).subscribe({
+		this.apiService.getRoom(id).pipe(
+			// delay(5000),
+		).subscribe({
 			next: room => {
 				this._selectedRoom.set(room);
 				this._isLoading.set(false);
@@ -124,7 +127,8 @@ export class RoomStore {
 		this._isLoading.set(true);
 		this.apiService.updateRoom(id, payload).subscribe({
 			next: room => {
-				this._rooms.set([...this._rooms(), room]);
+				this._rooms.set(this._rooms().map(r => r.id === room.id ? room : r));
+				// this._rooms.set([...this._rooms(), room]);
 				this._isLoading.set(false);
 			},
 			error: err => {
@@ -133,7 +137,7 @@ export class RoomStore {
 			},
 		});
 		
-		this.loadRooms();
+		// this.loadRooms();
 	}
 	
 	deactivateRoom(id: number) {

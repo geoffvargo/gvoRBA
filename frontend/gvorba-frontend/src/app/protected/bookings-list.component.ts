@@ -5,6 +5,7 @@ import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { BookingStore } from '../stores/booking-store';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-bookings-list',
@@ -22,6 +23,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 		MatRow,
 		MatRowDef,
 		MatPaginator,
+		MatProgressSpinner,
 	],
 	templateUrl: './bookings-list.component.html',
 	styleUrl: './bookings-list.component.css',

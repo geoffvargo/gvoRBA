@@ -5,6 +5,7 @@ import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { Booking } from '../../models/booking.model';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-bookings-admin',
@@ -22,6 +23,7 @@ import { Booking } from '../../models/booking.model';
 		MatSortHeader,
 		MatTable,
 		MatHeaderCellDef,
+		MatProgressSpinner,
 	],
 	templateUrl: './bookings-list-admin.component.html',
 	styleUrl: './bookings-list-admin.component.css',

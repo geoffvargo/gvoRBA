@@ -12,3 +12,8 @@
 .calendar__hashmarks {
 	@apply col-start-2 col-end-7 self-center mx-2 rounded-full text-neutral z-10;
 }
+
+mat-spinner {
+	--mat-progress-spinner-active-indicator-color: var(--color-info);
+}
+

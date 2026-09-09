@@ -6,6 +6,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatOption } from '@angular/material/core';
 import { MatLabel, MatSelect } from '@angular/material/select';
 import { UserUpdate } from '../../models/user-update.model';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-user-details',
@@ -15,6 +16,7 @@ import { UserUpdate } from '../../models/user-update.model';
 		MatOption,
 		MatSelect,
 		MatLabel,
+		MatProgressSpinner,
 	],
 	templateUrl: './user-admin-details.component.html',
 	styleUrl: './user-admin-details.component.css',

@@ -13,6 +13,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { BookingRequest } from '../models/booking-request.model';
 import { formatDate } from '@angular/common';
 import { AuthStore } from '../stores/auth-store';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 const DAY_START = 480;    // 08:00  (FR-4.3)
 const DAY_END = 1080;     // 18:00  (FR-4.3)
@@ -117,6 +118,7 @@ export const toDateTimeString = (date: Date) => {
 		MatSelect,
 		MatOption,
 		MatSlideToggle,
+		MatProgressSpinner,
 	],
 	providers: [provideNativeDateAdapter()],
 	templateUrl: './create-booking.component.html',
@@ -134,7 +136,9 @@ export class CreateBookingComponent {
 	protected bookingStore = inject(BookingStore);
 	protected authStore = inject(AuthStore);
 	
-	protected readonly isLoading = computed(this.roomStore.isLoading || this.userStore.isLoading || this.authStore.isLoading);
+	protected readonly isLoading = computed(() =>
+		this.roomStore.isLoading() || this.userStore.isLoading() || this.authStore.isLoading()
+	);
 	protected readonly rooms = this.roomStore.rooms;
 	protected readonly users = this.userStore.users;
 	protected readonly isAdmin = this.authStore.isAdmin;

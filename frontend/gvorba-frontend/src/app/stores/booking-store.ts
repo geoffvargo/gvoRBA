@@ -3,6 +3,7 @@ import { ApiService } from '../services/api.service';
 import { Booking } from '../models/booking.model';
 import { BookingRequest } from '../models/booking-request.model';
 import { BookingResponse } from '../models/booking.response';
+import { delay } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
@@ -26,7 +27,9 @@ export class BookingStore {
 	
 	loadBooking(id: number) {
 		this._isLoading.set(true);
-		this.apiService.getBooking(id).subscribe({
+		this.apiService.getBooking(id).pipe(
+			// delay(5000)
+		).subscribe({
 			next: booking => {
 				this.currentBooking.set(booking);
 				this._isCancelled.set(this.currentBooking().status === 'CANCELLED');

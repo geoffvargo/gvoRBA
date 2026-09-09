@@ -6,7 +6,9 @@
 		
 		<div class="card-body flex justify-center items-center">
 			@if (isLoading()) {
-				<span>Loading...</span>
+				<mat-spinner diameter="48"
+				             class="self-center m-4"
+				             aria-label="loading"></mat-spinner>
 			} @else if (!isEditing()) {
 				<div class="px-14 py-2 m-2 w-fit grid grid-cols-[max-content_max-content] gap-2">
 					<span>Name:</span>

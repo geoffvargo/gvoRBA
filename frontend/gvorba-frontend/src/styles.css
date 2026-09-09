@@ -71,3 +71,7 @@
 mat-paginator {
 	--mat-paginator-container-shape: 24px !important;
 }
+
+mat-spinner {
+	--mat-progress-spinner-active-indicator-color: var(--color-info);
+}

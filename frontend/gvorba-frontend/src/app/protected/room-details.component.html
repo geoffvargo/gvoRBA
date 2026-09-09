@@ -1,11 +1,21 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
 	<div class="card m-4 flex w-full bg-base-200 shadow-md items-center">
-		<div class="card-title">
-			<h1 class="text-xl font-bold p-2 m-2">
-				Room Details
-			</h1>
-		</div>
-		@if (!isLoading()) {
+		@if (isLoading()) {
+			<div class="card-title">
+				<h1 class="text-xl font-bold p-2 m-2">
+					Room Details
+				</h1>
+			</div>
+			<mat-spinner diameter="48"
+			             class="self-center m-4"
+			             aria-label="loading"></mat-spinner>
+		} @else {
+			<div class="card-title">
+				<h1 class="text-xl font-bold p-2 m-2">
+					Room Details
+				</h1>
+			</div>
+			
 			<div class="grid grid-cols-2 gap-x-16 sm:gap-x-8 gap-y-2">
 				<p class="flex gap-2">
 					<span class="font-semibold">Room Id:</span>
@@ -106,8 +116,6 @@
 				</div>
 			
 			</div>
-		} @else {
-			<span>Loading...</span>
 		}
 		
 		<div class="flex h-full items-end">

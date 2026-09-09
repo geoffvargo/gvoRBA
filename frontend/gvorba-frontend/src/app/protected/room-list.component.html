@@ -1,11 +1,17 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-200 p-4 flex justify-center content-center w-auto items-center">
 	<div class="card shadow-lg bg-base-100 flex flex-col py-4 overflow-x-auto w-fit justify-center">
-		<h1 class="text-center text-2xl font-bold">
-			All Rooms
-		</h1>
 		@if (isLoading()) {
-			<span>Loading...</span>
+			<h1 class="px-4 text-center text-2xl font-bold">
+				All Rooms
+			</h1>
+			<mat-spinner diameter="48"
+			             class="self-center m-4"
+			             aria-label="loading"></mat-spinner>
 		} @else {
+			<h1 class="text-center text-2xl font-bold">
+				All Rooms
+			</h1>
+			
 			<div class="card-body justify-center flex items-center">
 				<table class="mat-elevation-x8 mx-16 w-max"
 				       mat-table
