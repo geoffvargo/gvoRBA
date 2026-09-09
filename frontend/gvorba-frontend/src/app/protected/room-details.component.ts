@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RoomStore } from '../stores/room-store';
 import { Booking } from '../models/booking.model';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { delay } from 'rxjs';
 
 @Component({
 	selector: 'app-room-details',
