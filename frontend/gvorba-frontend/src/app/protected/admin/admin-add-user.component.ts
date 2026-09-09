@@ -8,6 +8,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { UserCreationModel } from '../../models/user-creation.model';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-admin-add-user',
@@ -17,6 +18,7 @@ import { UserCreationModel } from '../../models/user-creation.model';
 		MatOption,
 		MatSelect,
 		MatSlideToggle,
+		MatProgressSpinner,
 	],
 	templateUrl: './admin-add-user.component.html',
 	styleUrl: './admin-add-user.component.css',

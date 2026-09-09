@@ -1,12 +1,13 @@
 import { Component, effect, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RoomStore } from '../stores/room-store';
 import { Booking } from '../models/booking.model';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-room-details',
 	imports: [
-		RouterLink,
+		MatProgressSpinner,
 	],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
@@ -36,7 +37,6 @@ export class RoomDetailsComponent implements OnInit {
 		if (!this.roomId()) {
 			return;
 		}
-		
 		this.roomStore.loadRoom(this.roomId());
 	}
 	

@@ -3,10 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BookingStore } from '../stores/booking-store';
 import { AuthStore } from '../stores/auth-store';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-booking-details',
-	imports: [],
+	imports: [
+		MatProgressSpinner,
+	],
 	templateUrl: './booking-details.component.html',
 	styleUrl: './booking-details.component.css',
 	encapsulation: ViewEncapsulation.None,

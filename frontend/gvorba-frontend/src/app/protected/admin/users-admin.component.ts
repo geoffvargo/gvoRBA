@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { User } from '../../models/user.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-users-admin',
@@ -22,6 +23,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 		MatRowDef,
 		MatRow,
 		MatPaginator,
+		MatProgressSpinner,
 	],
 	templateUrl: './users-admin.component.html',
 	styleUrl: './users-admin.component.css',

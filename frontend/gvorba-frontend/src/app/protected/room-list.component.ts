@@ -5,6 +5,7 @@ import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { RoomStore } from '../stores/room-store';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-room-list',
@@ -22,6 +23,7 @@ import { RoomStore } from '../stores/room-store';
 		MatRow,
 		MatRowDef,
 		MatPaginator,
+		MatProgressSpinner,
 	],
 	templateUrl: './room-list.component.html',
 	styleUrl: './room-list.component.css',

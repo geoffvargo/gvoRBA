@@ -6,12 +6,14 @@ import { Amenities } from '../../models/amenities.enum';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { UpdateRoomRequest, UpdateRoomRequestImpl } from '../../models/update-room.request';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'app-room-manage',
 	imports: [
 		ReactiveFormsModule,
 		MatSlideToggle,
+		MatProgressSpinner,
 	],
 	templateUrl: './room-manage.component.html',
 	styleUrl: './room-manage.component.css',

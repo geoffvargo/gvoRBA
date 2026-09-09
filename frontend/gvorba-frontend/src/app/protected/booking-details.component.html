@@ -6,7 +6,9 @@
 			</h1>
 		</div>
 		@if (isLoading()) {
-			<span>Loading...</span>
+			<mat-spinner diameter="48"
+			             class="self-center m-4"
+			             aria-label="loading"></mat-spinner>
 		} @else {
 			<div class="p-2 m-2 grid grid-cols-2 gap-2 w-fit">
 				<span class="font-semibold">Booking Id:</span>

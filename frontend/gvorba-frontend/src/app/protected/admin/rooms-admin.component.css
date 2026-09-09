@@ -46,3 +46,8 @@
 .mat-mdc-select-value {
 	text-align: center;
 }
+
+mat-spinner {
+	--mat-progress-spinner-active-indicator-color: var(--color-info);
+}
+

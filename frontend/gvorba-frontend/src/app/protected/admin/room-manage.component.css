@@ -1,0 +1,3 @@
+mat-spinner {
+	--mat-progress-spinner-active-indicator-color: var(--color-info);
+}
