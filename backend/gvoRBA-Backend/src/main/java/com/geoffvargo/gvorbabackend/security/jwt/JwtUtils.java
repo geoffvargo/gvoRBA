@@ -16,6 +16,9 @@ import io.jsonwebtoken.io.*;
 import io.jsonwebtoken.security.*;
 import jakarta.servlet.http.*;
 
+/**
+ * For creating, parsing and validating the JWT token
+ */
 @Component
 public class JwtUtils {
 	public static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
@@ -56,10 +59,13 @@ public class JwtUtils {
 			               .map(GrantedAuthority::getAuthority)
 			               .collect(Collectors.joining("."));
 		
+		Date now = new Date();
+		
 		return Jwts.builder()
 			       .subject(username)
 			       .claim("roles", roles)
-			       .issuedAt(new Date((new Date()).getTime() + expirationMs))
+			       .issuedAt(now)
+			       .expiration(new Date(now.getTime() + expirationMs))
 			       .signWith(key())
 			       .compact();
 	}

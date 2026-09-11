@@ -6,8 +6,10 @@ import com.geoffvargo.gvorbabackend.repos.*;
 import com.geoffvargo.gvorbabackend.security.jwt.*;
 
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.*;
 import org.springframework.context.annotation.*;
+import org.springframework.scheduling.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.*;
 import org.springframework.security.config.annotation.web.builders.*;
@@ -22,11 +24,14 @@ import org.springframework.web.cors.*;
 import java.time.*;
 import java.util.*;
 
+import lombok.*;
+
 @Configuration
 @EnableWebSecurity
+@EnableScheduling
+@RequiredArgsConstructor
 public class SecurityConfig {
-	@Autowired
-	private AuthEntryPointJwt unauthorizedHandler;
+	private final AuthEntryPointJwt unauthorizedHandler;
 	
 	@Value("${app.cors.allowed-origins:http://localhost:4200}")
 	private String allowedOrigins;

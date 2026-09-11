@@ -8,7 +8,7 @@ spring:
 
   app:
     jwtSecret: "mySecretKey123912738aopsgjnspkmndfsopkvajoirjg94gf2opfng2moknm"
-    jwtExpirationMs: 172800000
+    jwtExpirationMs: 900_000
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/booking}
