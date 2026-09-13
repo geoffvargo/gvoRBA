@@ -32,28 +32,6 @@ export class ApiService {
 	// loggedIn = new BehaviorSubject<boolean>(true);
 	isloggedIn$ = this.isLoggedInSubject.asObservable();
 	
-	notifyLoggedIn() {
-		this.isLoggedInSubject.next(true);
-	}
-	
-	loginUser(data: LoginRequest) {
-		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/signin`, data);
-	}
-	
-	signup(payload: SignupRequest) {
-		return this.httpClient.post<string>(`${this.baseUrl}/api/auth/public/signup`, payload);
-	}
-	
-	logout() {
-		this.tokenService.removeToken();
-		
-		this.isLoggedInSubject.next(false);
-	}
-	
-	getUser() {
-		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/getUser`);
-	}
-	
 	getPing() {
 		return this.httpClient.get<Ping>(`${this.baseUrl}/api/ping`);
 	}
@@ -136,5 +114,36 @@ export class ApiService {
 	
 	createUser(data: UserCreationModel) {
 		return this.httpClient.put<User>(`${this.baseUrl}/api/users/create`, data);
+	}
+	
+	/* for auth-store */
+	loginUser(data: LoginRequest) {
+		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/signin`, data);
+	}
+	
+	signup(payload: SignupRequest) {
+		return this.httpClient.post<string>(`${this.baseUrl}/api/auth/public/signup`, payload);
+	}
+	
+	logout() {
+		this.httpClient.post(`${this.baseUrl}/api/auth/public/logout`, null).subscribe({
+			next: () => {
+				this.tokenService.removeToken();
+				this.isLoggedInSubject.next(false);
+			},
+			error: err => {
+				console.log(err);
+				this.tokenService.removeToken();
+				this.isLoggedInSubject.next(false);
+			},
+		});
+	}
+	
+	getUser() {
+		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/getUser`);
+	}
+	
+	refreshToken() {
+		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/refresh`, null);
 	}
 }

@@ -4,7 +4,7 @@ import { Room } from '../models/room.model';
 import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
-import { tap, delay } from 'rxjs';
+import { tap } from 'rxjs';
 import { Amenities } from '../models/amenities.enum';
 
 @Injectable({

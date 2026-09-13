@@ -4,7 +4,7 @@ import { User } from '../models/user.model';
 import { LoginRequest } from '../models/login-request.model';
 import { SignupRequest } from '../models/signup-request.model';
 import { TokenStorageService } from '../services/token-storage-service';
-import { switchMap, tap } from 'rxjs';
+import { finalize, map, Observable, shareReplay, switchMap, tap } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
@@ -12,6 +12,7 @@ import { switchMap, tap } from 'rxjs';
 export class AuthStore {
 	private apiService = inject(ApiService);
 	private tokenStorage = inject(TokenStorageService);
+	private inFlight: Observable<string> | null = null;
 	
 	private _user = signal<User | null>(null);
 	private _authToken = signal('');
@@ -66,7 +67,27 @@ export class AuthStore {
 	}
 	
 	refresh() {
-		console.log('refresh()');
+		if (this.inFlight) {
+			return this.inFlight;
+		}
+		
+		this.inFlight = this.apiService.refreshToken().pipe(
+			tap(
+				r => {
+					this._authToken.set(r.jwtToken);
+					this.tokenStorage.saveToken(r.jwtToken);
+				}),
+			map(
+				r => r.jwtToken),
+			finalize(
+				() => this.inFlight = null),
+			shareReplay({
+				bufferSize: 1,
+				refCount: false,
+			}),
+		);
+		
+		return this.inFlight;
 	}
 	
 	login(user: LoginRequest) {
