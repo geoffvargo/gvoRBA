@@ -5,7 +5,6 @@ import com.geoffvargo.gvorbabackend.models.Role;
 import com.geoffvargo.gvorbabackend.repos.*;
 import com.geoffvargo.gvorbabackend.security.jwt.*;
 
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.*;
 import org.springframework.context.annotation.*;
@@ -67,9 +66,12 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).map(String::trim).toList());
+		config.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+			                         .map(String::trim)
+			                         .toList());
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
 		config.setAllowedHeaders(List.of("*"));
+		config.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);
 		return source;

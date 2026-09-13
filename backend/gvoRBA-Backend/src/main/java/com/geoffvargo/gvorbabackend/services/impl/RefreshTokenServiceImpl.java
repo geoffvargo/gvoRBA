@@ -1,5 +1,6 @@
 package com.geoffvargo.gvorbabackend.services.impl;
 
+import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.repos.*;
 import com.geoffvargo.gvorbabackend.security.jwt.*;
@@ -70,18 +71,18 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 		Optional<RefreshToken> optional = refreshTokenRepository.findByTokenHash(hash(rawToken));
 		
 		if (optional.isEmpty()) {
-			throw new RuntimeException("No token found!");
+			throw new InvalidRefreshTokenException("No token found!");
 		}
 		
 		RefreshToken row = optional.get();
 		
 		if (row.getRevokedAt() != null) {
 			refreshTokenRepository.revokeAllForUser(LocalDateTime.now(), row.getUser().getId());
-			throw new RuntimeException("Token already revoked!");
+			throw new InvalidRefreshTokenException("Token already revoked!");
 		}
 		
 		if (row.getExpiresAt().isBefore(LocalDateTime.now())) {
-			throw new RuntimeException("Token has already expired!");
+			throw new InvalidRefreshTokenException("Token has already expired!");
 		}
 		
 		try {
@@ -107,7 +108,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 	}
 	
 	@Override
-	@Scheduled
+	@Scheduled(fixedDelay = 3_600_000)
 	public void purgeExpired() {
 		refreshTokenRepository.deleteByExpiresAtBefore(LocalDateTime.now());
 	}
