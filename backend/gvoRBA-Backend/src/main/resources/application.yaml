@@ -1,6 +1,10 @@
 app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  refresh:
+    ttl-days: ${REFRESH_TTL_DAYS:7}
+  cookie:
+    same-site: ${COOKIE_SAME_SITE:None}
 
 spring:
   application:
@@ -8,7 +12,7 @@ spring:
 
   app:
     jwtSecret: "mySecretKey123912738aopsgjnspkmndfsopkvajoirjg94gf2opfng2moknm"
-    jwtExpirationMs: 172800000
+    jwtExpirationMs: 900_000
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/booking}
