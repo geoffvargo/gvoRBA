@@ -51,8 +51,11 @@ public class AuthController {
 	
 	private final RefreshTokenService refreshTokenService;
 	
-	@Value("${spring.app.jwtExpirationMs}")
-	private int expirationMs;
+	@Value("${app.refresh.ttl-days}")
+	private int refreshTtlDays;
+
+	@Value("${app.cookie.same-site}")
+	private String cookieSameSite;
 	
 	private ResponseCookie buildRefreshCookie(String rawToken) {
 		ResponseCookie ans = ResponseCookie.from("refreshToken")
@@ -60,8 +63,8 @@ public class AuthController {
 			                     .path("/api/auth")
 			                     .httpOnly(true)
 			                     .secure(true)
-			                     .sameSite("None")
-			                     .maxAge(expirationMs / 60)
+			                     .sameSite(cookieSameSite)
+			                     .maxAge(Duration.ofDays(refreshTtlDays))
 			                     .build();
 		
 		LOGGER.info(ans.toString());
@@ -73,7 +76,7 @@ public class AuthController {
 		ResponseCookie ans = ResponseCookie.from("refreshToken", "")
 			                     .httpOnly(true)
 			                     .secure(true)
-			                     .sameSite("None")
+			                     .sameSite(cookieSameSite)
 			                     .path("/api/auth")
 			                     .maxAge(Duration.ZERO)
 			                     .build();

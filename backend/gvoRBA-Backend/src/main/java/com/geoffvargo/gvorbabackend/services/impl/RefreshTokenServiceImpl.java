@@ -28,8 +28,8 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 	
 	private final RefreshTokenRepository refreshTokenRepository;
 	
-	@Value("${spring.app.jwtExpirationMs}")
-	private int expirationMs;
+	@Value("${app.refresh.ttl-days}")
+	private int ttlDays;
 	
 	@Override
 	public String issue(User user) throws NoSuchAlgorithmException {
@@ -44,7 +44,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 			                .digest(raw.getBytes(StandardCharsets.UTF_8));
 		String ans = HexFormat.of().formatHex(digest);
 		LOGGER.info(ans);
-		LocalDateTime expDate = LocalDateTime.now().plusSeconds(expirationMs / 60);
+		LocalDateTime expDate = LocalDateTime.now().plusDays(ttlDays);
 		
 		refreshTokenRepository.save(RefreshToken.builder()
 			                            .user(user)
@@ -109,6 +109,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 	
 	@Override
 	@Scheduled(fixedDelay = 3_600_000)
+	@Transactional
 	public void purgeExpired() {
 		refreshTokenRepository.deleteByExpiresAtBefore(LocalDateTime.now());
 	}
