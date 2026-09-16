@@ -16,7 +16,7 @@
 				</h1>
 			</div>
 			
-			<div class="grid grid-cols-2 gap-x-16 sm:gap-x-8 gap-y-2">
+			<div class="grid grid-cols-2 gap-x-16 md:gap-x-2 gap-y-2 px-8">
 				<p class="flex gap-2">
 					<span class="font-semibold">Room Id:</span>
 					<span>{{ room()?.id }}</span>
@@ -61,39 +61,40 @@
 			
 			<div id="calendar-canvas"
 			     class="grid grid-cols-[repeat(6,var(--calendar-col-width))]
-			            grid-rows-[var(--calendar-header-height),repeat(10,var(--calendar-hour-height))]">
-				<div class="contents text-center leading-9">
+			            grid-rows-[var(--calendar-header-height),repeat(10,var(--calendar-hour-height))]
+			            max-w-full">
+				<div class="contents text-center text-[10px] sm:text-xs md:text-base leading-tight md:leading-9">
 					<div class="col-start-2">Monday</div>
 					<div class="col-start-3">Tuesday</div>
 					<div class="col-start-4">Wednesday</div>
 					<div class="col-start-5">Thursday</div>
 					<div class="col-start-6">Friday</div>
 				</div>
-				
+
 				<div id="calendar"
 				     class="col-start-1 col-end-7 row-start-2 row-end-12
 									grid grid-cols-subgrid grid-rows-subgrid">
 					<div id="hours"
-					     class="contents text-right bg-primary-content">
-						<div class="col-start-1 col-end-2 self-center p-2">8:00am</div>
+					     class="contents text-right text-[10px] sm:text-xs md:text-sm bg-primary-content">
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">8:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">9:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">9:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">10:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">10:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">11:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">11:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">12:00am</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">12:00am</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">1:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">1:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">2:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">2:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">3:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">3:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">4:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">4:00pm</div>
 						<hr class="calendar__hashmarks">
-						<div class="col-start-1 col-end-2 self-center p-2">5:00pm</div>
+						<div class="col-start-1 col-end-2 self-center p-1 md:p-2">5:00pm</div>
 						<hr class="calendar__hashmarks">
 					</div>
 				</div>
@@ -103,7 +104,9 @@
 									grid grid-cols-subgrid grid-rows-[repeat(40,var(--calendar-subrow-height))]
 									rounded-md">
 					@for (booking of roomBookings(); track booking.id) {
-						<button class="flex flex-col bg-primary text-base-300 z-20 p-2 text-sm shadow-lg shadow-base-content cursor-pointer text-left"
+						<button class="flex flex-col bg-primary text-base-300 z-20 p-1 md:p-2 text-[10px]
+														sm:text-xs md:text-sm shadow-lg shadow-base-content cursor-pointer
+														text-left overflow-hidden"
 						        [style.grid-column]="dayMapper(booking.startsAt)"
 						        [style.grid-row-start]="timeMapper(booking.startsAt)"
 						        [style.grid-row-end]="timeMapper(booking.endsAt)"
