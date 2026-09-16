@@ -30,3 +30,9 @@
 mat-spinner {
 	--mat-progress-spinner-active-indicator-color: var(--color-info);
 }
+
+@media (max-width: 1023px) {
+	.mat-mdc-paginator-container {
+		justify-content: center !important;
+	}
+}

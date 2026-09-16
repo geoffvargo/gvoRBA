@@ -9,6 +9,22 @@
 	--calendar-subrow-height: calc(var(--calendar-hour-height) / var(--calendar-subrow-count));
 }
 
+@media (max-width: 768px) {
+	#calendar-canvas {
+		--calendar-col-width: 4.5rem;
+		--calendar-header-height: 1.75rem;
+		--calendar-hour-height: 5rem;
+	}
+}
+
+@media (max-width: 480px) {
+	#calendar-canvas {
+		--calendar-col-width: 3.25rem;
+		--calendar-header-height: 1.5rem;
+		--calendar-hour-height: 4rem;
+	}
+}
+
 .calendar__hashmarks {
 	@apply col-start-2 col-end-7 self-center mx-2 rounded-full text-neutral z-10;
 }

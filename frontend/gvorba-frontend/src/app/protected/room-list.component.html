@@ -12,19 +12,21 @@
 				All Rooms
 			</h1>
 			
-			<div class="card-body justify-center flex items-center">
-				<table class="mat-elevation-x8 mx-16 w-max"
+			<div class="card-body justify-center flex items-start">
+				<table class="mat-elevation-x8 lg:mx-16 mx-0 w-max"
 				       mat-table
 				       matSort
 				       [dataSource]="dataSource">
 					
 					<ng-container matColumnDef="id">
 						<th mat-header-cell
+						    class="hidden md:table-cell md:text-sm"
 						    *matHeaderCellDef
 						    mat-sort-header="id">
 							Room Id
 						</th>
 						<td mat-cell
+						    class="hidden md:table-cell md:text-sm"
 						    *matCellDef="let room">
 							{{ room.id }}
 						</td>
@@ -45,10 +47,12 @@
 					<ng-container matColumnDef="location">
 						<th mat-header-cell
 						    *matHeaderCellDef
+						    class="hidden md:table-cell md:text-sm"
 						    mat-sort-header="location">
 							Location
 						</th>
 						<td mat-cell
+						    class="hidden md:table-cell md:text-sm"
 						    *matCellDef="let room">
 							{{ room.location }}
 						</td>
@@ -57,10 +61,12 @@
 					<ng-container matColumnDef="capacity">
 						<th mat-header-cell
 						    *matHeaderCellDef
+						    class="hidden md:table-cell md:text-sm"
 						    mat-sort-header="capacity">
 							Capacity
 						</th>
 						<td mat-cell
+						    class="hidden md:table-cell md:text-sm"
 						    *matCellDef="let room">
 							{{ room.capacity }}
 						</td>
@@ -68,11 +74,13 @@
 					
 					<ng-container matColumnDef="amenities">
 						<th mat-header-cell
+						    class="hidden lg:table-cell"
 						    *matHeaderCellDef
 						    mat-sort-header="amenities">
 							Amenities
 						</th>
 						<td mat-cell
+						    class="hidden lg:table-cell"
 						    *matCellDef="let room">
 							{{ room.amenities }}
 						</td>
@@ -92,11 +100,13 @@
 					
 					<ng-container matColumnDef="createdOn">
 						<th mat-header-cell
+						    class="hidden lg:table-cell"
 						    *matHeaderCellDef
 						    mat-sort-header="createdOn">
 							Created
 						</th>
 						<td mat-cell
+						    class="hidden lg:table-cell"
 						    *matCellDef="let room">
 							{{ room.createdOn }}
 						</td>
@@ -123,10 +133,12 @@
 					    *matRowDef="let row; columns: displayedColumns;"></tr>
 				</table>
 				
-				<mat-paginator [pageSizeOptions]="[10,25,50]"
-				               [selectConfig]="{ panelClass: 'paginator'}"
-				               class="m-4 rounded-box!"
-				               showFirstLastButtons></mat-paginator>
+				<div class="items-center! self-center justify-center!">
+					<mat-paginator [pageSizeOptions]="[10,25,50]"
+					               [selectConfig]="{ panelClass: 'paginator'}"
+					               class="m-4 rounded-box! flex-col lg:flex-row justify-center! items-center"
+					               showFirstLastButtons></mat-paginator>
+				</div>
 			</div>
 			
 		}
