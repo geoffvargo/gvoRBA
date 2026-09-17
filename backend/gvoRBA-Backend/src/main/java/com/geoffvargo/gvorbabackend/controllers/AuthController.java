@@ -1,5 +1,6 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
+import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.DTOs.*;
 import com.geoffvargo.gvorbabackend.models.User;
@@ -53,7 +54,7 @@ public class AuthController {
 	
 	@Value("${app.refresh.ttl-days}")
 	private int refreshTtlDays;
-
+	
 	@Value("${app.cookie.same-site}")
 	private String cookieSameSite;
 	
@@ -72,7 +73,7 @@ public class AuthController {
 		return ans;
 	}
 	
-	private ResponseCookie clearRefreshToken(String rawToken) {
+	private ResponseCookie clearRefreshToken() {
 		ResponseCookie ans = ResponseCookie.from("refreshToken", "")
 			                     .httpOnly(true)
 			                     .secure(true)
@@ -158,7 +159,7 @@ public class AuthController {
 	@PostMapping("/public/refresh")
 	public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String cookieValue) {
 		if (cookieValue == null) {
-			throw new RuntimeException("Null cookie name.");
+			throw new InvalidRefreshTokenException("No refresh token cookie present.");
 		}
 		
 		RotationResult res = refreshTokenService.rotate(cookieValue);
@@ -168,8 +169,8 @@ public class AuthController {
 			                     .map(GrantedAuthority::getAuthority)
 			                     .toList();
 		
-		return ResponseEntity.ok(new LoginResponse(jwt, res.principal().getUsername(), roles).toString() +
-		                         buildRefreshCookie(res.rawToken()));
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, buildRefreshCookie(res.rawToken()).toString())
+			       .body(new LoginResponse(jwt, res.principal().getUsername(), roles));
 	}
 	
 	@PostMapping("/public/logout")
@@ -178,7 +179,9 @@ public class AuthController {
 			refreshTokenService.revoke(cookieValue);
 		}
 		
-		return ResponseEntity.ok(clearRefreshToken(cookieValue));
+		return ResponseEntity.noContent()
+			       .header(HttpHeaders.SET_COOKIE, clearRefreshToken().toString())
+			       .build();
 	}
 	
 	@GetMapping("/getUser")

@@ -10,15 +10,13 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.*;
 import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.*;
 
 import java.nio.charset.*;
 import java.security.*;
 import java.time.*;
 import java.util.*;
 
-import javax.swing.text.html.*;
-
-import jakarta.transaction.*;
 import lombok.*;
 
 @Service
@@ -38,21 +36,15 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 		SecureRandom sr = new SecureRandom();
 		sr.nextBytes(bytes);
 		
-		String raw = Base64.getEncoder().encodeToString(bytes);
-		
-		byte[] digest = MessageDigest.getInstance("SHA-256")
-			                .digest(raw.getBytes(StandardCharsets.UTF_8));
-		String ans = HexFormat.of().formatHex(digest);
-		LOGGER.info(ans);
-		LocalDateTime expDate = LocalDateTime.now().plusDays(ttlDays);
+		String raw = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 		
 		refreshTokenRepository.save(RefreshToken.builder()
 			                            .user(user)
-			                            .tokenHash(ans)
-			                            .expiresAt(expDate)
+			                            .tokenHash(hash(raw))
+			                            .expiresAt(LocalDateTime.now().plusDays(ttlDays))
 			                            .build());
 		
-		return ans;
+		return raw;
 	}
 	
 	private String hash(String input) {
@@ -66,7 +58,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 	}
 	
 	@Override
-	@Transactional
+	@Transactional(noRollbackFor = InvalidRefreshTokenException.class)
 	public RotationResult rotate(String rawToken) {
 		Optional<RefreshToken> optional = refreshTokenRepository.findByTokenHash(hash(rawToken));
 		
@@ -78,6 +70,7 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 		
 		if (row.getRevokedAt() != null) {
 			refreshTokenRepository.revokeAllForUser(LocalDateTime.now(), row.getUser().getId());
+			LOGGER.warn("Refresh token replay detected for user id {}", row.getUser().getId());
 			throw new InvalidRefreshTokenException("Token already revoked!");
 		}
 		
@@ -90,12 +83,9 @@ class RefreshTokenServiceImpl implements RefreshTokenService {
 			String newRaw = issue(row.getUser());
 			row.setRevokedAt(LocalDateTime.now());
 			
-			RotationResult rotationResult = new RotationResult(newRaw, principal);
-			LOGGER.info(rotationResult.toString());
-			
-			return rotationResult;
+			return new RotationResult(newRaw, principal);
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
+			throw new IllegalStateException("SHA-256 is required on every Java platform", e);
 		}
 	}
 	

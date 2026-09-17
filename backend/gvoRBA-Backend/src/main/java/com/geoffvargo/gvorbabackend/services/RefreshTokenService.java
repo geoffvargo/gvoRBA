@@ -7,6 +7,10 @@ import java.security.*;
 
 public interface RefreshTokenService {
 	record RotationResult(String rawToken, UserDetailsImpl principal) {
+		@Override
+		public String toString() {
+			return "RotationResult[principal=" + principal.getUsername() + "]";
+		}
 	}
 	
 	public String issue(User user) throws NoSuchAlgorithmException;

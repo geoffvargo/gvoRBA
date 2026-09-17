@@ -24,7 +24,10 @@ export class AuthStore {
 	readonly isLoading = this._isLoading.asReadonly();
 	readonly error = this._error.asReadonly();
 	
-	role = computed(() => this._user()?.role.roleName ?? 'ROLE_GUEST');
+	// `.role` can itself be null/undefined even when `_user` isn't, so both hops
+	// need `?.` — otherwise a user payload with a missing role throws here
+	// instead of falling back to ROLE_GUEST.
+	role = computed(() => this._user()?.role?.roleName ?? 'ROLE_GUEST');
 	isAuthenticated = computed(() => this.authToken() !== '');
 	isAdmin = computed(() => this.role() === 'ROLE_ADMIN');
 	isMember = computed(() => this.role() === 'ROLE_MEMBER');
@@ -36,13 +39,17 @@ export class AuthStore {
 	/* MUTATORS */
 	loadCurrentUser() {
 		const token = sessionStorage.getItem('auth-token');
-		
+
 		if (token) {
 			this.apiService.getCurrentUser().subscribe({
 				next: (data: User) => {
 					this._user.set(data);
-					console.log(this._user());
-					this._authToken.set(token);
+					// Read the CURRENT token from storage rather than reusing the
+					// `token` captured above: if this request 401'd and got
+					// silently retried with a refreshed token (see authInterceptor),
+					// `token` is now stale. Writing it back here would clobber the
+					// valid token refresh() already stored.
+					this._authToken.set(this.tokenStorage.getToken() ?? token);
 				},
 				error: err => {
 					console.log(err);
@@ -67,18 +74,29 @@ export class AuthStore {
 	}
 	
 	refresh() {
+		// Dedupe concurrent refresh calls (e.g. several guards/interceptors
+		// firing around the same time): everyone gets the same in-flight
+		// observable instead of hitting /refresh multiple times.
 		if (this.inFlight) {
 			return this.inFlight;
 		}
-		
+
 		this.inFlight = this.apiService.refreshToken().pipe(
 			tap(
 				r => {
 					this._authToken.set(r.jwtToken);
 					this.tokenStorage.saveToken(r.jwtToken);
 				}),
-			map(
-				r => r.jwtToken),
+			// Re-fetch and set `_user` here too, not just the token. Previously
+			// refresh() only updated `_authToken`, so `isAdmin`/`role` (which are
+			// derived from `_user`) went stale or fell back to ROLE_GUEST any
+			// time a silent refresh fired — isAuthenticated looked fine while
+			// admin-only UI silently disappeared.
+			switchMap(
+				r => this.apiService.getCurrentUser().pipe(
+					tap(user => this._user.set(user)),
+					map(() => r.jwtToken),
+				)),
 			finalize(
 				() => this.inFlight = null),
 			shareReplay({
@@ -86,7 +104,7 @@ export class AuthStore {
 				refCount: false,
 			}),
 		);
-		
+
 		return this.inFlight;
 	}
 	
