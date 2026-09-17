@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, provideRouter, RedirectCommand, RouterStateSnapshot } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { firstValueFrom, Observable, throwError } from 'rxjs';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 
 import { adminGuard } from './admin-guard';
 import { TokenStorageService } from '../services/token-storage-service';
@@ -24,6 +24,8 @@ describe('adminGuardGuard', () => {
 		TestBed.runInInjectionContext(() =>
 			adminGuard(route, state),
 		);
+	const runGuardAsync = () =>
+		firstValueFrom(runGuard() as Observable<boolean | RedirectCommand>);
 	
 	let tokenService: { getToken: ReturnType<typeof vi.fn> };
 	let authStore: { refresh: ReturnType<typeof vi.fn> };
@@ -54,11 +56,25 @@ describe('adminGuardGuard', () => {
 		expect(runGuard()).toBeInstanceOf(RedirectCommand);
 	});
 	
+	it('grants access when refresh returns an admin token', async () => {
+		tokenService.getToken.mockReturnValue(EXPIRED_ADMIN_TOKEN);
+		authStore.refresh.mockReturnValue(of(ADMIN_TOKEN));
+
+		await expect(runGuardAsync()).resolves.toBe(true);
+	});
+
+	it('denies access when refresh returns a non-admin token', async () => {
+		tokenService.getToken.mockReturnValue(EXPIRED_ADMIN_TOKEN);
+		authStore.refresh.mockReturnValue(of(USER_TOKEN));
+
+		await expect(runGuardAsync()).resolves.toBeInstanceOf(RedirectCommand);
+	});
+
 	it('denies access when the token is expired and refresh fails', async () => {
 		tokenService.getToken.mockReturnValue(EXPIRED_ADMIN_TOKEN);
 		authStore.refresh.mockReturnValue(throwError(() => new Error('refresh failed')));
 
-		const result = await firstValueFrom(runGuard() as Observable<boolean | RedirectCommand>);
+		const result = await runGuardAsync();
 		expect(result).toBeInstanceOf(RedirectCommand);
 	});
 	
@@ -67,7 +83,7 @@ describe('adminGuardGuard', () => {
 		tokenService.getToken.mockReturnValue(null);
 		authStore.refresh.mockReturnValue(throwError(() => new Error('refresh failed')));
 
-		const result = await firstValueFrom(runGuard() as Observable<boolean | RedirectCommand>);
+		const result = await runGuardAsync();
 		expect(result).toBeInstanceOf(RedirectCommand);
 		expect(isExpired).not.toHaveBeenCalled(); // existence checked first
 	});
