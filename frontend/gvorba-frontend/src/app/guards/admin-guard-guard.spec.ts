@@ -3,9 +3,11 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, provideRouter, RedirectCommand, RouterStateSnapshot } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { firstValueFrom, Observable, throwError } from 'rxjs';
 
 import { adminGuard } from './admin-guard';
 import { TokenStorageService } from '../services/token-storage-service';
+import { AuthStore } from '../stores/auth-store';
 
 // Paste real tokens obtained from your backend:
 const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjoiUk9MRV9BRE1JTiIsImlhdCI6MTc4NTcyNjMyOH0.IgEPVIUGVo6QiqUxnYcMQ6baV9GFOsBn-SUhGjRMNow';
@@ -24,10 +26,12 @@ describe('adminGuardGuard', () => {
 		);
 	
 	let tokenService: { getToken: ReturnType<typeof vi.fn> };
+	let authStore: { refresh: ReturnType<typeof vi.fn> };
 	let jwtHelper: JwtHelperService;
 	
 	beforeEach(() => {
 		tokenService = { getToken: vi.fn() };
+		authStore = { refresh: vi.fn() };
 		jwtHelper = new JwtHelperService(); // real decode + real expiry check
 		
 		TestBed.configureTestingModule({
@@ -35,6 +39,7 @@ describe('adminGuardGuard', () => {
 				provideRouter([]),
 				{ provide: TokenStorageService, useValue: tokenService },
 				{ provide: JwtHelperService, useValue: jwtHelper },
+				{ provide: AuthStore, useValue: authStore },
 			],
 		});
 	});
@@ -49,15 +54,21 @@ describe('adminGuardGuard', () => {
 		expect(runGuard()).toBeInstanceOf(RedirectCommand);
 	});
 	
-	it('denies access when the token is expired', () => {
+	it('denies access when the token is expired and refresh fails', async () => {
 		tokenService.getToken.mockReturnValue(EXPIRED_ADMIN_TOKEN);
-		expect(runGuard()).toBeInstanceOf(RedirectCommand);
+		authStore.refresh.mockReturnValue(throwError(() => new Error('refresh failed')));
+
+		const result = await firstValueFrom(runGuard() as Observable<boolean | RedirectCommand>);
+		expect(result).toBeInstanceOf(RedirectCommand);
 	});
 	
-	it('denies access when no token is stored', () => {
+	it('denies access when no token is stored and refresh fails', async () => {
 		const isExpired = vi.spyOn(jwtHelper, 'isTokenExpired');
 		tokenService.getToken.mockReturnValue(null);
-		expect(runGuard()).toBeInstanceOf(RedirectCommand);
+		authStore.refresh.mockReturnValue(throwError(() => new Error('refresh failed')));
+
+		const result = await firstValueFrom(runGuard() as Observable<boolean | RedirectCommand>);
+		expect(result).toBeInstanceOf(RedirectCommand);
 		expect(isExpired).not.toHaveBeenCalled(); // existence checked first
 	});
 	
