@@ -6,6 +6,7 @@ import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, Mat
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'app-rooms-admin',
@@ -24,6 +25,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 		MatRowDef,
 		MatPaginator,
 		MatProgressSpinner,
+		DatePipe,
 	],
 	templateUrl: './rooms-admin.component.html',
 	styleUrl: './rooms-admin.component.css',

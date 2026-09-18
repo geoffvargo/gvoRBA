@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { Booking } from '../../models/booking.model';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'app-bookings-admin',
@@ -24,6 +25,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 		MatTable,
 		MatHeaderCellDef,
 		MatProgressSpinner,
+		DatePipe,
 	],
 	templateUrl: './bookings-list-admin.component.html',
 	styleUrl: './bookings-list-admin.component.css',
@@ -48,7 +50,6 @@ export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 		'userId',
 		'startsAt',
 		'endsAt',
-		'cancelledAt',
 		'purpose',
 		'status',
 		'action',

@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { BookingStore } from '../stores/booking-store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'app-bookings-list',
@@ -24,6 +25,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 		MatRowDef,
 		MatPaginator,
 		MatProgressSpinner,
+		DatePipe,
 	],
 	templateUrl: './bookings-list.component.html',
 	styleUrl: './bookings-list.component.css',
@@ -47,7 +49,7 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 		'roomId',
 		'startsAt',
 		'endsAt',
-		'cancelledAt',
+		// 'cancelledAt',
 		'purpose',
 		'status',
 		'action',
@@ -84,8 +86,8 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 					return item.startsAt.getTime();
 				case 'endsAt':
 					return item.endsAt.getTime();
-				case 'cancelledAt':
-					return item.cancelledAt ? item.cancelledAt.getTime() : 0;
+				// case 'cancelledAt':
+				// 	return item.cancelledAt ? item.cancelledAt.getTime() : 0;
 				case 'purpose':
 					return item.purpose;
 				case 'status':
@@ -110,4 +112,6 @@ export class BookingsListComponent implements OnInit, AfterViewInit {
 	onNewBooking() {
 		this.router.navigate(['bookings/create']).then();
 	}
+	
+	protected readonly Date = Date;
 }

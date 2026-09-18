@@ -6,6 +6,7 @@ import { User } from '../../models/user.model';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DatePipe } from '@angular/common';
 
 @Component({
 	selector: 'app-users-admin',
@@ -24,6 +25,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 		MatRow,
 		MatPaginator,
 		MatProgressSpinner,
+		DatePipe,
 	],
 	templateUrl: './users-admin.component.html',
 	styleUrl: './users-admin.component.css',
