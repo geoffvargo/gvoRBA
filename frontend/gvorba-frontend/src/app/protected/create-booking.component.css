@@ -34,3 +34,16 @@
 	height: 28px;
 	padding: 0;
 }
+#bookingScheduler {
+	@media (width <= 768px) {
+		width: 128px !important;
+		grid-template-columns: none;
+	}
+}
+
+mat-slide-toggle {
+	--mat-slide-toggle-track-width: 400px !important;
+	@media (width <= 768px) {
+		--mat-slide-toggle-track-width: 128px !important;
+	}
+}
