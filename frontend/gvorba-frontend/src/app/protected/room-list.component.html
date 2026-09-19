@@ -13,14 +13,16 @@
 			</h1>
 			
 			<div class="card-body p-4! justify-center flex items-start">
-				<table class="mat-elevation-x8 mx-0 w-max max-sm:[&_th]:px-0! max-sm:[&_td]:px-0! [&_th]:px-4! [&_td]:px-4!"
+				<table class="mat-elevation-x8 mx-0 w-max
+											max-sm:[&_th,&_td]:px-0! lg:[&_th,&_td]:px-4!
+											self-start"
 				       mat-table
 				       matSort
 				       [dataSource]="dataSource">
 					
 					<ng-container matColumnDef="id">
 						<th mat-header-cell
-						    class="hidden xl:table-cell md:text-sm"
+						    class="hidden xl:table-cell md:text-sm self-start"
 						    *matHeaderCellDef
 						    mat-sort-header="id">
 							Room Id

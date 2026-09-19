@@ -1,5 +1,5 @@
 <div class="min-h-[calc(100vh-74px)] bg-base-300 p-4 flex justify-center">
-	<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md items-center">
+	<div class="card m-4 p-4 flex w-4xl bg-base-200 shadow-md items-center sm:m-2! sm:p-2!">
 		<h1 class="text-center text-2xl font-bold">
 			Create Booking
 		</h1>
@@ -11,13 +11,13 @@
 		} @else {
 			<div class="card-body flex justify-center items-center">
 				<form [formGroup]="bookingCreateForm"
-				      class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 p-4 items-center">
+				      class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 p-4 items-center sm:gap-x-2! sm:p-0! [&_label]:self-start!">
 					<label for="roomId">
 						Roomd Id:
 					</label>
 					<select name="roomId"
 					        id="roomId"
-					        class="border rounded-sm py-0.5"
+					        class="border rounded-sm py-0.5 w-32"
 					        formControlName="roomId">
 						@for (room of rooms(); track room.id) {
 							<option [ngValue]="room.id">
@@ -32,7 +32,7 @@
 						</label>
 						<select name="userId"
 						        id="userId"
-						        class="border rounded-sm py-0.5"
+						        class="border rounded-sm py-0.5 w-32"
 						        formControlName="userId">
 							@for (user of users(); track user.id) {
 								<option [ngValue]="user.id"
@@ -46,7 +46,8 @@
 					<label for="date">
 						Time Slot:
 					</label>
-					<div class="grid grid-cols-3 gap-2 items-center">
+					<div id="bookingScheduler"
+					     class="grid grid-cols-3 gap-2 items-center">
 						<mat-form-field appearance="outline">
 							<input matInput
 							       placeholder="Select a Date"
@@ -91,7 +92,7 @@
 					          placeholder="Enter a description."
 					          id="purpose"
 					          rows="1"
-					          class="px-2 border items-start rounded-sm w-full h-10"
+					          class="px-2 border items-start rounded-sm w-full h-10! [@media(width<=768px)]:w-32! [@media(width<=768px)]:h-16!"
 					          formControlName="purpose"></textarea>
 					
 					<label for="bookingStatus">Status:</label>

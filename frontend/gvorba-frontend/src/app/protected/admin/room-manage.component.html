@@ -10,7 +10,7 @@
 				             class="self-center m-4"
 				             aria-label="loading"></mat-spinner>
 			} @else if (!isEditing()) {
-				<div class="px-14 py-2 m-2 w-fit grid grid-cols-[max-content_max-content] gap-2">
+				<div class="px-14 max-sm:px-2 py-2 m-2 w-fit max-w-full grid grid-cols-[max-content_minmax(0,1fr)] gap-2 wrap-anywhere">
 					<span>Name:</span>
 					<span>{{ room()?.name }}</span>
 					
