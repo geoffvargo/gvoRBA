@@ -59,4 +59,18 @@
   --mat-slide-toggle-handle-elevation-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
+/* Centering is not a token: plain CSS, one global rule */
+.mat-mdc-table .mat-mdc-header-cell {
+  text-align: center;
+
+  .mat-sort-header-container {
+    justify-content: center;
+  }
+}
+
+.mat-mdc-table .mat-mdc-cell {
+  text-align: center;
+
+}
+
 

@@ -112,7 +112,7 @@
 						<td mat-cell
 						    class="hidden lg:table-cell"
 						    *matCellDef="let room">
-							{{ room.createdOn }}
+							{{ room.createdOn | date:'short' }}
 						</td>
 					</ng-container>
 					
