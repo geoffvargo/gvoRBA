@@ -40,4 +40,11 @@ public class User {
 	
 	@Column(name = "enabled", nullable = false)
 	private Boolean enabled;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "auth_provider")
+	private AuthProvider authProvider = AuthProvider.LOCAL;
+	
+	@Column(name = "provider_id")
+	private String providerId;
 }

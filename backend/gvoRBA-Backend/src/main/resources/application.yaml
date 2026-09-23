@@ -5,6 +5,8 @@ app:
     ttl-days: ${REFRESH_TTL_DAYS:7}
   cookie:
     same-site: ${COOKIE_SAME_SITE:None}
+  oauth2:
+    frontend-redirect-uri: ${REDIRECT_URI:http://localhost:4200/oauth2/callback}
 
 spring:
   application:
@@ -25,6 +27,19 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID_GOOGLE:1079077201382-8hahkv3rnme49hgpqg808n19fqmrtrl2.apps.googleusercontent.com}
+            client-secret: ${CLIENT_SECRET_GOOGLE:}
+            scope: [openid, profile, email]
+          github:
+            client-id: ${CLIENT_ID_GITHUB:Ov23lix2iFbI3XbAIpqv}
+            client-secret: ${CLIENT_SECRET_GITHUB:}
+            scope: [read:user, user:email]
+
 server:
   port: ${PORT:8080}
 
