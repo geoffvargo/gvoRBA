@@ -1,0 +1,3 @@
+app:
+  oauth2:
+    frontend-redirect-uri: http://localhost:8080/api/dev/oauth2-echo

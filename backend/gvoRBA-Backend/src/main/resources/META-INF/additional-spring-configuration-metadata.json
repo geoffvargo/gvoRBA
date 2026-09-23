@@ -1,0 +1,8 @@
+{
+  "properties": [
+	{
+	  "name": "app.oauth2.frontend-redirect-uri",
+	  "type": "java.lang.String",
+	  "description": "Description for app.oauth2.frontend-redirect-uri."
+	}
+  ] }
