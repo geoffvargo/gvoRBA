@@ -4,10 +4,13 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.*;
 import org.springframework.stereotype.*;
 
 import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.http.*;
 
