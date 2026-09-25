@@ -7,10 +7,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.*;
 import org.springframework.stereotype.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.http.*;
 
@@ -32,6 +31,10 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 			              ? oauth2Ex.getError().getErrorCode()
 			              : "login_failed";
 
-		response.sendRedirect(frontendRedirectUri + "?error=" + URLEncoder.encode(code, StandardCharsets.UTF_8));
+		response.sendRedirect(UriComponentsBuilder.fromUriString(frontendRedirectUri)
+		                                        .queryParam("error", code)
+		                                        .build()
+		                                        .encode()
+		                                        .toUriString());
 	}
 }
