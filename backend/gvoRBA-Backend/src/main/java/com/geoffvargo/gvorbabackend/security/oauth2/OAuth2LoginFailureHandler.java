@@ -26,7 +26,7 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 	                                    @NonNull AuthenticationException exception) throws IOException {
 		LOGGER.error("OAuth2 login failed at {}", request.getRequestURI(), exception);
 
-		/// Provider errors carry a standard code (e.g. "invalid_client", "access_denied").
+		// Provider errors carry a standard code (e.g. "invalid_client", "access_denied").
 		String code = exception instanceof OAuth2AuthenticationException oauth2Ex
 			              ? oauth2Ex.getError().getErrorCode()
 			              : "login_failed";
