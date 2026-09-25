@@ -35,10 +35,12 @@ spring:
             client-id: ${CLIENT_ID_GOOGLE:1079077201382-8hahkv3rnme49hgpqg808n19fqmrtrl2.apps.googleusercontent.com}
             client-secret: ${CLIENT_SECRET_GOOGLE:}
             scope: [openid, profile, email]
+            redirect-uri: ${OAUTH2_BASE_URL:{baseUrl}}/login/oauth2/code/{registrationId}
           github:
             client-id: ${CLIENT_ID_GITHUB:Ov23lix2iFbI3XbAIpqv}
             client-secret: ${CLIENT_SECRET_GITHUB:}
             scope: [read:user, user:email]
+            redirect-uri: ${OAUTH2_BASE_URL:{baseUrl}}/login/oauth2/code/{registrationId}
 
 server:
   port: ${PORT:8080}
