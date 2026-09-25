@@ -6,7 +6,12 @@ public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
 	public GoogleOAuth2UserInfo(Map<String, Object> attributes) {
 		super(attributes);
 	}
-
+	
+//	@Override
+//	public Boolean isEmailVerified() {
+//		return attributes.get("email_verified").equals(Boolean.TRUE);
+//	}
+	
 	@Override
 	public String getProviderId() {
 		return (String) attributes.get("sub");

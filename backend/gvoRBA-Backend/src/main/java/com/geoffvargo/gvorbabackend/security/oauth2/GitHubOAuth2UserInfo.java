@@ -7,6 +7,12 @@ public class GitHubOAuth2UserInfo extends OAuth2UserInfo {
 		super(attributes);
 	}
 	
+	/// GitHub sends no "email_verified" claim; it only exposes an email on the profile once it's verified.
+	@Override
+	public Boolean isEmailVerified() {
+		return getEmail() != null;
+	}
+
 	@Override
 	public String getProviderId() {
 		return String.valueOf(attributes.get("id"));

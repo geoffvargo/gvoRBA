@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.*;
 import org.springframework.stereotype.*;
 
 import java.io.*;
-import java.security.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import jakarta.servlet.http.*;
@@ -49,22 +49,24 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 		OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
 		/// Normalize the provider-specific attribute map (e.g. "google", "github") into a common shape.
+		String registrationId = oauthToken.getAuthorizedClientRegistrationId();
 		OAuth2UserInfo info = OAuth2UserInfoFactory.create(
-			oauthToken.getAuthorizedClientRegistrationId(),
+			registrationId,
 			Objects.requireNonNull(oauthToken.getPrincipal()).getAttributes()
 		);
-		
-		/// Email is the key that links an OAuth2 identity to a local account, so it's mandatory.
-		String email = info.getEmail();
 
-		if (email == null || email.isBlank()) {
-			throw new OAuth2AuthenticationException("Invalid email.");
+		/// The account was already provisioned (with its role) by CustomOAuth2UserService /
+		/// CustomOidcUserService during login, so here it only needs to be looked up.
+		Optional<User> userOpt = userRepository.findByAuthProviderAndProviderId(
+			AuthProvider.fromRegistrationId(registrationId), info.getProviderId());
+
+		if (userOpt.isEmpty()) {
+			LOGGER.error("No provisioned user for {} id {}", registrationId, info.getProviderId());
+			response.sendRedirect(frontendRedirectUri + "?error=server_error");
+			return;
 		}
 
-		/// Existing account -> log in; otherwise create one on the fly (first-time OAuth2 login).
-		User user = userRepository.findByEmail(email).orElseGet(
-			() -> register(email, info.getName())
-		);
+		User user = userOpt.get();
 
 		/// Only the refresh token is issued here; the frontend exchanges it for an access token afterwards.
 		/// On failure, redirect with an error flag rather than leaving the user on a backend error page.
@@ -81,21 +83,5 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 		response.addHeader(HttpHeaders.SET_COOKIE,
 			refreshCookieFactory.buildRefreshCookie(rawRefreshToken).toString());
 		response.sendRedirect(frontendRedirectUri);
-	}
-
-	/**
-	 * Creates a local account for a first-time OAuth2 user.
-	 * No password is set; falls back to the email as display name if the provider didn't supply one.
-	 */
-	private User register(String email, String name) {
-		LOGGER.info("Registering new user from OAuth2 login: {}", email);
-		
-		User user = User.builder()
-			            .email(email)
-			            .name(name != null ? name : email)
-			            .enabled(true)
-			            .build();
-		
-		return userRepository.save(user);
 	}
 }

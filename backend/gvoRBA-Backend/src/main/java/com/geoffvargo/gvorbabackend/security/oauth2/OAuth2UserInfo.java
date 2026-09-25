@@ -8,6 +8,10 @@ public abstract class OAuth2UserInfo {
 		this.attributes = attributes;
 	}
 	
+	public Boolean isEmailVerified() {
+		return Boolean.TRUE.equals(attributes.get("email_verified"));
+	}
+	
 	public abstract String getProviderId();
 	public abstract String getEmail();
 	public abstract String getName();

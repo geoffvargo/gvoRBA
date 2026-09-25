@@ -10,7 +10,7 @@ public class OAuth2UserInfoFactory {
 		return switch (AuthProvider.fromRegistrationId(registrationId)) {
 			case AuthProvider.GOOGLE -> new GoogleOAuth2UserInfo(attributes);
 			case AuthProvider.GITHUB -> new GitHubOAuth2UserInfo(attributes);
-			default -> throw new OAuth2AuthenticationException("registrationId is invalid");
+			default -> throw new OAuth2AuthException("registrationId is invalid");
 		};
 	}
 }
