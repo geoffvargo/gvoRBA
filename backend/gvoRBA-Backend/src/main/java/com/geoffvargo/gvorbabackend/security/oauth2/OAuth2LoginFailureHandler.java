@@ -4,8 +4,10 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.*;
 import org.springframework.stereotype.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
 
@@ -22,7 +24,17 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(@NonNull HttpServletRequest request,
 	                                    @NonNull HttpServletResponse response,
 	                                    @NonNull AuthenticationException exception) throws IOException {
-		LOGGER.error("OAuth2 login failed", exception);
-		response.sendRedirect(frontendRedirectUri + "?error=oauth2_login_failed");
+		LOGGER.error("OAuth2 login failed at {}", request.getRequestURI(), exception);
+
+		// Provider errors carry a standard code (e.g. "invalid_client", "access_denied").
+		String code = exception instanceof OAuth2AuthenticationException oauth2Ex
+			              ? oauth2Ex.getError().getErrorCode()
+			              : "login_failed";
+
+		response.sendRedirect(UriComponentsBuilder.fromUriString(frontendRedirectUri)
+		                                        .queryParam("error", code)
+		                                        .build()
+		                                        .encode()
+		                                        .toUriString());
 	}
 }
