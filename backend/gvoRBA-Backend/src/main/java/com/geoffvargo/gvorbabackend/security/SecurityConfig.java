@@ -40,7 +40,13 @@ public class SecurityConfig {
 	private final AuthEntryPointJwt unauthorizedHandler;
 	
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-	
+
+	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+
+	private final CustomOAuth2UserService customOAuth2UserService;
+
+	private final CustomOidcUserService customOidcUserService;
+
 	@Value("${app.cors.allowed-origins:http://localhost:4200}")
 	private String allowedOrigins;
 	
@@ -100,8 +106,20 @@ public class SecurityConfig {
 				                           .requestMatchers("/api/auth/public/**").permitAll()
 				                           .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 				                           .requestMatchers("/api/dev/**").permitAll()
+		
+				                           /// Without this, any uncaught exception is re-dispatched to /error,
+				                           /// rejected here, and surfaces as a misleading 401.
+				                           .requestMatchers("/error").permitAll()
 				                           .anyRequest().authenticated());
-		http.oauth2Login(oauth2 -> oauth2.successHandler(oAuth2LoginSuccessHandler));
+		
+		/// The user services provision the local account (with ROLE_USER) during login:
+		/// the OIDC one handles Google (openid scope), the plain OAuth2 one handles GitHub.
+		http.oauth2Login(oauth2 -> oauth2
+			                           .userInfoEndpoint(userInfo -> userInfo
+				                                                         .userService(customOAuth2UserService)
+				                                                         .oidcUserService(customOidcUserService))
+			                           .successHandler(oAuth2LoginSuccessHandler)
+			                           .failureHandler(oAuth2LoginFailureHandler));
 		http.exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler));
 		
 		/// Both filters run before Spring's form-login filter: log the request, then read the JWT

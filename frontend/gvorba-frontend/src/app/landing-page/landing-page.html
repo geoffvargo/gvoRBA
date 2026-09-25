@@ -1,6 +1,30 @@
 <div class="flex-nowrap justify-center">
 	<div class="w-full py-16 flex justify-center items-center flex-col">
 		<div class="card bg-base-100 shadow-lg w-fit">
+			<div class="flex flex-row justify-between gap-1 py-5 mx-2">
+				<a class="flex flex-1 gap-1 items-center justify-center border p-2 rounded-md"
+				   [href]="googleOauth()">
+					<img ngSrc="/google.svg"
+					     alt=""
+					     class="size-7.5 shrink-0"
+					     height="30"
+					     width="30">
+					<span class="text-nowrap">
+						Login with Google
+					</span>
+				</a>
+				<a class="flex flex-1 gap-1 items-center justify-center border p-2 rounded-md"
+				   [href]="githubOauth()">
+					<img ngSrc="/github.svg"
+					     alt=""
+					     class="size-7.5 shrink-0"
+					     height="30"
+					     width="30">
+					<span class="text-nowrap">
+						Login with GitHub
+					</span>
+				</a>
+			</div>
 			<form [formGroup]="loginForm">
 				<div class="px-4 py-2 m-2 flex flex-col gap-2">
 					<label for="username">
@@ -21,6 +45,7 @@
 					       class="input bg-white"
 					       formControlName="password">
 				</div>
+				
 				<div class="card-actions m-4 gap-2 flex-col items-center">
 					<a routerLink="login">
 						<button class="btn btn-secondary hover:scale-105 shadow-md"
@@ -32,6 +57,7 @@
 				</div>
 			</form>
 		</div>
+		
 		<div class="card bg-neutral-content flex m-4 shadow-md">
 			<div class="card-body">
 				<h2 class="card-title">Login Response:</h2>

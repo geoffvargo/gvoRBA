@@ -4,10 +4,12 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { LoginRequest } from '../models/login-request.model';
 import { emptyResponse, LoginResponse } from '../models/login-response.model';
 import { AuthStore } from '../stores/auth-store';
+import { NgOptimizedImage } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 @Component({
 	selector: 'app-landing-page',
-	imports: [RouterLink, ReactiveFormsModule],
+	imports: [RouterLink, ReactiveFormsModule, NgOptimizedImage],
 	templateUrl: './landing-page.html',
 	styleUrl: './landing-page.css',
 	encapsulation: ViewEncapsulation.None,
@@ -15,6 +17,10 @@ import { AuthStore } from '../stores/auth-store';
 export class LandingPage {
 	private router = inject(Router);
 	private authStore = inject(AuthStore);
+	
+	protected baseUrl = signal(environment.apiBaseUrl);
+	protected readonly googleOauth = signal(this.baseUrl() + '/oauth2/authorization/google');
+	protected readonly githubOauth = signal(this.baseUrl() + '/oauth2/authorization/github');
 	
 	loginRequest = signal<LoginRequest>({ username: '', password: '' });
 	loginResponse = signal<LoginResponse>(emptyResponse());

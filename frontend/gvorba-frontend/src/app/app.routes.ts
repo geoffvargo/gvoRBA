@@ -17,12 +17,14 @@ import CreateBookingComponent from './protected/create-booking.component';
 import { BookingDetailsComponent } from './protected/booking-details.component';
 import { SignUpComponent } from './sign-up.component';
 import { BookingsListAdminComponent } from './protected/admin/bookings-list-admin.component';
+import { Oauth2CallbackComponent } from './oauth2/oauth2-callback.component';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
 	{ path: 'access-denied', component: AccessDenied },
 	{ path: 'signup', component: SignUpComponent },
 	{ path: 'home', component: UserHomeComponent, canActivate: [authGuard] },
+	{ path: 'oauth2/callback', component: Oauth2CallbackComponent },
 	{ path: 'admin/rooms', component: RoomsAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/create', component: RoomsCreateComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/:id', component: RoomManageComponent, canActivate: [adminGuard] },
