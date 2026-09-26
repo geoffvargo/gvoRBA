@@ -29,7 +29,6 @@ export const routes: Routes = [
 	{ path: 'admin/rooms/create', component: RoomsCreateComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/:id', component: RoomManageComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users', component: UsersAdminComponent, canActivate: [adminGuard] },
-	{ path: 'admin/rooms', component: RoomListComponent, canActivate: [adminGuard] },
 	{ path: 'admin/bookings', component: BookingsListAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users/create', component: AdminAddUserComponent, canActivate: [adminGuard] },
 	{ path: 'admin/users/:id', component: UserAdminDetailsComponent, canActivate: [adminGuard] },
