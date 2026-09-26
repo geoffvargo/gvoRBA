@@ -65,6 +65,8 @@
 
   .mat-sort-header-container {
     justify-content: center;
+    /* Offset the sort arrow's reserved space (12px + 6px margin) so labels stay centered */
+    padding-left: 18px;
   }
 }
 

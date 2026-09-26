@@ -14,8 +14,9 @@
 			</h1>
 			
 			<div class="card-body flex justify-center items-center self-start">
-				<table class="mat-elevation-x8 mx-10 w-max max-sm:[&_th]:px-0!
-									max-sm:[&_td]:px-0! md:[&_th]:px-2! md:[&_td]:px-2! [&_th]:px-4! [&_td]:px-4!"
+				<table class="mat-elevation-x8 mx-0 w-max max-sm:[&_th,&_td]:px-0!
+											lg:[&_th,&_td]:px-4! [&_th,&_td]:(align-top! pt-2! text-center!
+										  justify-center!) self-start"
 				       mat-table
 				       matSort
 				       [dataSource]="dataSource">
@@ -72,17 +73,17 @@
 						</td>
 					</ng-container>
 					
-<!-- 					<ng-container matColumnDef="cancelledAt"> -->
-<!-- 						<th mat-header-cell -->
-<!-- 						    *matHeaderCellDef -->
-<!-- 						    mat-sort-header="cancelledAt"> -->
-<!-- 							Cancelled At -->
-<!-- 						</th> -->
-<!-- 						<td mat-cell -->
-<!-- 						    *matCellDef="let booking"> -->
-<!-- 							{{ booking.cancelledAt }} -->
-<!-- 						</td> -->
-<!-- 					</ng-container> -->
+					<!-- 					<ng-container matColumnDef="cancelledAt"> -->
+					<!-- 						<th mat-header-cell -->
+					<!-- 						    *matHeaderCellDef -->
+					<!-- 						    mat-sort-header="cancelledAt"> -->
+					<!-- 							Cancelled At -->
+					<!-- 						</th> -->
+					<!-- 						<td mat-cell -->
+					<!-- 						    *matCellDef="let booking"> -->
+					<!-- 							{{ booking.cancelledAt }} -->
+					<!-- 						</td> -->
+					<!-- 					</ng-container> -->
 					
 					<ng-container matColumnDef="purpose">
 						<th mat-header-cell
@@ -120,7 +121,7 @@
 						</th>
 						<td mat-cell
 						    *matCellDef="let booking">
-							<button class="action-btn max-sm:px-2 max-sm:max-w-0"
+							<button class="action-btn max-sm:px-2 max-sm:max-w-0 mx-auto"
 							        (click)="onView(booking.id, booking)">
 								View
 							</button>
