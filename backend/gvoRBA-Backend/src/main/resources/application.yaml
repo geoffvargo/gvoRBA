@@ -7,6 +7,13 @@ app:
     same-site: ${COOKIE_SAME_SITE:None}
   oauth2:
     frontend-redirect-uri: ${REDIRECT_URI:http://localhost:4200/oauth2/callback}
+  google-calendar:
+    enabled: ${GOOGLE_CAL_ENABLED:false}
+    calendar-id: 4a8c7bfd1addd84c50d60c6362c3a78e5adc5f0b60a51408f46b1d9773ccedf1@group.calendar.google.com
+    credentials-path: ${APP_GOOGLECALENDAR_CREDENTIALSPATH:/run/secrets/google-calendar-sa.json}
+    time-zone: America/New_York
+    application-name: gvorba
+
 
 spring:
   application:

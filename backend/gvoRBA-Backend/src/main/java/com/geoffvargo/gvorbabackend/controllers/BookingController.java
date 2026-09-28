@@ -1,11 +1,13 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import com.geoffvargo.gvorbabackend.*;
+import com.geoffvargo.gvorbabackend.calendar.*;
 import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.repos.*;
 
+import org.springframework.context.*;
 import org.springframework.dao.*;
 import org.springframework.http.*;
 import org.springframework.security.core.*;
@@ -32,6 +34,23 @@ public class BookingController {
 	
 	private final RoomRepository roomRepository;
 	
+	private final ApplicationEventPublisher appEventPublisher;
+	
+	private void publishCalendarEvent(Booking booking, Boolean cancelled) {
+		String desciption = Objects.toString(booking.getPurpose(), "") +
+		                    "\nBooked by: " + booking.getUserId().getName();
+		
+		LOGGER.info(desciption);
+		
+		appEventPublisher.publishEvent(new BookingCalendarEvent(
+			booking.getId(),
+			booking.getRoom().getName(),
+			desciption,
+			booking.getStartsAt(),
+			booking.getEndsAt(),
+			cancelled));
+	}
+	
 	@GetMapping()
 	public ResponseEntity<List<Booking>> getAllBookings() {
 		return ResponseEntity.ok(bookingRepository.findAll());
@@ -48,7 +67,6 @@ public class BookingController {
 	
 	@PostMapping("/add-booking")
 	public ResponseEntity<Booking> addBooking(@RequestBody BookingRequest request) {
-		// TODO: make sure this returns 409 error on booking overlap error
 		User user = userRepository.findById(request.getUserId()).orElseThrow();
 		
 		Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
@@ -64,6 +82,7 @@ public class BookingController {
 		
 		try {
 			bookingRepository.save(booking);
+			publishCalendarEvent(booking,false);
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}
@@ -94,6 +113,7 @@ public class BookingController {
 			
 			try {
 				bookingRepository.save(booking);
+				publishCalendarEvent(booking, false);
 			} catch (DataIntegrityViolationException e) {
 				LOGGER.log(Level.WARNING, "Data Integrity Violation", e);
 				continue;
@@ -137,6 +157,7 @@ public class BookingController {
 		if (booking.getUserId().getName().equals(userDetails.getUsername()) ||
 		    authList.contains("ROLE_ADMIN")) {
 			bookingRepository.delete(booking);
+			publishCalendarEvent(booking, true);
 			return ResponseEntity.ok(booking);
 		}
 		
@@ -160,6 +181,7 @@ public class BookingController {
 			booking.setStatus(BookingStatus.CANCELLED);
 			booking.setCancelledAt(LocalDateTime.now());
 			bookingRepository.save(booking);
+			publishCalendarEvent(booking, true);
 			return ResponseEntity.ok(booking);
 		}
 		
@@ -182,6 +204,7 @@ public class BookingController {
 			booking.setStatus(BookingStatus.CONFIRMED);
 			booking.setCancelledAt(null);
 			bookingRepository.save(booking);
+			publishCalendarEvent(booking, false);
 			
 			return ResponseEntity.ok(booking);
 		}

@@ -58,6 +58,21 @@
 	</build>
 	<dependencies>
 		<dependency>
+		   <groupId>com.google.apis</groupId>
+		   <artifactId>google-api-services-calendar</artifactId>
+		   <version>v3-rev20260708-2.0.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>com.google.api-client</groupId>
+		   <artifactId>google-api-client</artifactId>
+		   <version>2.9.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>com.google.auth</groupId>
+		   <artifactId>google-auth-library-oauth2-http</artifactId>
+		   <version>1.53.0</version>
+		</dependency>
+		<dependency>
 			<artifactId>spring-boot-starter-validation</artifactId>
 			<groupId>org.springframework.boot</groupId>
 		</dependency>
