@@ -8,5 +8,6 @@ public record BookingCalendarEvent(
 	String description,
 	LocalDateTime start,
 	LocalDateTime end,
-	Boolean cancelled) {
+	Boolean cancelled,
+	Long roomId) {
 }

@@ -1,6 +1,9 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
+import com.geoffvargo.gvorbabackend.*;
 import com.geoffvargo.gvorbabackend.calendar.*;
+import com.geoffvargo.gvorbabackend.models.*;
+import com.geoffvargo.gvorbabackend.repos.*;
 
 import org.slf4j.*;
 import org.springframework.boot.autoconfigure.condition.*;
@@ -36,6 +39,17 @@ public class CalendarExportController {
 	private final CalendarExportService calendarExportService;
 	
 	private final GoogleCalendarProperties properties;
+	
+	private final BookingRepository bookingRepository;
+	
+	@GetMapping("/api/calendar/booking.ics")
+	public ResponseEntity<byte[]> exportBookingToIcs(@RequestParam Long bookingId) {
+		Booking booking = bookingRepository.findById(bookingId).orElseThrow(
+			() -> new BookingNotFoundException("Booking {} not found.", bookingId)
+		);
+		
+		return null;
+	}
 	
 	/**
 	 * Downloads the bookings in a date range as an iCalendar ({@code .ics}) file.

@@ -44,6 +44,7 @@
 						</button>
 					</div>
 				}
+				
 				@if (isAdmin()) {
 					<div class="col-span-2 flex h-full justify-center">
 						<button class="action-btn w-auto! self-start"
@@ -53,6 +54,13 @@
 						</button>
 					</div>
 				}
+				
+				<div class="col-span-2 flex h-full justify-center">
+					<button class="action-btn w-auto! self-start"
+					        (click)="onExportIcs()">
+						Export to ICS
+					</button>
+				</div>
 			</div>
 		}
 		

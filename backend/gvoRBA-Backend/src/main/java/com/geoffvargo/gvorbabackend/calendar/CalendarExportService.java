@@ -1,5 +1,7 @@
 package com.geoffvargo.gvorbabackend.calendar;
 
+import com.geoffvargo.gvorbabackend.models.*;
+import com.geoffvargo.gvorbabackend.repos.*;
 import com.google.api.client.util.*;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.*;
@@ -36,6 +38,18 @@ public class CalendarExportService {
 	/// From the sync guide: GoogleCalendarConfig (2.4) and GoogleCalendarProperties (2.3).
 	private final Calendar calendar;
 	private final GoogleCalendarProperties properties;
+	
+	private final BookingRepository bookingRepository;
+	
+	public IcsEvent bookingToIcs(Booking booking) {
+		return new IcsEvent(booking.getId().toString(),
+			booking.getRoom().getId(),
+			booking.getStartsAt().toInstant(ZoneOffset.UTC),
+			booking.getEndsAt().toInstant(ZoneOffset.UTC),
+			booking.getPurpose(),
+			null,
+			null);
+	}
 	
 	/**
 	 * Fetches every Google Calendar event that overlaps the given date range.
@@ -120,6 +134,7 @@ public class CalendarExportService {
 		return Optional.of(
 			new IcsEvent(
 				event.getICalUID(),
+				null,
 				toInstant(start.getDateTime()),
 				toInstant(end.getDateTime()),
 				event.getSummary(),

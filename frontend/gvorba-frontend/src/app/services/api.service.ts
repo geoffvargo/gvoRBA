@@ -146,4 +146,8 @@ export class ApiService {
 	refreshToken() {
 		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/refresh`, null);
 	}
+	
+	/* for ICS */
+	
+	exportIcs() {}
 }

@@ -1,12 +1,17 @@
 package com.geoffvargo.gvorbabackend.calendar;
 
+import com.geoffvargo.gvorbabackend.models.*;
+
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
 
+import lombok.*;
+
 /**
  * Writes a minimal RFC 5545 iCalendar document.
  */
+@NoArgsConstructor
 public final class IcsWriter {
 	/**
 	 * RFC 5545 3.1: lines end in CRLF, not just LF.
@@ -24,9 +29,6 @@ public final class IcsWriter {
 	 */
 	public static final DateTimeFormatter UTC_FORMAT = DateTimeFormatter.ofPattern("yyyMMdd'T'HHmmss'Z'")
 		                                                   .withZone(ZoneOffset.UTC);
-	
-	private IcsWriter() {
-	}
 	
 	/**
 	 * Serializes a list of events into a complete iCalendar ({@code .ics}) document.
@@ -77,6 +79,32 @@ public final class IcsWriter {
 			line(out, "END:VEVENT");
 		}
 		
+		line(out, "END:VCALENDAR");
+		
+		return out.toString();
+	}
+	
+	public static String write(IcsEntry event, String productId) {
+		StringBuilder out = new StringBuilder();
+		
+		line(out, "BEGIN:VCALENDAR");
+		line(out, "VERSION:2.0");
+		line(out, "PRODID:" + escapeText(productId));
+		line(out, "CALSCALE:GREGORIAN");
+		line(out, "BEGIN:VEVENT");
+		
+		line(out, "UID:" + escapeText(event.uid()));
+		
+		if (event.roomId() != null) {
+			line(out, "X-GVRB-ROOM-ID:" + event.roomId());
+		}
+		
+		line(out, "DTSTAMP:" + UTC_FORMAT.format(event.updated()));
+		line(out, "DTSTART:" + UTC_FORMAT.format(event.start()));
+		line(out, "DTEND:" + UTC_FORMAT.format(event.end()));
+		line(out, "SUMMARY:" + escapeText(event.summary()));
+		
+		line(out, "END:VEVENT");
 		line(out, "END:VCALENDAR");
 		
 		return out.toString();

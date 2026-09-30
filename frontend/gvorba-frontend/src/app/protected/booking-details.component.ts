@@ -47,6 +47,10 @@ export class BookingDetailsComponent implements OnInit {
 		this.onBack();
 	}
 	
+	onExportIcs() {
+		console.log('exportIcs()');
+	}
+	
 	onBack() {
 		this.location.back();
 		// if (this.isAdmin()) {

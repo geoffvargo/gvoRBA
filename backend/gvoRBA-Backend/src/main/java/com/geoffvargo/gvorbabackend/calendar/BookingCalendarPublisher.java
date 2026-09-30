@@ -22,7 +22,8 @@ public class BookingCalendarPublisher {
 				getDescription(booking),
 				booking.getStartsAt(),
 				booking.getEndsAt(),
-				cancelled
+				cancelled,
+				booking.getRoom().getId()
 			)
 		);
 	}

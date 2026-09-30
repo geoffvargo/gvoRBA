@@ -6,7 +6,9 @@ import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.repos.*;
+import com.geoffvargo.gvorbabackend.security.jwt.*;
 
+import org.apache.http.client.methods.*;
 import org.springframework.context.*;
 import org.springframework.dao.*;
 import org.springframework.http.*;
@@ -15,6 +17,7 @@ import org.springframework.security.core.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.*;
 import java.time.*;
 import java.util.*;
 import java.util.logging.*;
@@ -36,19 +39,47 @@ public class BookingController {
 	
 	private final ApplicationEventPublisher appEventPublisher;
 	
+	private final BookingIcsService bookingIcsService;
+	
+	/**
+	 * RFC 5545 8.1: the registered media type is text/calendar.
+	 */
+	public static final MediaType TEXT_CALENDAR = new MediaType("text", "calendar", StandardCharsets.UTF_8);
+	
+	
 	private void publishCalendarEvent(Booking booking, Boolean cancelled) {
 		String desciption = Objects.toString(booking.getPurpose(), "") +
 		                    "\nBooked by: " + booking.getUserId().getName();
 		
 		LOGGER.info(desciption);
 		
-		appEventPublisher.publishEvent(new BookingCalendarEvent(
-			booking.getId(),
-			booking.getRoom().getName(),
-			desciption,
-			booking.getStartsAt(),
-			booking.getEndsAt(),
-			cancelled));
+		appEventPublisher.publishEvent(
+			new BookingCalendarEvent(
+				booking.getId(),
+				booking.getRoom().getName(),
+				desciption,
+				booking.getStartsAt(),
+				booking.getEndsAt(),
+				cancelled,
+				booking.getRoom().getId()
+			)
+		);
+	}
+	
+	@GetMapping("/{id}/calendar.ics")
+	public ResponseEntity<byte[]> downloadIcs(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+		String username = userDetails.getUsername();
+		
+		byte[] ans = bookingIcsService.exportIcs(id,username,true).getBytes();
+		
+		ContentDisposition disposition = ContentDisposition.attachment()
+			                                 .filename("bookings-" + id + ".ics")
+			                                 .build();
+		
+		return ResponseEntity.ok()
+			       .contentType(TEXT_CALENDAR)
+			       .header(HttpHeaders.CONTENT_DISPOSITION,disposition.toString())
+			       .body(ans);
 	}
 	
 	@GetMapping()
@@ -82,7 +113,7 @@ public class BookingController {
 		
 		try {
 			bookingRepository.save(booking);
-			publishCalendarEvent(booking,false);
+			publishCalendarEvent(booking, false);
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}

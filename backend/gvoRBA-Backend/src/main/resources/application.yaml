@@ -13,6 +13,10 @@ app:
     credentials-path: ${APP_GOOGLECALENDAR_CREDENTIALSPATH:/run/secrets/google-calendar-sa.json}
     time-zone: America/New_York
     application-name: gvorba
+  calendar-export:
+    time-zone: America/New_York
+    uid-domain: gvorbabackend.geoffvargo.com
+    product-name: gvorba
 
 
 spring:

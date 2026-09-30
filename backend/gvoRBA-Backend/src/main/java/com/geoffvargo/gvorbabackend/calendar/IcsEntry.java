@@ -2,12 +2,16 @@ package com.geoffvargo.gvorbabackend.calendar;
 
 import java.time.*;
 
-public record IcsEvent(
+import javax.annotation.*;
+
+import lombok.*;
+
+@Builder
+public record IcsEntry(
 	String uid,
-	Long roomId,
+	@Nullable Long roomId,
 	Instant start,
 	Instant end,
 	String summary,
-	String description,
 	Instant updated
 ) {}
