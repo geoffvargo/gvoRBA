@@ -149,5 +149,9 @@ export class ApiService {
 	
 	/* for ICS */
 	
-	exportIcs() {}
+	exportIcs(bookingId: number) {
+		return this.httpClient.get(`${this.baseUrl}/api/bookings/${bookingId}/calendar.ics`, {
+			responseType: 'blob',
+		});
+	}
 }

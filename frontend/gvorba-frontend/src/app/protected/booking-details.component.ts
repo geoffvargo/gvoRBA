@@ -49,6 +49,7 @@ export class BookingDetailsComponent implements OnInit {
 	
 	onExportIcs() {
 		console.log('exportIcs()');
+		this.bookingStore.exportIcs(this.bookingId());
 	}
 	
 	onBack() {
