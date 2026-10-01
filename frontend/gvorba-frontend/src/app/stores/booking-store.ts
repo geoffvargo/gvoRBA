@@ -128,7 +128,7 @@ export class BookingStore {
 	
 	exportIcs(bookingId: number) {
 		this._isLoading.set(true);
-		const filename: string = `booking-${bookingId}.ics`;
+		const filename = `booking-${bookingId}.ics`;
 		console.log(filename);
 		this.apiService.exportIcs(bookingId).pipe(
 			catchError((error: HttpErrorResponse) => {
