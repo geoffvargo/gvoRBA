@@ -13,5 +13,6 @@ public record IcsEntry(
 	Instant start,
 	Instant end,
 	String summary,
-	Instant updated
+	Instant updated,
+	String location
 ) {}
