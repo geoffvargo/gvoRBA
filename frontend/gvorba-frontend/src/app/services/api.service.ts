@@ -146,4 +146,12 @@ export class ApiService {
 	refreshToken() {
 		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/refresh`, null);
 	}
+	
+	/* for ICS */
+	
+	exportIcs(bookingId: number) {
+		return this.httpClient.get(`${this.baseUrl}/api/bookings/${bookingId}/calendar.ics`, {
+			responseType: 'blob',
+		});
+	}
 }

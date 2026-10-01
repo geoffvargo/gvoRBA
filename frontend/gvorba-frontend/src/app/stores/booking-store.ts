@@ -3,6 +3,9 @@ import { ApiService } from '../services/api.service';
 import { Booking } from '../models/booking.model';
 import { BookingRequest } from '../models/booking-request.model';
 import { BookingResponse } from '../models/booking.response';
+import { saveBlob } from '../utils/save-blob';
+import { catchError, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
 	providedIn: 'root',
@@ -114,6 +117,29 @@ export class BookingStore {
 				console.log(data);
 				this.loadBookings();
 				this.loadMyBookings();
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.error(err);
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	exportIcs(bookingId: number) {
+		this._isLoading.set(true);
+		const filename = `booking-${bookingId}.ics`;
+		console.log(filename);
+		this.apiService.exportIcs(bookingId).pipe(
+			catchError((error: HttpErrorResponse) => {
+				console.error('Booking fetch failed:', error.status, error.message);
+				// Return a safe value or re-throw a user-friendly error
+				return throwError(() => new Error('Failed to load bookings. Please try again later.'));
+			})
+		).subscribe({
+			next: data => {
+				console.log(data.toString());
+				saveBlob(data, filename);
 				this._isLoading.set(false);
 			},
 			error: err => {

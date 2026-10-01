@@ -1,0 +1,64 @@
+### GET /api/bookings/{id}/calendar.ics
+# Run with the "dev" environment. Tokens in http-client.private.env.json are signed with the dev jwtSecret
+# from application.yaml (HS256, exp 2100), so they only work against a local backend.
+# userToken  = Holden_Marquardt42 (ROLE_USER), adminToken = admin (ROLE_ADMIN)
+# Seed data: 1252 = CONFIRMED, owned by admin; 852 = CANCELLED, owned by Holden_Marquardt42.
+# Assertions describe the intended behavior; cases 2-4 fail until the ownership check and error mapping are fixed.
+
+### 1. No auth -> 401
+GET {{baseUrl}}/api/bookings/1252/calendar.ics
+
+> {%
+    client.test("no auth is rejected", () => {
+        client.assert(response.status === 401, "expected 401, got " + response.status);
+    });
+%}
+
+### 2. Non-owner requests someone else's CONFIRMED booking -> 403 (currently 200: isAdmin is hardcoded true)
+GET {{baseUrl}}/api/bookings/1252/calendar.ics
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("non-owner is forbidden", () => {
+        client.assert(response.status === 403, "expected 403, got " + response.status);
+    });
+%}
+
+### 3. Admin requests a CONFIRMED booking -> 200 with a valid ICS attachment
+GET {{baseUrl}}/api/bookings/1252/calendar.ics
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("returns an ICS attachment", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(response.contentType.mimeType === "text/calendar", "wrong content type: " + response.contentType.mimeType);
+        client.assert(response.headers.valueOf("Content-Disposition").includes('filename="bookings-1252.ics"'),
+            "wrong Content-Disposition");
+        client.assert(response.body.startsWith("BEGIN:VCALENDAR\r\n"), "body is not CRLF-delimited VCALENDAR");
+        client.assert(response.body.includes("BEGIN:VEVENT"), "missing VEVENT");
+    });
+    client.test("start time is converted from America/New_York", () => {
+        // starts_at is 2026-09-29 08:45 local (EDT, UTC-4); currently exported as 084500Z
+        client.assert(response.body.includes("DTSTART:20260929T124500Z"), "DTSTART not converted to UTC");
+    });
+%}
+
+### 4. Owner requests their own CANCELLED booking -> 409 (currently 500: plain RuntimeException)
+GET {{baseUrl}}/api/bookings/852/calendar.ics
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("cancelled booking is not exported", () => {
+        client.assert(response.status === 409, "expected 409, got " + response.status);
+    });
+%}
+
+### 5. Missing booking -> 404 (currently 500: BookingNotFoundException isn't mapped)
+GET {{baseUrl}}/api/bookings/999999/calendar.ics
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("missing booking is 404", () => {
+        client.assert(response.status === 404, "expected 404, got " + response.status);
+    });
+%}

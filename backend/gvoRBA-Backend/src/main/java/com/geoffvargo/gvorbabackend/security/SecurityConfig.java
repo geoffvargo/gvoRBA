@@ -40,13 +40,13 @@ public class SecurityConfig {
 	private final AuthEntryPointJwt unauthorizedHandler;
 	
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
+	
 	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
-
+	
 	private final CustomOAuth2UserService customOAuth2UserService;
-
+	
 	private final CustomOidcUserService customOidcUserService;
-
+	
 	@Value("${app.cors.allowed-origins:http://localhost:4200}")
 	private String allowedOrigins;
 	
@@ -106,7 +106,8 @@ public class SecurityConfig {
 				                           .requestMatchers("/api/auth/public/**").permitAll()
 				                           .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 				                           .requestMatchers("/api/dev/**").permitAll()
-		
+//				                           .requestMatchers("/api/calendar/**").permitAll()
+				                           
 				                           /// Without this, any uncaught exception is re-dispatched to /error,
 				                           /// rejected here, and surfaces as a misleading 401.
 				                           .requestMatchers("/error").permitAll()

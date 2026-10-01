@@ -1,11 +1,15 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import com.geoffvargo.gvorbabackend.*;
+import com.geoffvargo.gvorbabackend.calendar.*;
 import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.repos.*;
+import com.geoffvargo.gvorbabackend.security.jwt.*;
 
+import org.apache.http.client.methods.*;
+import org.springframework.context.*;
 import org.springframework.dao.*;
 import org.springframework.http.*;
 import org.springframework.security.core.*;
@@ -13,6 +17,7 @@ import org.springframework.security.core.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.*;
 import java.time.*;
 import java.util.*;
 import java.util.logging.*;
@@ -32,6 +37,51 @@ public class BookingController {
 	
 	private final RoomRepository roomRepository;
 	
+	private final ApplicationEventPublisher appEventPublisher;
+	
+	private final BookingIcsService bookingIcsService;
+	
+	/**
+	 * RFC 5545 8.1: the registered media type is text/calendar.
+	 */
+	public static final MediaType TEXT_CALENDAR = new MediaType("text", "calendar", StandardCharsets.UTF_8);
+	
+	
+	private void publishCalendarEvent(Booking booking, Boolean cancelled) {
+		String desciption = Objects.toString(booking.getPurpose(), "") +
+		                    "\nBooked by: " + booking.getUserId().getName();
+		
+		LOGGER.info(desciption);
+		
+		appEventPublisher.publishEvent(
+			new BookingCalendarEvent(
+				booking.getId(),
+				booking.getRoom().getName(),
+				desciption,
+				booking.getStartsAt(),
+				booking.getEndsAt(),
+				cancelled,
+				booking.getRoom().getId()
+			)
+		);
+	}
+	
+	@GetMapping("/{id}/calendar.ics")
+	public ResponseEntity<byte[]> downloadIcs(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+		String username = userDetails.getUsername();
+		
+		byte[] ans = bookingIcsService.exportIcs(id,username,true).getBytes();
+		
+		ContentDisposition disposition = ContentDisposition.attachment()
+			                                 .filename("bookings-" + id + ".ics")
+			                                 .build();
+		
+		return ResponseEntity.ok()
+			       .contentType(TEXT_CALENDAR)
+			       .header(HttpHeaders.CONTENT_DISPOSITION,disposition.toString())
+			       .body(ans);
+	}
+	
 	@GetMapping()
 	public ResponseEntity<List<Booking>> getAllBookings() {
 		return ResponseEntity.ok(bookingRepository.findAll());
@@ -48,7 +98,6 @@ public class BookingController {
 	
 	@PostMapping("/add-booking")
 	public ResponseEntity<Booking> addBooking(@RequestBody BookingRequest request) {
-		// TODO: make sure this returns 409 error on booking overlap error
 		User user = userRepository.findById(request.getUserId()).orElseThrow();
 		
 		Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
@@ -64,6 +113,7 @@ public class BookingController {
 		
 		try {
 			bookingRepository.save(booking);
+			publishCalendarEvent(booking, false);
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}
@@ -94,6 +144,7 @@ public class BookingController {
 			
 			try {
 				bookingRepository.save(booking);
+				publishCalendarEvent(booking, false);
 			} catch (DataIntegrityViolationException e) {
 				LOGGER.log(Level.WARNING, "Data Integrity Violation", e);
 				continue;
@@ -137,6 +188,7 @@ public class BookingController {
 		if (booking.getUserId().getName().equals(userDetails.getUsername()) ||
 		    authList.contains("ROLE_ADMIN")) {
 			bookingRepository.delete(booking);
+			publishCalendarEvent(booking, true);
 			return ResponseEntity.ok(booking);
 		}
 		
@@ -160,6 +212,7 @@ public class BookingController {
 			booking.setStatus(BookingStatus.CANCELLED);
 			booking.setCancelledAt(LocalDateTime.now());
 			bookingRepository.save(booking);
+			publishCalendarEvent(booking, true);
 			return ResponseEntity.ok(booking);
 		}
 		
@@ -182,6 +235,7 @@ public class BookingController {
 			booking.setStatus(BookingStatus.CONFIRMED);
 			booking.setCancelledAt(null);
 			bookingRepository.save(booking);
+			publishCalendarEvent(booking, false);
 			
 			return ResponseEntity.ok(booking);
 		}
