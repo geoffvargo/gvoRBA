@@ -103,6 +103,7 @@ public final class IcsWriter {
 		line(out, "DTSTART:" + UTC_FORMAT.format(event.start()));
 		line(out, "DTEND:" + UTC_FORMAT.format(event.end()));
 		line(out, "SUMMARY:" + escapeText(event.summary()));
+		line(out, "LOCATION:" + escapeText(event.location()));
 		
 		line(out, "END:VEVENT");
 		line(out, "END:VCALENDAR");

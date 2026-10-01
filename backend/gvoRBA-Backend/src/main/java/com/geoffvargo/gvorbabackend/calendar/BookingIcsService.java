@@ -40,6 +40,7 @@ public class BookingIcsService {
 					                 .end(booking.getEndsAt().toInstant(ZoneOffset.UTC))
 					                 .summary(booking.getPurpose())
 					                 .updated(Instant.now())
+					                 .location(booking.getRoom().getName() + ", " + booking.getRoom().getLocation())
 					                 .build();
 				
 				return IcsWriter.write(entry, properties.productName());
