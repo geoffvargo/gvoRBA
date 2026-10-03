@@ -55,6 +55,7 @@ public class AdminController {
 			            .name(userDto.name())
 			            .email(userDto.email())
 			            .role(role)
+			            .authProvider(AuthProvider.LOCAL)
 			            .createdOn(new Date())
 			            .enabled(true)
 			            .password(passwordEncoder.encode(userDto.password()))
