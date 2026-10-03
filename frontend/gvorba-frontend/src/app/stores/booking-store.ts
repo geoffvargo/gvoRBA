@@ -6,12 +6,14 @@ import { BookingResponse } from '../models/booking.response';
 import { saveBlob } from '../utils/save-blob';
 import { catchError, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class BookingStore {
 	private apiService = inject(ApiService);
+	private toast = inject(HotToastService);
 	
 	private _myBookings = signal<Booking[]>([]);
 	private _bookings = signal<Booking[]>([]);
@@ -40,6 +42,10 @@ export class BookingStore {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -55,6 +61,10 @@ export class BookingStore {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -70,6 +80,10 @@ export class BookingStore {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -83,11 +97,19 @@ export class BookingStore {
 				console.log(data);
 				this.loadBookings();
 				this.loadMyBookings();
+				this.toast.success('Booking successfully created!', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
 				this._conflictError.set(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -101,10 +123,18 @@ export class BookingStore {
 				console.log(data);
 				this.loadBookings();
 				this.loadMyBookings();
+				this.toast.success('Booking canceled successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -117,10 +147,18 @@ export class BookingStore {
 				console.log(data);
 				this.loadBookings();
 				this.loadMyBookings();
+				this.toast.success('Booking uncanceled successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -135,7 +173,7 @@ export class BookingStore {
 				console.error('Booking fetch failed:', error.status, error.message);
 				// Return a safe value or re-throw a user-friendly error
 				return throwError(() => new Error('Failed to load bookings. Please try again later.'));
-			})
+			}),
 		).subscribe({
 			next: data => {
 				console.log(data.toString());
@@ -144,6 +182,10 @@ export class BookingStore {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});

@@ -1,3 +1,5 @@
+@use '@ngxpert/hot-toast/styles';
+
 @mixin toggle-states($who, $what, $value) {
   @each $s in ('', 'hover-', 'focus-', 'pressed-') {
     --mat-slide-toggle-#{$who}-#{$s}#{$what}: #{$value};

@@ -5,12 +5,14 @@ import { Role } from '../models/role.model';
 import { UserUpdate } from '../models/user-update.model';
 import { UserCreationModel } from '../models/user-creation.model';
 import { firstValueFrom } from 'rxjs';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class UserStore {
 	private apiService = inject(ApiService);
+	private toast = inject(HotToastService);
 	
 	private _users = signal<User[]>([]);
 	private _isLoading = signal<boolean>(false);
@@ -34,6 +36,10 @@ export class UserStore {
 			},
 			error: err => {
 				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -49,6 +55,10 @@ export class UserStore {
 			},
 			error: err => {
 				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -59,10 +69,18 @@ export class UserStore {
 		this.apiService.updateRole(id, role).subscribe({
 			next: data => {
 				console.log(data);
+				this.toast.success('User Role updated successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -77,6 +95,10 @@ export class UserStore {
 			},
 			error: err => {
 				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -88,10 +110,18 @@ export class UserStore {
 			next: data => {
 				console.log(data);
 				this.loadUser(id);
+				this.toast.success('User updated successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
