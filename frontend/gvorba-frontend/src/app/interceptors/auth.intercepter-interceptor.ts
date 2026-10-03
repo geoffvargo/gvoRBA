@@ -1,5 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { TokenStorageService } from '../services/token-storage-service';
 import { catchError, switchMap } from 'rxjs';
 import { AuthStore } from '../stores/auth-store';
@@ -10,7 +10,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
 	const tokenService = inject(TokenStorageService);
 	const token = tokenService.getToken();
-	const authStore = inject(AuthStore);
+	// Resolve AuthStore lazily (only on 401). AuthStore's constructor fires
+	// getCurrentUser() through HttpClient, which runs this interceptor while
+	// AuthStore is still being constructed — injecting it eagerly here is NG0200.
+	const injector = inject(Injector);
 
 	// withCredentials always set: refresh token is an HttpOnly cookie
 	const authReq = token ?
@@ -31,7 +34,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 			}
 
 			// dedupes concurrent refreshes internally
-			return authStore.refresh().pipe(
+			return injector.get(AuthStore).refresh().pipe(
 				switchMap(newToken => {
 					// replay original request once with the new token
 					const retried = req.clone({
