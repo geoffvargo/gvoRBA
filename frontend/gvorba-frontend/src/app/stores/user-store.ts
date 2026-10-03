@@ -140,22 +140,25 @@ export class UserStore {
 		}
 	}
 	
-	// createUser(data: UserCreationModel) {
-	// 	this._isLoading.set(true);
-	// 	this.apiService.createUser(data).subscribe({
-	// 		next: data => {
-	// 			console.log(data);
-	// 			this._isLoading.set(false);
-	// 		},
-	// 		error: err => {
-	// 			console.log(err);
-	// 			this._isLoading.set(false);
-	// 		}
-	// 	});
-	// }
-	async createUser(user: UserCreationModel): Promise<User> {
-		const created = await firstValueFrom(this.apiService.createUser(user)); // your existing Observable call
-		this._users.update(list => [...list, created]);                  // your backing signal
-		return created;
+	async createUser(user: UserCreationModel): Promise<User | null> {
+		this._isLoading.set(true);
+		try {
+			const created = await firstValueFrom(this.apiService.createUser(user)); // your existing Observable call
+			this._users.update(list => [...list, created]);                  // your backing signal
+			this.toast.success('User created successfully.', {
+				position: 'bottom-center',
+				dismissible: true,
+			});
+			return created;
+		} catch (err) {
+			console.log(err);
+			this.toast.error(err instanceof Error ? err.message : 'User create failed', {
+				position: 'bottom-center',
+				dismissible: true,
+			});
+			return null;
+		} finally {
+			this._isLoading.set(false);
+		}
 	}
 }
