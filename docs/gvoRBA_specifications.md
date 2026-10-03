@@ -2,7 +2,7 @@
 
 **Version:** 0.1 (Draft)
 **Status:** Living document — updated as decisions are made
-**Last updated:** 2026-07-09
+**Last updated:** 2026-10-01
 
 ---
 
@@ -349,3 +349,34 @@ demo-able and deployable.
 - **Working hours** — The configured time window during which bookings are permitted.
 - **Optimistic locking** — Concurrency control strategy that detects conflicting updates at commit time using a version
   field, rather than holding a lock during the transaction. See ADR-0001.
+
+## 12. Future Enhancements
+
+The non-goals listed in §2 are candidates for versions after v1. None are committed; each would be
+specified with its own functional requirements (and an ADR where it changes the architecture) before work begins.
+
+- **External calendar integrations** <br>
+  *In progress.* One-way sync of confirmed bookings to a shared Google Calendar, and per-booking ICS export
+  (`GET /api/bookings/{id}/calendar.ics`) so members can add a booking to any calendar client. Two-way sync and
+  Outlook/Microsoft Graph support remain out of scope.
+- **Recurring bookings** <br>
+  A booking series ("every Tuesday at 10am") expanded into individual occurrences, each validated against FR-3.1,
+  FR-4.4, and the overlap constraint. Open questions: whether a series is created atomically or with per-occurrence
+  conflict reporting, and how cancelling one occurrence vs. the whole series is modelled.
+- **Waitlisting** <br>
+  Members can join a waitlist for a taken slot and are offered it when the booking is cancelled. Depends on
+  notifications (below) to be useful.
+- **Notifications** <br>
+  Email, and later real-time push, for booking confirmations, cancellations (especially admin-initiated ones,
+  FR-3.6), and waitlist offers.
+- **Mobile apps** <br>
+  Native or PWA clients against the existing REST API. The API surface in §7 is client-agnostic, so this is
+  primarily frontend work.
+- **Non-room resources** <br>
+  Generalizing `Room` into a bookable `Resource` (desks, equipment, parking) with per-type booking rules.
+- **Multi-tenancy** <br>
+  Supporting multiple organizations, each with its own rooms, users, and working hours (FR-4.3). Requires an
+  organization scope on every entity and on authorization checks.
+- **Payments and billing** <br>
+  Pricing per room or per hour for external/shared spaces. Least likely of the candidates, since it falls
+  outside the internal-employee use case in §1.

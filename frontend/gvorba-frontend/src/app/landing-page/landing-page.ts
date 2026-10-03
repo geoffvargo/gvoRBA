@@ -6,6 +6,7 @@ import { emptyResponse, LoginResponse } from '../models/login-response.model';
 import { AuthStore } from '../stores/auth-store';
 import { NgOptimizedImage } from '@angular/common';
 import { environment } from '../../environments/environment';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
 	selector: 'app-landing-page',
@@ -17,6 +18,7 @@ import { environment } from '../../environments/environment';
 export class LandingPage {
 	private router = inject(Router);
 	private authStore = inject(AuthStore);
+	private toast = inject(HotToastService);
 	
 	protected baseUrl = signal(environment.apiBaseUrl);
 	protected readonly googleOauth = signal(this.baseUrl() + '/oauth2/authorization/google');
@@ -57,6 +59,10 @@ export class LandingPage {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 			},
 		});
 	}

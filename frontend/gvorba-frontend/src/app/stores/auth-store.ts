@@ -5,6 +5,7 @@ import { LoginRequest } from '../models/login-request.model';
 import { SignupRequest } from '../models/signup-request.model';
 import { TokenStorageService } from '../services/token-storage-service';
 import { finalize, map, Observable, shareReplay, switchMap, tap } from 'rxjs';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Injectable({
 	providedIn: 'root',
@@ -13,6 +14,7 @@ export class AuthStore {
 	private apiService = inject(ApiService);
 	private tokenStorage = inject(TokenStorageService);
 	private inFlight: Observable<string> | null = null;
+	private toast = inject(HotToastService);
 	
 	private _user = signal<User | null>(null);
 	private _authToken = signal('');
@@ -39,7 +41,7 @@ export class AuthStore {
 	/* MUTATORS */
 	loadCurrentUser() {
 		const token = sessionStorage.getItem('auth-token');
-
+		
 		if (token) {
 			this.apiService.getCurrentUser().subscribe({
 				next: (data: User) => {
@@ -53,6 +55,10 @@ export class AuthStore {
 				},
 				error: err => {
 					console.log(err);
+					this.toast.error(err.message, {
+						position: 'bottom-center',
+						dismissible: true,
+					});
 					this.resetState();
 				},
 			});
@@ -68,6 +74,10 @@ export class AuthStore {
 			},
 			error: err => {
 				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -80,7 +90,7 @@ export class AuthStore {
 		if (this.inFlight) {
 			return this.inFlight;
 		}
-
+		
 		this.inFlight = this.apiService.refreshToken().pipe(
 			tap(
 				r => {
@@ -104,7 +114,7 @@ export class AuthStore {
 				refCount: false,
 			}),
 		);
-
+		
 		return this.inFlight;
 	}
 	
@@ -124,6 +134,10 @@ export class AuthStore {
 				error: err => {
 					console.error(err);
 					this.resetState();
+					this.toast.error(err.message, {
+						position: 'bottom-center',
+						dismissible: true,
+					});
 					this._isLoading.set(false);
 				},
 			}),

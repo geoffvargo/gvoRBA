@@ -6,12 +6,14 @@ import { CreateRoomRequest } from '../models/create-room.request';
 import { UpdateRoomRequest } from '../models/update-room.request';
 import { tap } from 'rxjs';
 import { Amenities } from '../models/amenities.enum';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class RoomStore {
 	private apiService = inject(ApiService);
+	private toast = inject(HotToastService);
 	
 	private _rooms = signal<Room[]>([]);
 	private _selectedRoom = signal<Room | null>(null);
@@ -70,6 +72,10 @@ export class RoomStore {
 				},
 				error: err => {
 					console.error(err);
+					this.toast.error(err.message, {
+						position: 'bottom-center',
+						dismissible: true,
+					});
 					this._isLoading.set(false);
 				},
 			}),
@@ -87,6 +93,10 @@ export class RoomStore {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -104,6 +114,10 @@ export class RoomStore {
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -114,10 +128,18 @@ export class RoomStore {
 		this.apiService.createRoom(payload).subscribe({
 			next: room => {
 				this._rooms.set([...this._rooms(), room]);
+				this.toast.success('Room created successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -128,11 +150,18 @@ export class RoomStore {
 		this.apiService.updateRoom(id, payload).subscribe({
 			next: room => {
 				this._rooms.set(this._rooms().map(r => r.id === room.id ? room : r));
-				// this._rooms.set([...this._rooms(), room]);
+				this.toast.success('Room updated successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
@@ -145,10 +174,18 @@ export class RoomStore {
 		this.apiService.deactivateRoom(id).subscribe({
 			next: room => {
 				console.log(room);
+				this.toast.success('Succesfully deactivated', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 			error: err => {
 				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
 				this._isLoading.set(false);
 			},
 		});
