@@ -28,12 +28,17 @@ export class BookingDetailsComponent implements OnInit {
 	
 	readonly currUser = this.authStore.user;
 	readonly isCancelled = this.bookingStore.isCancelled;
+	
 	readonly isOwner = computed(() =>
 		this.isAdmin() || this.currUser()?.id === this.booking().userId.id);
+	readonly attendeeNames = computed(() => {
+		return this.booking().attendees.map(attendee => attendee.name).join(', ');
+	});
 	
 	ngOnInit() {
 		this.bookingStore.loadBooking(this.bookingId());
 		console.log('currentBooking', this.booking());
+		console.log(this.attendeeNames());
 	}
 	
 	onCancelBooking() {
@@ -52,17 +57,11 @@ export class BookingDetailsComponent implements OnInit {
 		this.bookingStore.exportIcs(this.bookingId());
 	}
 	
+	onEdit() {
+		console.log('edit');
+	}
+	
 	onBack() {
 		this.location.back();
-		// if (this.isAdmin()) {
-		// 	this.router.navigate(['admin/bookings'], {
-		// 		replaceUrl: true,
-		// 	}).then();
-		// } else {
-		// 	this.router.navigate(['..'], {
-		// 		relativeTo: this.route,
-		// 		replaceUrl: true,
-		// 	}).then();
-		// }
 	}
 }

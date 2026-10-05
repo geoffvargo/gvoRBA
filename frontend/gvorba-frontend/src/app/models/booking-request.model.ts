@@ -5,6 +5,7 @@ export interface BookingRequest {
 	endsAt: string;
 	purpose: string;
 	status: string;
+	attendees: number[];
 }
 
 export class BookingRequestImpl implements BookingRequest {
@@ -14,4 +15,5 @@ export class BookingRequestImpl implements BookingRequest {
 	public endsAt = '';
 	public purpose = '';
 	public status = '';
+	public attendees = [];
 }

@@ -10,6 +10,7 @@ export class BookingResponse {
 	cancelledAt: Date | null = null;
 	purpose = '';
 	status = '';
+	attendees: User[] = [];
 	
 	constructor(id = -1,
 	            room = new Room(),
@@ -18,7 +19,8 @@ export class BookingResponse {
 	            endsAt: Date = new Date(),
 	            cancelledAt: Date | null = null,
 	            purpose = '',
-	            status = '') {
+	            status = '',
+	            attendees: User[] = [],) {
 		this.id = id;
 		this.room = room;
 		this.userId = userId;
@@ -27,5 +29,6 @@ export class BookingResponse {
 		this.cancelledAt = cancelledAt;
 		this.purpose = purpose;
 		this.status = status;
+		this.attendees = attendees;
 	}
 }

@@ -1,0 +1,198 @@
+### POST /api/bookings/add-booking
+# Run the whole file top-to-bottom with the "dev" environment (tokens in http-client.private.env.json,
+# local backend only). Requests 0a-0c look up real ids so the file doesn't depend on seed-data ids.
+# Each run books a random day in 2099 so reruns don't collide; request 7 deletes what request 2 created.
+# Assertions describe the intended behavior; cases 4-6 and 7a fail until those bugs are fixed.
+
+### 0a. Setup: id of the user behind userToken
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("setup: user lookup", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+    client.global.set("userId", response.body.id);
+%}
+
+### 0b. Setup: id of the user behind adminToken
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("setup: admin lookup", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+    client.global.set("adminId", response.body.id);
+%}
+
+### 0c. Setup: an active room
+GET {{baseUrl}}/api/rooms
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("setup: room lookup", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(response.body.length > 0, "no rooms in the database");
+    });
+    const room = response.body.find(r => r.isActive) || response.body[0];
+    client.global.set("roomId", room.id);
+%}
+
+### 1. No auth -> 401
+POST {{baseUrl}}/api/bookings/add-booking
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("no auth is rejected", () => {
+        client.assert(response.status === 401, "expected 401, got " + response.status);
+    });
+%}
+
+### 2. Valid booking -> 200 with the saved booking
+< {%
+    // Random day in 2099, 10:00-11:00. LocalDateTime format, no zone.
+    const day = Math.floor(Math.random() * 365);
+    const start = new Date(Date.UTC(2099, 0, 1 + day, 10, 0, 0));
+    const end = new Date(start.getTime() + 60 * 60 * 1000);
+    client.global.set("startsAt", start.toISOString().slice(0, 19));
+    client.global.set("endsAt", end.toISOString().slice(0, 19));
+    // Overlaps the first half hour later, for case 3.
+    client.global.set("overlapStartsAt", new Date(start.getTime() + 30 * 60 * 1000).toISOString().slice(0, 19));
+    client.global.set("overlapEndsAt", new Date(end.getTime() + 30 * 60 * 1000).toISOString().slice(0, 19));
+%}
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{startsAt}}",
+  "endsAt": "{{endsAt}}",
+  "purpose": "HTTP integration test",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("booking is created", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(typeof response.body.id === "number", "response has no id");
+        client.assert(response.body.purpose === "HTTP integration test", "wrong purpose: " + response.body.purpose);
+        client.assert(response.body.status === "CONFIRMED", "wrong status: " + response.body.status);
+        client.assert(response.body.startsAt.startsWith(client.global.get("startsAt")),
+            "wrong startsAt: " + response.body.startsAt);
+        client.assert(response.body.endsAt.startsWith(client.global.get("endsAt")),
+            "wrong endsAt: " + response.body.endsAt);
+        client.assert(String(response.body.room.id) === String(client.global.get("roomId")), "wrong room");
+    });
+    client.global.set("bookingId", response.body.id);
+%}
+
+### 3. Overlapping booking in the same room -> 409 BOOKING_CONFLICT (bookings_no_overlap constraint)
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{overlapStartsAt}}",
+  "endsAt": "{{overlapEndsAt}}",
+  "purpose": "HTTP integration test (overlap)",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("overlap is rejected", () => {
+        client.assert(response.status === 409, "expected 409, got " + response.status);
+        client.assert(response.body.code === "BOOKING_CONFLICT", "wrong code: " + response.body.code);
+        client.assert(response.body.path === "/api/bookings/add-booking", "wrong path: " + response.body.path);
+    });
+%}
+
+### 4. Unknown room -> 404 (currently 500: bare orElseThrow() -> unmapped NoSuchElementException)
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": 999999,
+  "startsAt": "{{startsAt}}",
+  "endsAt": "{{endsAt}}",
+  "purpose": "HTTP integration test (bad room)",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("unknown room is 404", () => {
+        client.assert(response.status === 404, "expected 404, got " + response.status);
+    });
+%}
+
+### 5. Unknown user -> 404 (currently 500: same as case 4)
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": 999999,
+  "roomId": {{roomId}},
+  "startsAt": "{{startsAt}}",
+  "endsAt": "{{endsAt}}",
+  "purpose": "HTTP integration test (bad user)",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("unknown user is 404", () => {
+        client.assert(response.status === 404, "expected 404, got " + response.status);
+    });
+%}
+
+### 6. ROLE_USER books on behalf of someone else -> 403 (currently 200: userId is taken from the body, not the token)
+# Uses a different hour of the same day so it can't trip the overlap constraint.
+< {%
+    const start = client.global.get("startsAt").replace("T10:", "T14:");
+    const end = client.global.get("endsAt").replace("T11:", "T15:");
+    request.variables.set("otherStartsAt", start);
+    request.variables.set("otherEndsAt", end);
+%}
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{adminId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{otherStartsAt}}",
+  "endsAt": "{{otherEndsAt}}",
+  "purpose": "HTTP integration test (impersonation)",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("cannot book as another user", () => {
+        client.assert(response.status === 403, "expected 403, got " + response.status);
+    });
+    // If it slipped through, remember it so 7b can clean it up.
+    client.global.set("impersonatedBookingId", response.status === 200 ? response.body.id : "");
+%}
+
+### 7a. Cleanup: delete the booking from case 2
+# Currently returns 500 even though the row IS deleted (the failure happens after the delete commits).
+DELETE {{baseUrl}}/api/bookings/delete/{{bookingId}}
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("cleanup: case 2 booking deleted", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+%}
+
+### 7b. Cleanup: delete the booking from case 6, if it was created (404 here means there was nothing to delete)
+DELETE {{baseUrl}}/api/bookings/delete/{{impersonatedBookingId}}
+Authorization: Bearer {{adminToken}}

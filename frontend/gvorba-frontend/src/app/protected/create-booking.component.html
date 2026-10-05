@@ -91,9 +91,29 @@
 					<textarea name="purpose"
 					          placeholder="Enter a description."
 					          id="purpose"
-					          rows="1"
-					          class="px-2 border items-start rounded-sm w-full h-10! [@media(width<=768px)]:w-32! [@media(width<=768px)]:h-16!"
+					          class="px-2 border items-start rounded-sm w-full min-h-10 [@media(width<=768px)]:w-32! [@media(width<=768px)]:min-h-16"
 					          formControlName="purpose"></textarea>
+					
+					<label class="self-start"
+					       for="attendees">Attendees:
+					</label>
+					<select name="attendees"
+					        id="attendees"
+					        class="border rounded-sm py-0 5 w-64"
+					        multiple
+					        formControlName="attendees">
+						@for (user of users(); track user.id) {
+							<option [ngValue]="user.id"
+							        class="p-4">
+								{{ user.name }}
+							</option>
+						}
+					</select>
+					<!-- 					<mat-form-field> -->
+<!-- 					<mat-label>Attendees:</mat-label> -->
+<!-- 					<mat-select multiple -->
+<!-- 					            formControlName="attendees"></mat-select> -->
+<!-- 					</mat-form-field> -->
 					
 					<label for="bookingStatus">Status:</label>
 					<mat-slide-toggle style="--mat-slide-toggle-track-width: 400px"
