@@ -15,14 +15,16 @@ import { formatDate } from '@angular/common';
 import { AuthStore } from '../stores/auth-store';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
+// All times below are minutes since midnight.
 const DAY_START = 480;    // 08:00  (FR-4.3)
 const DAY_END = 1080;     // 18:00  (FR-4.3)
 const STEP = 15;          // FR-3.1 slot quantum
 const MIN_DUR = 15;       // FR-3.1
 const MAX_DUR = 240;      // FR-3.1 (4h)
-const DEFAULT_DUR = 60;
-const HORIZON_DAYS = 30;  //FR-3.1
+const DEFAULT_DUR = 60;   // used for the end time until a duration is entered
+const HORIZON_DAYS = 30;  // FR-3.1: how far ahead a booking can be made
 
+/** Returns [from, from + step, ...] up to but not including `to`. */
 const timerange = (from: number, to: number, step: number) => {
 	const ans = [];
 	for (let i = from; i < to; i += step) {
@@ -31,10 +33,12 @@ const timerange = (from: number, to: number, step: number) => {
 	return ans;
 };
 
+/** Zero-pads a number to two digits (7 -> "07"). */
 const pad2 = (num: number) => {
 	return String(num).padStart(2, '0');
 };
 
+/** Formats minutes since midnight as "HH:mm" (510 -> "08:30"). */
 const timeLabel = (minutes: number) => {
 	const h = Math.floor(minutes / 60);
 	const m = minutes % 60;
@@ -46,8 +50,10 @@ const timeLabel = (minutes: number) => {
 	return str;
 };
 
+// Every allowed start time in the working day, in STEP increments.
 const START_VALUES = timerange(DAY_START, DAY_END, STEP);
 
+// Start times as { value, label } pairs for the start-time <mat-select>.
 export const START_OPTIONS: { value: number, label: string }[] = START_VALUES.map(v => ({
 	value: v,
 	label: timeLabel(v),
@@ -65,15 +71,18 @@ const clamp = (value: number, min: number, max: number) => {
 	return (value < min) ? min : (value > max) ? max : value;
 };
 
+/** Longest duration allowed for a given start time: MAX_DUR, or less if that would run past DAY_END. */
 const maxDurationFor = (minutes: number) => {
 	return Math.min(MAX_DUR, DAY_END - minutes);
 };
 
+/** True for Monday-Friday; null means today. Also used as the datepicker's date filter. */
 export const isWeekday = (d: Date | null): boolean => {
 	const day = (d ?? new Date()).getDay();
 	return day !== 0 && day !== 6;   // 0 = Sunday, 6 = Saturday
 };
 
+/** Returns the first weekday strictly after `from`. */
 export const nextWeekdayFrom = (from: Date) => {
 	const day = new Date(new Date(from).setDate(from.getDate() + 1));
 	while (!isWeekday(day)) {
@@ -83,24 +92,29 @@ export const nextWeekdayFrom = (from: Date) => {
 	return day;
 };
 
+/** Today at 00:00 local time. */
 const startOfToday = () => {
 	return new Date(new Date().setHours(0, 0, 0, 0));
 };
 
+/** Returns a copy of date moved forward by `days`. */
 const addDays = (date: Date, days: number) => {
 	const copy = new Date(date);
 	copy.setDate(copy.getDate() + days);
 	return copy;
 };
 
+/** True when both dates fall on the same calendar day in local time, ignoring the time of day. */
 export const isSameLocalDay = (a: Date, b: Date) => {
 	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 };
 
+/** Formats as "yyyy-M-d" in local time (no zero-padding). */
 export const formatLocalDate = (date: Date) => {
 	return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 };
 
+/** Formats as a zone-less "yyyy-MM-ddTHH:mm:ss" string, which the backend parses as a LocalDateTime. */
 export const toDateTimeString = (date: Date) => {
 	return formatDate(date, 'yyyy-MM-ddTHH:mm:ss', 'en-US');
 };
@@ -120,7 +134,7 @@ export const toDateTimeString = (date: Date) => {
 		MatSlideToggle,
 		MatProgressSpinner,
 	],
-	providers: [provideNativeDateAdapter()],
+	providers: [provideNativeDateAdapter()], // the datepicker works with plain JS Dates
 	templateUrl: './create-booking.component.html',
 	styleUrl: './create-booking.component.css',
 	encapsulation: ViewEncapsulation.None,
@@ -136,8 +150,9 @@ export class CreateBookingComponent {
 	protected bookingStore = inject(BookingStore);
 	protected authStore = inject(AuthStore);
 	
+	// Show the spinner until every store the form depends on has loaded.
 	protected readonly isLoading = computed(() =>
-		this.roomStore.isLoading() || this.userStore.isLoading() || this.authStore.isLoading()
+		this.roomStore.isLoading() || this.userStore.isLoading() || this.authStore.isLoading(),
 	);
 	protected readonly rooms = this.roomStore.rooms;
 	protected readonly users = this.userStore.users;
@@ -145,15 +160,16 @@ export class CreateBookingComponent {
 	protected readonly currentUser = this.authStore.user;
 	protected readonly startOptions = signal(START_OPTIONS);
 	protected readonly isWeekdayFilter = isWeekday;
-	protected readonly MIN_DUR = MIN_DUR;
-	
+	protected readonly MIN_DUR = MIN_DUR; // exposed for the template's [min] binding
+
+	/** Form-level validator: flags a booking whose start + duration runs past DAY_END. */
 	private readonly endWithinWorkingHours: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 		const group = control as FormGroup<{
-			duration: AbstractControl<number>;
-			start: AbstractControl<number>;
+			duration: AbstractControl<number | null>;
+			startsAt: AbstractControl<number | null>;
 		}>;
-		
-		const { start, duration } = group.getRawValue();
+
+		const { startsAt: start, duration } = group.getRawValue();
 		
 		if (start == null || duration == null) {
 			return null;
@@ -164,6 +180,7 @@ export class CreateBookingComponent {
 		return end > DAY_END ? { endAfterClass: { end, limit: DAY_END, overBy: end - DAY_END } } : null;
 	};
 	
+	// startsAt and duration are in minutes; date is the day only.
 	bookingCreateForm = this.fb.group({
 			roomId: this.fb.control<number>(0, [Validators.required]),
 			userId: this.fb.control<number>(this.currentUser()?.id ?? 0, [Validators.required]),
@@ -172,20 +189,22 @@ export class CreateBookingComponent {
 			duration: this.fb.control<number | null>(null, [Validators.required]),
 			purpose: this.fb.control('', [Validators.required]),
 			bookingStatus: this.fb.control(true, [Validators.required]),
+			attendees: this.fb.control<number[]>([]),
 		}, {
 			validators: [this.endWithinWorkingHours],
 		},
 	);
 	
+	/** Builds the request body from the form, or null while required fields are still missing. */
 	private readonly bookingPayload = computed((): BookingRequest | null => {
 		console.log(this.bookingCreateForm.controls.roomId.value);
 		
-		const { roomId, userId, date, purpose, bookingStatus } = this.formValue();
+		const { roomId, userId, date, purpose, bookingStatus, attendees } = this.formValue();
 		const start = this.startMinutes();
 		
-		if (!roomId || !userId || !date || start == null || !purpose) {
+		if (!roomId || !userId || !date || start == null || !purpose || !attendees) {
 			console.log('[bookingPayload] guard failed on:', {
-				roomId: !roomId, userId: !userId, date: !date, start: start == null, purpose: !purpose,
+				roomId: !roomId, userId: !userId, date: !date, start: start == null, purpose: !purpose, attendees: !attendees,
 			});
 			return null;
 		}
@@ -201,19 +220,23 @@ export class CreateBookingComponent {
 			startsAt: startsAt,
 			endsAt: endsAt,
 			purpose,
-			status: bookingStatus && bookingStatus ? 'CONFIRMED' : 'CANCELLED',
+			status: bookingStatus ? 'CONFIRMED' : 'CANCELLED',
+			attendees,
 		} as BookingRequest;
 	});
 	
+	// Signal versions of the form's values, so computed()s can react to edits.
 	protected readonly formValue = toSignal(
 		this.bookingCreateForm.valueChanges, {
 			initialValue: this.bookingCreateForm.value,
 		},
 	);
 	
+	// Datepicker bounds: today through HORIZON_DAYS ahead.
 	today = signal(startOfToday());
 	minDate = computed(() => this.today());
 	maxDate = computed(() => addDays(this.today(), HORIZON_DAYS));
+	// Duration cap for the chosen start time, and the resulting end time (both in minutes).
 	maxDuration = computed(() => maxDurationFor(this.startMinutes() ?? DAY_START));
 	endMinutes = computed(() => (this.startMinutes() ?? DAY_START) + (this.durationMinutes() ?? DEFAULT_DUR));
 	
@@ -223,6 +246,8 @@ export class CreateBookingComponent {
 	
 	constructor() {
 		this.authStore.loadCurrentUser();
+
+		// Non-admins can only book for themselves: pin userId to the logged-in user once it loads.
 		effect(() => {
 			if (!this.isAdmin()) {
 				const currentUserId = this.authStore.user()?.id;
@@ -232,6 +257,7 @@ export class CreateBookingComponent {
 			}
 		});
 		
+		// Picking a later start time can shrink maxDuration; pull the entered duration back under it.
 		effect(() => {
 			const max = this.maxDuration();
 			const current = this.bookingCreateForm.controls.duration.value;
@@ -242,6 +268,7 @@ export class CreateBookingComponent {
 		});
 	}
 	
+	/** Discards the form and goes back: admins to the bookings admin list, everyone else up one route. */
 	onCancel() {
 		this.onReset();
 		if (this.isAdmin()) {
@@ -260,6 +287,7 @@ export class CreateBookingComponent {
 		this.bookingCreateForm.reset();
 	}
 	
+	/** Submits the booking if the payload is complete, then resets the form and navigates up one route. */
 	onSave() {
 		const payload = this.bookingPayload();
 		if (!payload) {
@@ -277,6 +305,7 @@ export class CreateBookingComponent {
 		}).then();
 	}
 	
+	// Selected start time in minutes, as a signal.
 	startMinutes: Signal<number | null> = toSignal(this.bookingCreateForm.controls.startsAt.valueChanges, {
 		initialValue: this.bookingCreateForm.controls.startsAt.value,
 	});

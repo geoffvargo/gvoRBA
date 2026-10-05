@@ -1,6 +1,9 @@
 package com.geoffvargo.gvorbabackend.models;
 
 import java.time.*;
+import java.util.*;
+
+import javax.annotation.*;
 
 import lombok.*;
 
@@ -15,4 +18,7 @@ public class BookingRequest {
 	private LocalDateTime endsAt;
 	private String purpose;
 	private BookingStatus status;
+	
+	@Nullable
+	private Set<Long> attendees;
 }

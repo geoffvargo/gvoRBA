@@ -6,9 +6,7 @@ import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.repos.*;
-import com.geoffvargo.gvorbabackend.security.jwt.*;
 
-import org.apache.http.client.methods.*;
 import org.springframework.context.*;
 import org.springframework.dao.*;
 import org.springframework.http.*;
@@ -46,7 +44,6 @@ public class BookingController {
 	 */
 	public static final MediaType TEXT_CALENDAR = new MediaType("text", "calendar", StandardCharsets.UTF_8);
 	
-	
 	private void publishCalendarEvent(Booking booking, Boolean cancelled) {
 		String desciption = Objects.toString(booking.getPurpose(), "") +
 		                    "\nBooked by: " + booking.getUserId().getName();
@@ -67,10 +64,11 @@ public class BookingController {
 	}
 	
 	@GetMapping("/{id}/calendar.ics")
-	public ResponseEntity<byte[]> downloadIcs(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+	public ResponseEntity<byte[]> downloadIcs(@PathVariable Long id,
+	                                          @AuthenticationPrincipal UserDetails userDetails) {
 		String username = userDetails.getUsername();
 		
-		byte[] ans = bookingIcsService.exportIcs(id,username,true).getBytes();
+		byte[] ans = bookingIcsService.exportIcs(id, username, true).getBytes();
 		
 		ContentDisposition disposition = ContentDisposition.attachment()
 			                                 .filename("bookings-" + id + ".ics")
@@ -78,7 +76,7 @@ public class BookingController {
 		
 		return ResponseEntity.ok()
 			       .contentType(TEXT_CALENDAR)
-			       .header(HttpHeaders.CONTENT_DISPOSITION,disposition.toString())
+			       .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
 			       .body(ans);
 	}
 	
@@ -102,6 +100,10 @@ public class BookingController {
 		
 		Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
 		
+		Set<User> attendees = request.getAttendees() == null
+		                      ? new HashSet<>()
+		                      : new HashSet<>(userRepository.findAllById(request.getAttendees()));
+		
 		Booking booking = Booking.builder()
 			                  .room(room)
 			                  .userId(user)
@@ -109,6 +111,7 @@ public class BookingController {
 			                  .endsAt(request.getEndsAt())
 			                  .purpose(request.getPurpose())
 			                  .status(request.getStatus())
+			                  .attendees(attendees)
 			                  .build();
 		
 		try {
