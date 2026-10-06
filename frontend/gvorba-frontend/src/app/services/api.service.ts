@@ -91,6 +91,10 @@ export class ApiService {
 		return this.httpClient.post<Booking>(`${this.baseUrl}/api/bookings/add-booking`, payload);
 	}
 	
+	updateBooking(id: number, payload: BookingRequest) {
+		return this.httpClient.patch(`${this.baseUrl}/api/bookings/${id}/edit`, payload);
+	}
+	
 	/* for user-store */
 	loadUsers() {
 		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users/`);

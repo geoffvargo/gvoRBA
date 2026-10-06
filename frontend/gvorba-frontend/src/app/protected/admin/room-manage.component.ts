@@ -30,7 +30,9 @@ export class RoomManageComponent implements OnInit {
 	protected roomId = signal<number>(this.route.snapshot.params['id']);
 	protected room = this.roomStore.selectedRoom;
 	protected updateReq = signal<UpdateRoomRequest>(new UpdateRoomRequestImpl());
+	
 	protected readonly amenityOptions = Object.values(Amenities);
+	
 	protected readonly roomPayload = computed(() => {
 		const { amenities, ...rest } = this.formValue();
 		return {
@@ -38,6 +40,7 @@ export class RoomManageComponent implements OnInit {
 			amenities: Object.values(Amenities).filter(a => amenities?.[a]),
 		} as UpdateRoomRequestImpl;
 	});
+	
 	roomEditForm = new FormGroup({
 			name: new FormControl(''),
 			location: new FormControl(''),
