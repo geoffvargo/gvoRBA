@@ -38,39 +38,131 @@
 				<span class="font-semibold">Attendees:</span>
 				<span>{{ attendeeNames() }}</span>
 				
-				@if (isOwner()) {
+				@if (!isEditing()) {
+					@if (isOwner()) {
+						<div class="col-span-2 flex h-full justify-center">
+							<button class="action-btn w-auto! self-start"
+							        [disabled]="isCancelled()"
+							        (click)="onCancelBooking()">
+								Cancel Booking
+							</button>
+						</div>
+					}
+					
+					@if (isAdmin()) {
+						<div class="col-span-2 flex h-full justify-center">
+							<button class="action-btn w-auto! self-start"
+							        [disabled]="booking().status === 'CONFIRMED'"
+							        (click)="onUncancelBooking()">
+								Uncancel Booking
+							</button>
+						</div>
+					}
+					
 					<div class="col-span-2 flex h-full justify-center">
 						<button class="action-btn w-auto! self-start"
-						        [disabled]="isCancelled()"
-						        (click)="onCancelBooking()">
-							Cancel Booking
+						        (click)="onExportIcs()">
+							Export to ICS
 						</button>
 					</div>
-				}
-				
-				@if (isAdmin()) {
-					<div class="col-span-2 flex h-full justify-center">
-						<button class="action-btn w-auto! self-start"
-						        [disabled]="booking().status === 'CONFIRMED'"
-						        (click)="onUncancelBooking()">
-							Uncancel Booking
-						</button>
-					</div>
-				}
-				
-				<div class="col-span-2 flex h-full justify-center">
-					<button class="action-btn w-auto! self-start"
-					        (click)="onExportIcs()">
-						Export to ICS
-					</button>
-				</div>
-				
-				@if (isAdmin() || isOwner()) {
-					<div class="col-span-2 flex h-full justify-center">
-						<button class="action-btn w-auto! self-start"
-						        (click)="onEdit()">
-							Edit
-						</button>
+					
+					@if (isAdmin() || isOwner()) {
+						<div class="col-span-2 flex h-full justify-center">
+							<button class="action-btn w-auto! self-start"
+							        (click)="onEdit()">
+								Edit
+							</button>
+						</div>
+					}
+				} @else {
+					<div class="p-2 m-2 col-span-2 gap-2 w-fit">
+						<form [formGroup]="editingForm"
+						      class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-4 p-4 items-center sm:gap-x-2! sm:p-0! [&_label]:self-start!">
+							<label for="date"
+							       class="font-semibold">
+								Time Slot:
+							</label>
+							<div id="bookingScheduler"
+							     class="grid grid-cols-3 gap-2 items-center">
+								<mat-form-field appearance="outline">
+									<input matInput
+									       placeholder="Select a Date"
+									       formControlName="date"
+									       [matDatepickerFilter]="isWeekdayFilter"
+									       [max]="maxDate()"
+									       [min]="minDate()"
+									       [matDatepicker]="picker1">
+									<mat-datepicker-toggle matIconSuffix
+									                       startView="year"
+									                       [for]="picker1"></mat-datepicker-toggle>
+									<mat-datepicker #picker1
+									                panelClass="shadow-lg rounded-lg"></mat-datepicker>
+								</mat-form-field>
+								
+								<mat-form-field appearance="outline">
+									<mat-select formControlName="startsAt"
+									            placeholder="Select a Start Time">
+										@for (value of startOptions(); track value.value) {
+											<mat-option [value]="value.value">{{ value.label }}</mat-option>
+										}
+									</mat-select>
+								</mat-form-field>
+								
+								<mat-form-field appearance="outline">
+									<input matInput
+									       placeholder="Enter a Duration"
+									       formControlName="duration"
+									       type="number"
+									       id="duration"
+									       step="15"
+									       [min]="MIN_DUR"
+									       [max]="maxDuration()">
+								</mat-form-field>
+							</div>
+							
+							<label class="font-semibold"
+							       for="purpose">
+								Purpose:
+							</label>
+							<textarea name="purpose"
+							          placeholder="Enter a description."
+							          id="purpose"
+							          class="px-2 border items-start rounded-sm w-full min-h-10
+							                 [@media(width<=768px)]:w-32! [@media(width<=768px)]:min-h-16"
+							          formControlName="purpose"></textarea>
+							
+							<label class="font-semibold"
+							       for="attendees">
+								Attendees:
+							</label>
+							<select name="attendees"
+							        id="attendees"
+							        multiple
+							        class="border rounded-sm py-0 5 w-64"
+							        formControlName="attendees">
+								@for (user of users(); track user.id) {
+									<option [ngValue]="user.id"
+									        class="p-4">
+										{{ user.name }}
+									</option>
+								}
+							</select>
+						</form>
+						
+						<div class="col-span-2 flex flex-row gap-2 justify-center">
+							<button class="action-btn w-auto!"
+							        (click)="onSave()">
+								Save
+							</button>
+							<button class="action-btn w-auto!"
+							        (click)="onReset()">
+								Reset
+							</button>
+							<button class="action-btn w-auto!"
+							        (click)="onCancel()">
+								Cancel
+							</button>
+						</div>
 					</div>
 				}
 			

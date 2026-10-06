@@ -190,4 +190,29 @@ export class BookingStore {
 			},
 		});
 	}
+	
+	updateBooking(id: number, payload: BookingRequest) {
+		this._isLoading.set(true);
+		return this.apiService.updateBooking(id,payload).subscribe({
+			next: data => {
+				console.log(data);
+				this._isLoading.set(false);
+				// Reload only after the server has applied the update, so the details page shows the new values.
+				this.loadBooking(id);
+				this.loadBookings();
+				this.toast.success('Booking updated successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
+			},
+			error: err => {
+				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
+				this._isLoading.set(false);
+			},
+		});
+	}
 }

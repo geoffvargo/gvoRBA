@@ -7,6 +7,7 @@ import { JWT_OPTIONS, JwtHelperService } from '@auth0/angular-jwt';
 import { authInterceptor } from './interceptors/auth.intercepter-interceptor';
 import { MAT_SELECT_CONFIG } from '@angular/material/select';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { provideHotToastConfig } from '@ngxpert/hot-toast';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -23,5 +24,6 @@ export const appConfig: ApplicationConfig = {
 		{ provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
 		JwtHelperService,
 		{ provide: MAT_SELECT_CONFIG, useValue: { panelClass: 'ds-select-panel' } },
+		provideHotToastConfig(),
 	],
 };

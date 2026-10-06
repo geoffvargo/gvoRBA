@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
-import { CreateBookingComponent, formatLocalDate, isSameLocalDay, nextWeekdayFrom, START_OPTIONS, toDateTimeString } from './create-booking.component';
+import { CreateBookingComponent } from './create-booking.component';
+import { formatLocalDate, isSameLocalDay, nextWeekdayFrom, START_OPTIONS, toDateTimeString } from '../utils/booking-time';
 
 describe('CreateBookingComponent', () => {
 	let component: CreateBookingComponent;
