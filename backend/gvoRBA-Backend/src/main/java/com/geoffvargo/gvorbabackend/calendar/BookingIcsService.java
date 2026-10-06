@@ -1,6 +1,6 @@
 package com.geoffvargo.gvorbabackend.calendar;
 
-import com.geoffvargo.gvorbabackend.*;
+import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.repos.*;
 
@@ -26,7 +26,7 @@ public class BookingIcsService {
 	@Transactional(readOnly = true)
 	public String exportIcs(Long bookingId, String requesterName, boolean isAdmin) {
 		Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-			() -> new BookingNotFoundException("Booking {} not found.", bookingId)
+			() -> new BookingNotFoundException(bookingId)
 		);
 		
 		User owner = booking.getUserId();

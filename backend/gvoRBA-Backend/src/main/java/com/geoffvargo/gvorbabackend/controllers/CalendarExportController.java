@@ -1,7 +1,7 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
-import com.geoffvargo.gvorbabackend.*;
 import com.geoffvargo.gvorbabackend.calendar.*;
+import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.repos.*;
 
@@ -45,7 +45,7 @@ public class CalendarExportController {
 	@GetMapping("/api/calendar/booking.ics")
 	public ResponseEntity<byte[]> exportBookingToIcs(@RequestParam Long bookingId) {
 		Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-			() -> new BookingNotFoundException("Booking {} not found.", bookingId)
+			() -> new BookingNotFoundException(bookingId)
 		);
 		
 		return null;

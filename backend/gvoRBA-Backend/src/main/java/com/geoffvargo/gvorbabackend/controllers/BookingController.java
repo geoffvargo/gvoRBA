@@ -1,6 +1,5 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
-import com.geoffvargo.gvorbabackend.*;
 import com.geoffvargo.gvorbabackend.calendar.*;
 import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
@@ -88,7 +87,7 @@ public class BookingController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Booking> getBookingById(@PathVariable Long id) {
 		Booking booking = bookingRepository.findById(id).orElseThrow(
-			() -> new BookingNotFoundException("Booking with id {} not found.", id)
+			() -> new BookingNotFoundException(id)
 		);
 		
 		return ResponseEntity.ok(booking);
@@ -166,6 +165,38 @@ public class BookingController {
 		}
 	}
 	
+	@PatchMapping("{id}/edit")
+	public ResponseEntity<?> editBooking(@PathVariable Long id, @RequestBody BookingRequest request) {
+		Booking booking = bookingRepository.findById(id).orElseThrow(
+			() -> new BookingNotFoundException(id)
+		);
+		
+		User user = userRepository.findById(request.getUserId()).orElseThrow(
+			() -> new UserNotFoundException(request.getUserId())
+		);
+		
+		Room room = roomRepository.findById(request.getRoomId()).orElseThrow(
+			() -> new RoomNotFoundException(request.getRoomId())
+		);
+		
+		Set<User> attendees = request.getAttendees() == null
+		                      ? new HashSet<>()
+		                      : new HashSet<>(userRepository.findAllById(request.getAttendees()));
+		
+		booking.setStartsAt(request.getStartsAt());
+		booking.setEndsAt(request.getEndsAt());
+		booking.setPurpose(request.getPurpose());
+		booking.setAttendees(attendees);
+		
+		try {
+			bookingRepository.save(booking);
+		} catch (DataIntegrityViolationException e) {
+			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
+		}
+		
+		return ResponseEntity.ok(booking);
+	}
+	
 	@GetMapping("/me")
 	public ResponseEntity<?> getMyBookings(@AuthenticationPrincipal UserDetails userDetails) {
 		Long id = userRepository.findByName(userDetails.getUsername()).orElseThrow().getId();
@@ -181,7 +212,7 @@ public class BookingController {
 	public ResponseEntity<?> deleteBooking(@PathVariable Long id,
 	                                       @AuthenticationPrincipal UserDetails userDetails) {
 		Booking booking = bookingRepository.findById(id).orElseThrow(
-			() -> new BookingNotFoundException("Booking with id {} not found.", id)
+			() -> new BookingNotFoundException(id)
 		);
 		
 		List<String> authList = userDetails.getAuthorities().stream()
@@ -203,7 +234,7 @@ public class BookingController {
 	public ResponseEntity<?> cancelBooking(@PathVariable Long id,
 	                                       @AuthenticationPrincipal UserDetails userDetails) {
 		Booking booking = bookingRepository.findById(id).orElseThrow(
-			() -> new BookingNotFoundException("Booking with id {} not found.", id)
+			() -> new BookingNotFoundException(id)
 		);
 		
 		List<String> authList = userDetails.getAuthorities().stream()
@@ -226,7 +257,7 @@ public class BookingController {
 	public ResponseEntity<?> uncancelBooking(@PathVariable Long id,
 	                                         @AuthenticationPrincipal UserDetails userDetails) {
 		Booking booking = bookingRepository.findById(id).orElseThrow(
-			() -> new BookingNotFoundException("Booking with id {} not found.", id)
+			() -> new BookingNotFoundException(id)
 		);
 		
 		List<String> authList = userDetails.getAuthorities().stream()
