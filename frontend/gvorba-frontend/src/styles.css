@@ -36,10 +36,15 @@
 	--border: 1px;
 	--depth: 1;
 	--noise: 1;
+	
 }
 
 @theme {
 	/*--color-schedule: oklch(80% 0.125 293.0);*/
+	--breakpoint-mobile-md: 375px;
+	--breakpoint-mobile-lg: 500px;
+	--breakpoint-tablet-sm: 640px;
+	
 	--height-headerHeight: 74px;
 	--max-height-navbarHeight: 420px;
 	--min-height-customHeight: 530px;
