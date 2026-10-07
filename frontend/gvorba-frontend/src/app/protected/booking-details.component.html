@@ -127,8 +127,8 @@
 							<textarea name="purpose"
 							          placeholder="Enter a description."
 							          id="purpose"
-							          class="px-2 border items-start rounded-sm w-full min-h-10
-							                 [@media(width<=768px)]:w-32! [@media(width<=768px)]:min-h-16"
+							          class="px-2 border items-start rounded-sm min-h-10
+							                 w-32 mobile-lg:w-full [@media(width<=768px)]:min-h-16"
 							          formControlName="purpose"></textarea>
 							
 							<label class="font-semibold"
@@ -138,7 +138,7 @@
 							<select name="attendees"
 							        id="attendees"
 							        multiple
-							        class="border rounded-sm py-0 5 w-64"
+							        class="border rounded-sm py-0 5 w-full"
 							        formControlName="attendees">
 								@for (user of users(); track user.id) {
 									<option [ngValue]="user.id"
