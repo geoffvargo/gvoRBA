@@ -594,9 +594,10 @@ after v1. None are committed; each would be specified with its own functional re
 
 - **External calendar integrations — remaining scope.** One-way Google sync and per-booking ICS export are implemented (§4.6). Remaining: two-way sync,
   Outlook/Microsoft Graph, and per-user (rather than shared) calendars.
-- **Recurring bookings.** A booking series ("every Tuesday at 10am") expanded into individual occurrences, each validated against FR-3.1,
-  FR-4.4, and the overlap constraint. Open questions: whether a series is created atomically or with per-occurrence
-  conflict reporting, and how cancelling one occurrence vs. the whole series is modelled.
+- **Amenity-based room search.** Extend FR-2.2 so members can filter rooms by required amenities (e.g. "Projector"
+  and "Video Conferencing") alongside minimum capacity and name. `Room.amenities` already stores free-text strings, so
+  this first needs a controlled amenity vocabulary that admins manage, to stop variants like "WiFi" and "Wi-Fi" from
+  splitting results.
 - **Waitlisting.** Members can join a waitlist for a taken slot and are offered it when the booking is cancelled. Depends on
   notifications (below) to be useful.
 - **Notifications.** Email, and later real-time push, for booking confirmations, cancellations (especially admin-initiated ones,
