@@ -1,8 +1,10 @@
-import { Component, effect, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoomStore } from '../stores/room-store';
 import { Booking } from '../models/booking.model';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DatePipe } from '@angular/common';
 
 /**
  * Shows one room's details and a Monday-Friday calendar of its bookings.
@@ -15,6 +17,8 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 	selector: 'app-room-details',
 	imports: [
 		MatProgressSpinner,
+		MatTooltip,
+		DatePipe,
 	],
 	templateUrl: './room-details.component.html',
 	styleUrl: './room-details.component.css',
@@ -29,14 +33,28 @@ export class RoomDetailsComponent implements OnInit {
 	// if the router reuses this component for a different room.
 	protected roomId = signal<number>(this.activatedRoute.snapshot.params['id']);
 	
-	// All of these come from RoomStore. Loading the room sets selectedRoom, and the store's own
-	// effect reloads roomBookings whenever the selected room or selectedDate changes.
+	/** All of these come from RoomStore. Loading the room sets selectedRoom, and the store's own
+	 *  effect reloads roomBookings whenever the selected room or selectedDate changes. */
 	protected room = this.roomStore.selectedRoom;
 	protected isLoading = this.roomStore.isLoading;
 	protected roomBookings = this.roomStore.roomBookings;
 	protected selectedDate = this.roomStore.selectedDate;
 	
-	// Exposes the global Date constructor to the template. The template doesn't use it at the moment.
+	/** The Monday-Friday dates of the week containing selectedDate, recomputed whenever it changes.
+	 *  Index 0 is Monday, so weekdays()[i] lines up with `#schedule-grid` column i + 1. Each date
+	 *  keeps selectedDate's time of day. **/
+	weekdays = computed(() => {
+		const startOfWeek = new Date(this.selectedDate());
+		// getDay() is 0 for Sunday, so (day + 6) % 7 is the number of days since Monday.
+		startOfWeek.setDate(this.selectedDate().getDate() - (this.selectedDate().getDay() + 6) % 7);
+		return Array.from({ length: 5 }, (_, i) => {
+			const day = new Date(startOfWeek);
+			day.setDate(startOfWeek.getDate() + i);
+			return day;
+		});
+	});
+	
+	/** Exposes the global Date constructor to the template. The template doesn't use it at the moment. */
 	protected readonly Date = Date;
 	
 	constructor() {
@@ -79,7 +97,8 @@ export class RoomDetailsComponent implements OnInit {
 		if (typeof date !== 'object') {
 			date = new Date(date);
 		}
-
+		
+		// return the day of the week for `date`
 		return date.getDay();
 	}
 	

@@ -68,26 +68,46 @@
 			
 			<div id="canvas-frame"
 			     class="flex flex-row">
-				
-				<div id="leftDiv"
-				     class="flex flex-col ">
-					<button class="material-symbols-outlined cursor-pointer select-none"
-					      (click)="onGoBackOneWeek()">
-						arrow_back_ios_new
-					</button>
-				</div>
-				
 				<div id="calendar-canvas"
-				     class="grid grid-cols-[repeat(6,var(--calendar-col-width))]
+				     class="grid grid-cols-[repeat(7,var(--calendar-col-width))]
 			            grid-rows-[var(--calendar-header-height),repeat(10,var(--calendar-hour-height))]
 			            max-w-full">
+					<button class="material-symbols-outlined cursor-pointer select-none justify-self-end"
+					        matTooltip="Go Back One Week"
+					        [matTooltipShowDelay]="1000"
+					        (click)="onGoBackOneWeek()">
+						arrow_back_ios_new
+					</button>
+					
 					<div class="contents text-center text-[10px] sm:text-xs md:text-base leading-tight md:leading-9">
-						<div class="col-start-2">Monday</div>
-						<div class="col-start-3">Tuesday</div>
-						<div class="col-start-4">Wednesday</div>
-						<div class="col-start-5">Thursday</div>
-						<div class="col-start-6">Friday</div>
+						<div class="col-start-2 leading-none">Monday
+							<br>
+							{{ weekdays()[0] | date:'MM/dd' }}
+						</div>
+						<div class="col-start-3 leading-none">Tuesday
+							<br>
+							{{ weekdays()[1] | date:'MM/dd' }}
+						</div>
+						<div class="col-start-4 leading-none">Wednesday
+							<br>
+							{{ weekdays()[2] | date:'MM/dd' }}
+						</div>
+						<div class="col-start-5 leading-none">Thursday
+							<br>
+							{{ weekdays()[3] | date:'MM/dd' }}
+						</div>
+						<div class="col-start-6 leading-none">Friday
+							<br>
+							{{ weekdays()[4] | date:'MM/dd' }}
+						</div>
 					</div>
+					
+					<button class="material-symbols-outlined cursor-pointer select-none justify-self-start"
+					        matTooltip="Go Forward One Week"
+					        [matTooltipShowDelay]="1000"
+					        (click)="onGoForwardOneWeek()">
+						arrow_forward_ios
+					</button>
 					
 					<div id="calendar"
 					     class="col-start-1 col-end-7 row-start-2 row-end-12
@@ -123,8 +143,8 @@
 									rounded-md">
 						@for (booking of roomBookings(); track booking.id) {
 							<button class="flex flex-col bg-primary text-base-300 z-20 p-1 md:p-2 text-[10px]
-														sm:text-xs md:text-sm shadow-lg shadow-base-content cursor-pointer
-														text-left overflow-hidden"
+														 sm:text-xs md:text-sm shadow-lg shadow-base-content cursor-pointer
+														 text-left overflow-hidden"
 							        [style.grid-column]="dayMapper(booking.startsAt)"
 							        [style.grid-row-start]="timeMapper(booking.startsAt)"
 							        [style.grid-row-end]="timeMapper(booking.endsAt)"
@@ -135,14 +155,6 @@
 							</button>
 						}
 					</div>
-				</div>
-				
-				<div id="rightDiv"
-				     class="flex flex-col">
-					<button class="material-symbols-outlined cursor-pointer select-none"
-					      (click)="onGoForwardOneWeek()">
-						arrow_forward_ios
-					</button>
 				</div>
 			</div>
 		}
