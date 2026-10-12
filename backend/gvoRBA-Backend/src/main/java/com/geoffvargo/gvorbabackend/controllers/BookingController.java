@@ -4,6 +4,7 @@ import com.geoffvargo.gvorbabackend.calendar.*;
 import com.geoffvargo.gvorbabackend.exceptions.*;
 import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
+import com.geoffvargo.gvorbabackend.notification.*;
 import com.geoffvargo.gvorbabackend.repos.*;
 
 import org.springframework.context.*;
@@ -114,8 +115,18 @@ public class BookingController {
 			                  .build();
 		
 		try {
-			bookingRepository.save(booking);
+			Booking saved = bookingRepository.save(booking);
 			publishCalendarEvent(booking, false);
+			appEventPublisher.publishEvent(
+				new BookingConfirmedEvent(
+					saved.getId(),
+					user.getEmail(),
+					user.getName(),
+					saved.getRoom().getName(),
+					saved.getStartsAt(),
+					saved.getEndsAt()
+				)
+			);
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}
@@ -189,7 +200,17 @@ public class BookingController {
 		booking.setAttendees(attendees);
 		
 		try {
-			bookingRepository.save(booking);
+			Booking saved = bookingRepository.save(booking);
+			appEventPublisher.publishEvent(
+				new BookingConfirmedEvent(
+					saved.getId(),
+					user.getEmail(),
+					user.getName(),
+					saved.getRoom().getName(),
+					saved.getStartsAt(),
+					saved.getEndsAt()
+				)
+			);
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}
@@ -270,6 +291,17 @@ public class BookingController {
 			booking.setCancelledAt(null);
 			bookingRepository.save(booking);
 			publishCalendarEvent(booking, false);
+			appEventPublisher.publishEvent(
+				new BookingConfirmedEvent(
+					booking.getId(),
+					booking.getUserId().getEmail(),
+					booking.getUserId().getName(),
+					booking.getRoom().getName(),
+					booking.getStartsAt(),
+					booking.getEndsAt()
+				)
+			);
+			
 			
 			return ResponseEntity.ok(booking);
 		}

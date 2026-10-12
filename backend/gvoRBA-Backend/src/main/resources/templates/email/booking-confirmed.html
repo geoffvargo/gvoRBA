@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<body style="margin: 0;padding: 24px;background: #f4f4f5;font-family: Arial, sans-serif;">
+		<table role="presentation"
+		       width="100%"
+		       style="min-width: 520px;margin: 0 auto;background: #ffffff;border: 1px solid #e4e4e7;border-radius: 8px;">
+			<tr>
+				<td style="padding: 24px;">
+					<h2 style="margin: 0 0 12px;">
+						Booking Confirmed
+					</h2>
+					<p>Hi
+					   <!--/*@thymesVar id="guestName" type=""*/-->
+						<span th:text="${guestName}">Guest</span>
+					   ,
+					</p>
+					<p style="color: #3f3f46;">Your reservation for
+						<strong th:text="${roomName}">Room</strong>
+					                           is confirmed.
+					</p>
+					<table role="presentation"
+					       style="width:100%;font-size:14px;color:#3f3f46;">
+						<tr>
+							<td>From</td>
+							<td style="text-align:right"
+							    th:text="${#temporals.format(start,'MMM d, yyyy h:mm a')}">—
+							</td>
+						</tr>
+						<tr>
+							<td>To</td>
+							<td style="text-align:right"
+							    th:text="${#temporals.format(end,'MMM d, yyyy h:mm a')}">—
+							</td>
+						</tr>
+						<tr>
+							<td>Reference</td>
+							<td style="text-align:right"
+							    th:text="${'#' + bookingId}">#0
+							</td>
+						</tr>
+					</table>
+					<p th:if="${hasIcs}"
+					   style="margin: 16px 0 0;padding: 10px 12px;background: #f4f4f5;border-radius: 6px;font-size: 13px;color: #3f3f46;">
+						Open the attached <strong th:text="'booking-' + ${bookingId} + '.ics'">booking.ics</strong>
+					</p>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

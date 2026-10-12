@@ -1,0 +1,267 @@
+### PATCH /api/bookings/{id}/edit
+# Run the whole file top-to-bottom with the "dev" environment (tokens in http-client.private.env.json,
+# local backend only). Requests 0a-0e look up real ids and create the bookings under test, so the file
+# doesn't depend on seed-data ids. Each run uses a random day in 2099 so reruns don't collide.
+# Assertions describe the intended behavior; cases 4, 6-9 fail until those bugs are fixed.
+
+### 0a. Setup: id of the user behind userToken
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("setup: user lookup", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+    client.global.set("userId", response.body.id);
+%}
+
+### 0b. Setup: id of the user behind adminToken
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{adminToken}}
+
+> {%
+    client.test("setup: admin lookup", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+    client.global.set("adminId", response.body.id);
+%}
+
+### 0c. Setup: two rooms (the second is the target of the room-change case)
+GET {{baseUrl}}/api/rooms
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("setup: room lookup", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(response.body.length > 1, "need at least two rooms");
+    });
+    client.global.set("roomId", response.body[0].id);
+    client.global.set("otherRoomId", response.body[1].id);
+%}
+
+### 0d. Setup: the booking under test, 10:00-11:00 on a random day in 2099
+< {%
+    const day = Math.floor(Math.random() * 365);
+    const at = (h) => new Date(Date.UTC(2099, 0, 1 + day, h, 0, 0)).toISOString().slice(0, 19);
+    client.global.set("startsAt", at(10));
+    client.global.set("endsAt", at(11));
+    client.global.set("editedStartsAt", at(12));
+    client.global.set("editedEndsAt", at(13));
+    client.global.set("blockerStartsAt", at(15));
+    client.global.set("blockerEndsAt", at(16));
+%}
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{startsAt}}",
+  "endsAt": "{{endsAt}}",
+  "purpose": "HTTP edit test",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("setup: booking created", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+    client.global.set("bookingId", response.body.id);
+%}
+
+### 0e. Setup: a second booking in the same room, 15:00-16:00, for the overlap case
+POST {{baseUrl}}/api/bookings/add-booking
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "userId": {{adminId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{blockerStartsAt}}",
+  "endsAt": "{{blockerEndsAt}}",
+  "purpose": "HTTP edit test (blocker)",
+  "status": "CONFIRMED"
+}
+
+> {%
+    client.test("setup: blocker created", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+    });
+    client.global.set("blockerId", response.body.id);
+%}
+
+### 1. No auth -> 401
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/edit
+Content-Type: application/json
+
+{}
+
+> {%
+    client.test("no auth is rejected", () => {
+        client.assert(response.status === 401, "expected 401, got " + response.status);
+    });
+%}
+
+### 2. Valid edit: new times, purpose and attendees -> 200 with the updated booking
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{editedStartsAt}}",
+  "endsAt": "{{editedEndsAt}}",
+  "purpose": "HTTP edit test (edited)",
+  "attendees": [{{adminId}}]
+}
+
+> {%
+    client.test("booking is edited", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(response.body.id === client.global.get("bookingId"), "wrong id: " + response.body.id);
+        client.assert(response.body.purpose === "HTTP edit test (edited)", "wrong purpose: " + response.body.purpose);
+        client.assert(response.body.startsAt.startsWith(client.global.get("editedStartsAt")),
+            "wrong startsAt: " + response.body.startsAt);
+        client.assert(response.body.endsAt.startsWith(client.global.get("editedEndsAt")),
+            "wrong endsAt: " + response.body.endsAt);
+        client.assert(response.body.attendees.length === 1, "expected 1 attendee, got " + response.body.attendees.length);
+        client.assert(response.body.status === "CONFIRMED", "status changed: " + response.body.status);
+    });
+%}
+
+### 3. GET reflects the edit (it was persisted, not just echoed)
+GET {{baseUrl}}/api/bookings/{{bookingId}}
+Authorization: Bearer {{userToken}}
+
+> {%
+    client.test("edit is persisted", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(response.body.purpose === "HTTP edit test (edited)", "wrong purpose: " + response.body.purpose);
+        client.assert(response.body.startsAt.startsWith(client.global.get("editedStartsAt")),
+            "wrong startsAt: " + response.body.startsAt);
+    });
+%}
+
+### 4. Change the room -> 200 with the new room (currently ignored: roomId is looked up but never set)
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{otherRoomId}},
+  "startsAt": "{{editedStartsAt}}",
+  "endsAt": "{{editedEndsAt}}",
+  "purpose": "HTTP edit test (edited)"
+}
+
+> {%
+    client.test("room is changed", () => {
+        client.assert(response.status === 200, "expected 200, got " + response.status);
+        client.assert(String(response.body.room.id) === String(client.global.get("otherRoomId")),
+            "room not changed: " + response.body.room.id);
+    });
+%}
+
+### 5. Move onto the blocker's slot in the same room -> 409 BOOKING_CONFLICT
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{blockerStartsAt}}",
+  "endsAt": "{{blockerEndsAt}}",
+  "purpose": "HTTP edit test (overlap)"
+}
+
+> {%
+    client.test("overlap is rejected", () => {
+        client.assert(response.status === 409, "expected 409, got " + response.status);
+        client.assert(response.body.code === "BOOKING_CONFLICT", "wrong code: " + response.body.code);
+    });
+%}
+
+### 6. Unknown booking -> 404 (currently 500: BookingNotFoundException has no handler)
+PATCH {{baseUrl}}/api/bookings/999999999/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{editedStartsAt}}",
+  "endsAt": "{{editedEndsAt}}"
+}
+
+> {%
+    client.test("unknown booking is 404", () => {
+        client.assert(response.status === 404, "expected 404, got " + response.status);
+    });
+%}
+
+### 7. Unknown user -> 404 (currently 500: UserNotFoundException has no handler)
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": 999999999,
+  "roomId": {{roomId}},
+  "startsAt": "{{editedStartsAt}}",
+  "endsAt": "{{editedEndsAt}}"
+}
+
+> {%
+    client.test("unknown user is 404", () => {
+        client.assert(response.status === 404, "expected 404, got " + response.status);
+    });
+%}
+
+### 8. Unknown room -> 404 (currently 500: RoomNotFoundException has no handler)
+PATCH {{baseUrl}}/api/bookings/{{bookingId}}/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "roomId": 999999999,
+  "startsAt": "{{editedStartsAt}}",
+  "endsAt": "{{editedEndsAt}}"
+}
+
+> {%
+    client.test("unknown room is 404", () => {
+        client.assert(response.status === 404, "expected 404, got " + response.status);
+    });
+%}
+
+### 9. ROLE_USER edits someone else's booking -> 403 (currently 200: no ownership check)
+PATCH {{baseUrl}}/api/bookings/{{blockerId}}/edit
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{
+  "userId": {{adminId}},
+  "roomId": {{roomId}},
+  "startsAt": "{{blockerStartsAt}}",
+  "endsAt": "{{blockerEndsAt}}",
+  "purpose": "hijacked"
+}
+
+> {%
+    client.test("non-owner is forbidden", () => {
+        client.assert(response.status === 403, "expected 403, got " + response.status);
+    });
+%}
+
+### 10a. Cleanup: delete the booking under test
+DELETE {{baseUrl}}/api/bookings/delete/{{bookingId}}
+Authorization: Bearer {{adminToken}}
+
+### 10b. Cleanup: delete the blocker
+DELETE {{baseUrl}}/api/bookings/delete/{{blockerId}}
+Authorization: Bearer {{adminToken}}
