@@ -2,61 +2,75 @@
 <project xmlns = "http://maven.apache.org/POM/4.0.0"
          xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation = "http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<parent>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<groupId>org.springframework.boot</groupId>
+		<relativePath/>
+		<version>4.0.6</version> <!-- lookup parent from repository -->
+	</parent>
+	
+	<groupId>com.geoffvargo</groupId>
+	<licenses>
+		<license/>
+	</licenses>
+	<modelVersion>4.0.0</modelVersion>
+	<name>gvoRBA Backend</name>
+	
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<url/>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<developers>
+		<developer/>
+	</developers>
+	
+	<description>gvoRBA Backend</description>
+	
 	<artifactId>gvoRBA-backend</artifactId>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<artifactId>lombok</artifactId>
-							<groupId>org.projectlombok</groupId>
-						</exclude>
-					</excludes>
-				</configuration>
-				<groupId>org.springframework.boot</groupId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<executions>
-					<execution>
-						<configuration>
-							<annotationProcessorPaths>
-								<path>
-									<artifactId>lombok</artifactId>
-									<groupId>org.projectlombok</groupId>
-								</path>
-							</annotationProcessorPaths>
-						</configuration>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<id>default-compile</id>
-						<phase>compile</phase>
-					</execution>
-					<execution>
-						<configuration>
-							<annotationProcessorPaths>
-								<path>
-									<artifactId>lombok</artifactId>
-									<groupId>org.projectlombok</groupId>
-								</path>
-							</annotationProcessorPaths>
-						</configuration>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<id>default-testCompile</id>
-						<phase>test-compile</phase>
-					</execution>
-				</executions>
-				<groupId>org.apache.maven.plugins</groupId>
-			</plugin>
-		</plugins>
-	</build>
+	<dependencyManagement>
+	    <dependencies>
+	        <dependency>
+	            <artifactId>testcontainers-bom</artifactId>
+	            <groupId>org.testcontainers</groupId>
+	            <scope>import</scope>
+	            <type>pom</type>
+	            <version>1.20.4</version>
+	        </dependency>
+		    <dependency>
+                <groupId>me.paulschwarz</groupId>
+                <artifactId>spring-dotenv-bom</artifactId>
+                <version>5.1.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+	    </dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
+		<dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+		   <groupId>org.springframework.boot</groupId>
+		   <artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>springboot4-dotenv</artifactId>
+            <optional>true</optional>
+        </dependency>
 		<dependency>
 		   <groupId>com.google.apis</groupId>
 		   <artifactId>google-api-services-calendar</artifactId>
@@ -170,45 +184,58 @@
 		    <scope>test</scope>
 		</dependency><dependency><artifactId>spring-boot-starter-actuator</artifactId><groupId>org.springframework.boot</groupId></dependency>
 	</dependencies>
-	<dependencyManagement>
-	    <dependencies>
-	        <dependency>
-	            <artifactId>testcontainers-bom</artifactId>
-	            <groupId>org.testcontainers</groupId>
-	            <scope>import</scope>
-	            <type>pom</type>
-	            <version>1.20.4</version>
-	        </dependency>
-	    </dependencies>
-	</dependencyManagement>
-	<description>gvoRBA Backend</description>
-	<developers>
-		<developer/>
-	</developers>
-	<groupId>com.geoffvargo</groupId>
-	<licenses>
-		<license/>
-	</licenses>
-	<modelVersion>4.0.0</modelVersion>
-	<name>gvoRBA Backend</name>
 	
-	<parent>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<groupId>org.springframework.boot</groupId>
-		<relativePath/>
-		<version>4.0.6</version> <!-- lookup parent from repository -->
-	</parent>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<artifactId>lombok</artifactId>
+							<groupId>org.projectlombok</groupId>
+						</exclude>
+					</excludes>
+				</configuration>
+				<groupId>org.springframework.boot</groupId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<artifactId>lombok</artifactId>
+									<groupId>org.projectlombok</groupId>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<id>default-compile</id>
+						<phase>compile</phase>
+					</execution>
+					<execution>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<artifactId>lombok</artifactId>
+									<groupId>org.projectlombok</groupId>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+					</execution>
+				</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+			</plugin>
+		</plugins>
+	</build>
 	
-	<properties>
-		<java.version>21</java.version>
-	</properties>
-
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
-	<url/>
-	<version>0.0.1-SNAPSHOT</version>
 </project>
