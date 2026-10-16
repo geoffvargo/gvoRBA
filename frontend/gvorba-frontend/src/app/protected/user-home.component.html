@@ -1,25 +1,48 @@
 <div class="flex-nowrap justify-center">
 	<div class="w-full py-16 flex items-center justify-center">
-		<div class="card bg-base-100 shadow-lg w-fit p-2">
-			<h2 class="card-title">Credentials:</h2>
-			<div class="card-body">
-				<p>
-					<span class="font-semibold">Username:</span>
-					{{ currUser().name }}
-				</p>
-				<p>
-					<span class="font-semibold">Email:</span>
-					{{ currUser().email }}
-				</p>
-				<p>
-					<span class="font-semibold">Role:</span>
-					{{ currUser().role.roleName }}
-				</p>
-				<p class="break-all pl-19 -indent-19">
-					<span class="font-semibold">JWT Token:</span>
-					{{ token() }}
-				</p>
+		<div class="card bg-base-100 shadow-lg w-fit p-2 text-center">
+			<ngx-avatars [name]="currUser().name"
+			             class="self-center p-2" />
+			<h2 class="text-4xl">
+				{{ currUser().name }}
+			</h2>
+			
+			<div class="grid grid-cols-2 [&>:nth-child(odd)]:text-right [&>:nth-child(even)]:text-left gap-2 p-2">
+				<span class="font-semibold">User Id:</span>
+				<span>{{ currUser().id }}</span>
+				
+				<span class="font-semibold">Email:</span>
+				<span>{{ currUser().email }}</span>
+				
+				<span class="font-semibold">Role:</span>
+				<span>{{ currUser().role.roleName }}</span>
+				
+				<span class="font-semibold">Created On:</span>
+				<span>{{ currUser().createdOn }}</span>
+				
+				<span class="font-semibold">Enabled:</span>
+				<span>{{ currUser().enabled }}</span>
 			</div>
+			
+			@if (!isEditing()) {
+				<button class="action-btn w-fit! self-center"
+				        (click)="onEdit()">
+					Edit
+				</button>
+			} @else {
+				<div class="flex flex-row gap-2">
+					<button class="action-btn">
+						Save
+					</button>
+					<button class="action-btn">
+						Reset
+					</button>
+					<button class="action-btn"
+					        (click)="onCancel()">
+						Cancel
+					</button>
+				</div>
+			}
 		</div>
 	</div>
 </div>

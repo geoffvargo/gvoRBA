@@ -1,38 +1,41 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { ApiService } from '../services/api.service';
-import { TokenStorageService } from '../services/token-storage-service';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { Component, computed, inject, signal } from '@angular/core';
 import { User } from '../models/user.model';
+import { AvatarComponent } from 'ngx-avatars';
+import { AuthStore } from '../stores/auth-store';
+import { NonNullableFormBuilder, Validators } from '@angular/forms';
 
 @Component({
 	selector: 'app-user-home',
-	imports: [],
+	imports: [
+		AvatarComponent,
+	],
 	templateUrl: './user-home.component.html',
 	styleUrl: './user-home.component.css',
 })
-export class UserHomeComponent implements OnInit {
-	private apiService = inject(ApiService);
-	private tokenService = inject(TokenStorageService);
-	private jwtHelper = inject(JwtHelperService);
+export class UserHomeComponent {
+	private authStore = inject(AuthStore);
 	
-	token = signal(this.tokenService.getToken() ?? '');
-	currUser = signal<User>(new User);
+	isAdmin = this.authStore.isAdmin;
 	
-	decodeJwt(token: string): unknown {
-		const payload = token.split('.')[1];
-		const decodedPayload = atob(payload);
-		console.log('[TARGET] decodedPayload: ' + decodedPayload);
-		return JSON.parse(decodedPayload);
+	isEditing = signal(false);
+	
+	// Falls back to an empty `User` while the store's user is still loading (or after logout), so the template never sees
+	// `null`.
+	currUser = computed<User>(() => this.authStore.user() ?? new User());
+	
+	private readonly fb = inject(NonNullableFormBuilder);
+	
+	editingForm = this.fb.group({
+		name: ['', Validators.required],
+		email: ['', Validators.required],
+	});
+	
+	onEdit() {
+		console.log('user edited');
+		this.isEditing.set(true);
 	}
 	
-	ngOnInit() {
-		if (this.token() !== null) {
-			this.apiService.getUser().subscribe({
-				next: async (user: User) => {
-					this.currUser.set(user);
-					console.log('user: ', user);
-				},
-			});
-		}
+	onCancel() {
+		this.isEditing.set(false);
 	}
 }

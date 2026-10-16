@@ -1,4 +1,5 @@
 import { Role } from './role.model';
+import { AuthProviderEnum } from './auth-provider.enum';
 
 export class User {
 	id = -1;
@@ -7,18 +8,21 @@ export class User {
 	role: Role = new Role();
 	createdOn: Date = new Date();
 	enabled: boolean;
+	authProvider: AuthProviderEnum;
 	
 	constructor(id = -1,
 	            email = '',
 	            name = '',
 	            role: Role = new Role(),
 	            createdOn: Date = new Date(),
-	            isEnabled = true) {
+	            isEnabled = true,
+	            authProvider = AuthProviderEnum.LOCAL) {
 		this.id = id;
 		this.email = email;
 		this.name = name;
 		this.role = role;
 		this.createdOn = createdOn;
 		this.enabled = isEnabled;
+		this.authProvider = authProvider;
 	}
 }

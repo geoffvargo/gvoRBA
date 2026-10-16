@@ -6,6 +6,7 @@ import { UserUpdate } from '../models/user-update.model';
 import { UserCreationModel } from '../models/user-creation.model';
 import { firstValueFrom } from 'rxjs';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { AuthProviderEnum } from '../models/auth-provider.enum';
 
 @Injectable({
 	providedIn: 'root',
@@ -17,10 +18,12 @@ export class UserStore {
 	private _users = signal<User[]>([]);
 	private _isLoading = signal<boolean>(false);
 	private _loadedUser = signal<User | null>(null);
+	private _isLocal = signal<boolean>(false);
 	
 	readonly users = this._users.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
 	readonly loadedUser = this._loadedUser.asReadonly();
+	readonly isLocal = this._isLocal.asReadonly();
 	
 	constructor() {
 		this.loadUsers();
@@ -50,6 +53,7 @@ export class UserStore {
 		this.apiService.loadUser(id).subscribe({
 			next: data => {
 				this._loadedUser.set(data);
+				this._isLocal.set(this._loadedUser()?.authProvider === AuthProviderEnum.LOCAL);
 				console.log(this.loadedUser());
 				this._isLoading.set(false);
 			},
