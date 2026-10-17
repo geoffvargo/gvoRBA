@@ -200,7 +200,8 @@ public class SecurityConfig {
 				user1.setRole(userRole);
 				user1.setCreatedOn(new Date());
 				user1.setEnabled(true);
-				
+				user1.withDefaultPrefs();
+
 				userRepository.save(user1);
 			}
 			
@@ -212,6 +213,7 @@ public class SecurityConfig {
 				user2.setRole(adminRole);
 				user2.setCreatedOn(new Date());
 				user2.setEnabled(true);
+				user2.withDefaultPrefs();
 				userRepository.save(user2);
 			}
 			

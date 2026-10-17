@@ -19,24 +19,27 @@ public record UserDto(
 	Boolean enabled,
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	String password,
-	AuthProvider authProvider) implements Serializable {
+	AuthProvider authProvider,
+	UserPrefsDto userPrefs
+) implements Serializable {
+
 	public UserDto(Long id,
 	               String email,
 	               String name,
 	               RoleDto role,
 	               Date createdOn,
 	               Boolean enabled,
-	               String authProvider) {
-		this(id, email, name, role, createdOn, enabled, null, AuthProvider.valueOf(authProvider));
-	}
-	
-	public UserDto(Long id,
-	               String email,
-	               String name,
-	               RoleDto role,
-	               Boolean enabled,
-	               String password) {
-		this(id, email, name, role, null, enabled, password);
+	               String authProvider,
+	               UserPrefsDto userPrefs) {
+		this(id,
+			email,
+			name,
+			role,
+			createdOn,
+			enabled,
+			null,
+			AuthProvider.valueOf(authProvider),
+			userPrefs);
 	}
 	
 	public static UserDto fromUser(User user) {
@@ -47,7 +50,8 @@ public record UserDto(
 			RoleDto.fromRole(user.getRole()),
 			user.getCreatedOn(),
 			user.getEnabled(),
-			user.getAuthProvider().toString()
+			user.getAuthProvider().toString(),
+			UserPrefsDto.fromUserPrefs(user.getUserPrefs())
 		);
 	}
 }

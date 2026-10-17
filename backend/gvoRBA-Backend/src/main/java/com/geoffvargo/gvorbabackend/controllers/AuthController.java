@@ -149,10 +149,11 @@ public class AuthController {
 			            .password(passwordEncoder.encode(request.getPassword()))
 			            .createdOn(new Date())
 			            .enabled(true)
-			            .build();
-		
+			            .build()
+			            .withDefaultPrefs();
+
 		userRepository.save(user);
-		
+
 		return ResponseEntity.ok("User registered successfully!");
 	}
 	
