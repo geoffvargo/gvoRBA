@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { User } from '../models/user.model';
 import { AvatarComponent } from 'ngx-avatars';
-import { AuthStore } from '../stores/auth-store';
+import { UserStore } from '../stores/user-store';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 
 @Component({
@@ -13,15 +13,15 @@ import { NonNullableFormBuilder, Validators } from '@angular/forms';
 	styleUrl: './user-home.component.css',
 })
 export class UserHomeComponent {
-	private authStore = inject(AuthStore);
+	private userStore = inject(UserStore);
 	
-	isAdmin = this.authStore.isAdmin;
+	isAdmin = this.userStore.isAdmin;
 	
 	isEditing = signal(false);
 	
 	// Falls back to an empty `User` while the store's user is still loading (or after logout), so the template never sees
 	// `null`.
-	currUser = computed<User>(() => this.authStore.user() ?? new User());
+	currUser = computed<User>(() => this.userStore.user() ?? new User());
 	
 	private readonly fb = inject(NonNullableFormBuilder);
 	

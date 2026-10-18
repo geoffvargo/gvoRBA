@@ -1,11 +1,11 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { User } from '../models/user.model';
 import { LoginRequest } from '../models/login-request.model';
 import { SignupRequest } from '../models/signup-request.model';
 import { TokenStorageService } from '../services/token-storage-service';
 import { finalize, map, Observable, shareReplay, switchMap, tap } from 'rxjs';
 import { HotToastService } from '@ngxpert/hot-toast';
+import { UserStore } from './user-store';
 
 @Injectable({
 	providedIn: 'root',
@@ -13,56 +13,44 @@ import { HotToastService } from '@ngxpert/hot-toast';
 export class AuthStore {
 	private apiService = inject(ApiService);
 	private tokenStorage = inject(TokenStorageService);
+	/// One-way dependency: AuthStore → UserStore. UserStore must never inject
+	/// AuthStore, or Angular throws a circular-DI error (NG0200).
+	private userStore = inject(UserStore);
 	private inFlight: Observable<string> | null = null;
 	private toast = inject(HotToastService);
 	
-	private _user = signal<User | null>(null);
 	private _authToken = signal('');
 	private _isLoading = signal(false);
 	private _error = signal<Error | null>(null);
 	
-	readonly user = this._user.asReadonly();
 	readonly authToken = this._authToken.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
 	readonly error = this._error.asReadonly();
 	
-	// `.role` can itself be null/undefined even when `_user` isn't, so both hops
-	// need `?.` — otherwise a user payload with a missing role throws here
-	// instead of falling back to ROLE_GUEST.
-	role = computed(() => this._user()?.role?.roleName ?? 'ROLE_GUEST');
 	isAuthenticated = computed(() => this.authToken() !== '');
-	isAdmin = computed(() => this.role() === 'ROLE_ADMIN');
-	isMember = computed(() => this.role() === 'ROLE_MEMBER');
 	
 	constructor() {
-		this.loadCurrentUser();
+		this.restoreSession();
 	}
 	
 	/* MUTATORS */
-	loadCurrentUser() {
+	
+	/** On app start, if a token survived in sessionStorage, re-fetch the user and re-arm the token signal. */
+	private restoreSession() {
 		const token = sessionStorage.getItem('auth-token');
-		
-		if (token) {
-			this.apiService.getCurrentUser().subscribe({
-				next: (data: User) => {
-					this._user.set(data);
-					// Read the CURRENT token from storage rather than reusing the
-					// `token` captured above: if this request 401'd and got
-					// silently retried with a refreshed token (see authInterceptor),
-					// `token` is now stale. Writing it back here would clobber the
-					// valid token refresh() already stored.
-					this._authToken.set(this.tokenStorage.getToken() ?? token);
-				},
-				error: err => {
-					console.log(err);
-					this.toast.error(err.message, {
-						position: 'bottom-center',
-						dismissible: true,
-					});
-					this.resetState();
-				},
-			});
+		if (!token) {
+			return;
 		}
+		
+		this.userStore.loadCurrentUser().subscribe({
+			next: data => {
+				console.log(data);
+			},
+			error: error => {
+				console.log(error);
+				this.toast.error(error);
+			},
+		});
 	}
 	
 	signUp(payload: SignupRequest) {
@@ -97,14 +85,13 @@ export class AuthStore {
 					this._authToken.set(r.jwtToken);
 					this.tokenStorage.saveToken(r.jwtToken);
 				}),
-			// Re-fetch and set `_user` here too, not just the token. Previously
-			// refresh() only updated `_authToken`, so `isAdmin`/`role` (which are
-			// derived from `_user`) went stale or fell back to ROLE_GUEST any
-			// time a silent refresh fired — isAuthenticated looked fine while
-			// admin-only UI silently disappeared.
+			// Re-fetch the user here too, not just the token. Previously
+			// refresh() only updated the token, so `isAdmin`/`role` (derived
+			// from the user in UserStore) went stale or fell back to ROLE_GUEST
+			// any time a silent refresh fired — isAuthenticated looked fine
+			// while admin-only UI silently disappeared.
 			switchMap(
-				r => this.apiService.getCurrentUser().pipe(
-					tap(user => this._user.set(user)),
+				r => this.userStore.loadCurrentUser().pipe(
 					map(() => r.jwtToken),
 				)),
 			finalize(
@@ -125,10 +112,9 @@ export class AuthStore {
 				this.tokenStorage.saveToken(resp.jwtToken);
 				this._authToken.set(resp.jwtToken);
 			}),
-			switchMap(() => this.apiService.getCurrentUser()),
+			switchMap(() => this.userStore.loadCurrentUser()),
 			tap({
-				next: currUser => {
-					this._user.set(currUser);
+				next: () => {
 					this._isLoading.set(false);
 				},
 				error: err => {
@@ -155,7 +141,7 @@ export class AuthStore {
 	
 	private resetState() {
 		sessionStorage.removeItem('auth-token');
-		this._user.set(null);
+		this.userStore.clearCurrentUser();
 		this._authToken.set('');
 	}
 }

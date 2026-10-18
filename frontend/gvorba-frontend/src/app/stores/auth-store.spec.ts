@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { of } from 'rxjs';
 
 import { AuthStore } from './auth-store';
+import { UserStore } from './user-store';
 import { ApiService } from '../services/api.service';
 import { TokenStorageService } from '../services/token-storage-service';
 import { User } from '../models/user.model';
@@ -11,6 +12,7 @@ import { LoginRequest } from '../models/login-request.model';
 
 describe('AuthStore', () => {
 	let service: AuthStore;
+	let userStore: UserStore;
 	let apiSpy: {
 		getCurrentUser: Mock,
 		signup: Mock,
@@ -43,20 +45,21 @@ describe('AuthStore', () => {
 		});
 		
 		service = TestBed.inject(AuthStore);
+		userStore = TestBed.inject(UserStore);
 	});
 	
 	it('should be created', () => {
 		expect(service).toBeTruthy();
 	});
 	
-	describe('user', () => {
+	describe('user (owned by UserStore, driven by AuthStore)', () => {
 		it('should start out as null when there is no stored auth token', () => {
-			expect(service.user()).toBeNull();
+			expect(userStore.user()).toBeNull();
 		});
 		
 		it('should be read-only, exposing no `.set`/`.update` methods', () => {
-			expect((service.user as unknown as { set?: unknown }).set).toBeUndefined();
-			expect((service.user as unknown as { update?: unknown }).update).toBeUndefined();
+			expect((userStore.user as unknown as { set?: unknown }).set).toBeUndefined();
+			expect((userStore.user as unknown as { update?: unknown }).update).toBeUndefined();
 		});
 		
 		it('should reflect the current user after a successful login', () => {
@@ -66,9 +69,9 @@ describe('AuthStore', () => {
 			
 			service.login({} as LoginRequest).subscribe();
 			
-			expect(service.user()).toEqual(user);
+			expect(userStore.user()).toEqual(user);
 			console.log('user: ', user);
-			expect(service.user()?.id).toEqual(1);
+			expect(userStore.user()?.id).toEqual(1);
 		});
 		
 		it('should reset to null after logout', () => {
@@ -79,7 +82,7 @@ describe('AuthStore', () => {
 			
 			service.logout();
 			
-			expect(service.user()).toBeNull();
+			expect(userStore.user()).toBeNull();
 		});
 	});
 });

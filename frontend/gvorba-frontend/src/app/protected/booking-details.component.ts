@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, OnInit, Signal, signal, ViewEncaps
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { BookingStore } from '../stores/booking-store';
-import { AuthStore } from '../stores/auth-store';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
@@ -41,18 +40,17 @@ export class BookingDetailsComponent implements OnInit {
 	private readonly fb = inject(NonNullableFormBuilder);
 	
 	protected bookingStore = inject(BookingStore);
-	protected authStore = inject(AuthStore);
 	protected userStore = inject(UserStore);
 	
 	protected bookingId = signal<number>(this.route.snapshot.params['id']);
 	protected users = this.userStore.users;
 	protected booking = this.bookingStore.currentBooking;
 	protected isLoading = this.bookingStore.isLoading;
-	protected isAdmin = this.authStore.isAdmin;
+	protected isAdmin = this.userStore.isAdmin;
 	
 	isEditing = signal(false);
 	
-	readonly currUser = this.authStore.user;
+	readonly currUser = this.userStore.user;
 	readonly isCancelled = this.bookingStore.isCancelled;
 	
 	readonly isOwner = computed(() =>
@@ -134,6 +132,7 @@ export class BookingDetailsComponent implements OnInit {
 	}
 	
 	ngOnInit() {
+		this.userStore.loadUsers(); // attendee picker
 		this.bookingStore.loadBooking(this.bookingId());
 		console.log('currentBooking', this.booking());
 		console.log(this.attendeeNames());
