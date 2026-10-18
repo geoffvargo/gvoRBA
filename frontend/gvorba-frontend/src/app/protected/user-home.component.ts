@@ -25,9 +25,17 @@ export class UserHomeComponent {
 	
 	private readonly fb = inject(NonNullableFormBuilder);
 	
-	editingForm = this.fb.group({
+	userDetailsForm = this.fb.group({
 		name: ['', Validators.required],
 		email: ['', Validators.required],
+	});
+	
+	userPreferencesForm = this.fb.group({
+		emailNotification: [false, Validators.required],
+		multifactor: [false, Validators.required],
+		confirmBookings: [false, Validators.required],
+		notifyOnAdminCancel: [false, Validators.required],
+		favoriteRoons: [[], Validators.required],
 	});
 	
 	onEdit() {
