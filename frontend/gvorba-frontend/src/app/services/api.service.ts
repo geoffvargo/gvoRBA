@@ -162,10 +162,10 @@ export class ApiService {
 	
 	/* for UserPrefs */
 	getUserPrefs(id: number) {
-		return this.httpClient.get<UserPrefs>(`${this.baseUrl}/api/users/${id}/get-prefs`);
+		return this.httpClient.get<UserPrefs>(`${this.baseUrl}/api/userprefs/${id}/get-prefs`);
 	}
 	
 	setUserPrefs(id: number, payload: UserPrefs) {
-		return this.httpClient.post<UserPrefs>(`/${this.baseUrl}/api/users/${id}/set-prefs`, payload);
+		return this.httpClient.post<UserPrefs>(`/${this.baseUrl}/api/userprefs/${id}/set-prefs`, payload);
 	}
 }
