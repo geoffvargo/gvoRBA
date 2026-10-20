@@ -69,7 +69,8 @@ public class OAuth2UserProvisioningService {
 			               .createdOn(new Date())
 			               .authProvider(provider)
 			               .providerId(userInfo.getProviderId())
-			               .build();
+			               .build()
+			               .withDefaultPrefs();
 
 		User saved = userRepository.save(newUser);
 

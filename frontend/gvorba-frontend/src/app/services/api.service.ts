@@ -17,6 +17,7 @@ import { UserUpdate } from '../models/user-update.model';
 import { UserCreationModel } from '../models/user-creation.model';
 import { BookingResponse } from '../models/booking.response';
 import { SignupRequest } from '../models/signup-request.model';
+import { UserPrefs } from '../models/user.prefs';
 
 // const baseURL = '/api';
 
@@ -157,5 +158,14 @@ export class ApiService {
 		return this.httpClient.get(`${this.baseUrl}/api/bookings/${bookingId}/calendar.ics`, {
 			responseType: 'blob',
 		});
+	}
+	
+	/* for UserPrefs */
+	getUserPrefs(id: number) {
+		return this.httpClient.get<UserPrefs>(`${this.baseUrl}/api/userprefs/${id}/get-prefs`);
+	}
+	
+	setUserPrefs(id: number, payload: UserPrefs) {
+		return this.httpClient.post<UserPrefs>(`${this.baseUrl}/api/userprefs/${id}/set-prefs`, payload);
 	}
 }

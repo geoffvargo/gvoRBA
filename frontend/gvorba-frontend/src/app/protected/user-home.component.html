@@ -1,25 +1,141 @@
 <div class="flex-nowrap justify-center">
-	<div class="w-full py-16 flex items-center justify-center">
-		<div class="card bg-base-100 shadow-lg w-fit p-2">
-			<h2 class="card-title">Credentials:</h2>
-			<div class="card-body">
-				<p>
-					<span class="font-semibold">Username:</span>
+	<div class="w-full py-16 flex flex-col items-center justify-center gap-4">
+		@if (isLoading()) {
+			<mat-spinner diameter="48"
+			             class="self-center m-4"
+			             aria-label="loading"></mat-spinner>
+		} @else {
+			<div class="card bg-base-100 shadow-lg w-fit p-2 text-center">
+				<ngx-avatars [name]="currUser().name"
+				             class="self-center p-2" />
+				<h2 class="text-4xl">
 					{{ currUser().name }}
-				</p>
-				<p>
+				</h2>
+				
+				<div class="grid grid-cols-2 [&>:nth-child(odd)]:text-right [&>:nth-child(even)]:text-left gap-2 p-2">
+					<span class="font-semibold">User Id:</span>
+					<span>{{ currUser().id }}</span>
+					
 					<span class="font-semibold">Email:</span>
-					{{ currUser().email }}
-				</p>
-				<p>
+					<span>{{ currUser().email }}</span>
+					
 					<span class="font-semibold">Role:</span>
-					{{ currUser().role.roleName }}
-				</p>
-				<p class="break-all pl-19 -indent-19">
-					<span class="font-semibold">JWT Token:</span>
-					{{ token() }}
-				</p>
+					<span>{{ currUser().role.roleName }}</span>
+					
+					<span class="font-semibold">Created On:</span>
+					<span>{{ currUser().createdOn }}</span>
+					
+					<span class="font-semibold">Enabled:</span>
+					<span>{{ currUser().enabled }}</span>
+				</div>
+			
 			</div>
-		</div>
+			
+			<div class="card p-4 bg-base-100 shadow-lg w-fit text-center">
+				<h2 class="text-2xl font-semibold p-4">
+					User Preferences
+				</h2>
+				
+				@if (!isEditing()) {
+					<div class="p-2 gap-2 grid grid-cols-2 [&>:nth-child(odd)]:text-right [&>:nth-child(even)]:text-left">
+						<label class="font-semibold"
+						       for="notifications">
+							Email Notifications:
+						</label>
+						<span id="notifications">{{ userPrefs().emailNotification }}</span>
+						
+						<label class="font-semibold"
+						       for="mulitfactor">
+							Multifactor Authorization:
+						</label>
+						<span id="multifactor">{{ userPrefs().multifactor }}</span>
+						
+						<label class="font-semibold"
+						       for="confirmBookings">
+							Confirm Bookings:
+						</label>
+						<span id="confirmBookings">{{ userPrefs().confirmBookings }}</span>
+						
+						<label class="font-semibold"
+						       for="favoriteRooms">
+							Favorite Rooms:
+						</label>
+						<span id="favoriteRooms">
+							{{ favoriteRoomNames() || 'none' }}
+						</span>
+					</div>
+					
+					<div class="flex flex-row p-2 justify-center">
+						<button class="action-btn w-fit!"
+						        (click)="onEdit()">
+							Edit
+						</button>
+					</div>
+				} @else {
+					<form [formGroup]="userPrefsForm"
+					      class="grid grid-cols-2 [&>:nth-child(odd)]:text-right [&>:nth-child(even)]:text-left gap-4">
+						
+						<label for="notifications"
+						       class="font-semibold">
+							Notifications:
+						</label>
+						<mat-slide-toggle name="notifications"
+						                  formControlName="emailNotification"></mat-slide-toggle>
+						
+						<label class="font-semibold"
+						       for="multifactor">Multifactor Authorhization:
+						</label>
+						<mat-slide-toggle name="multifactor"
+						                  formControlName="multifactor"></mat-slide-toggle>
+						
+						<label class="font-semibold"
+						       for="confirmBookings">
+							Booking Confirmation:
+						</label>
+						<mat-slide-toggle name="confirmBookings"
+						                  formControlName="confirmBookings"></mat-slide-toggle>
+						
+						<label class="font-semibold"
+						       for="notifyOnAdminCancel">
+							Notify on Administator Cancel:
+						</label>
+						<mat-slide-toggle name="notifyOnAdminCancel"
+						                  formControlName="notifyOnAdminCancel"></mat-slide-toggle>
+						
+						<label class="font-semibold"
+						       for="favoriteRooms">
+							Favorite Rooms:
+						</label>
+						<select name="favoriteRooms"
+						        id="favoriteRooms"
+						        class="border rounded-sm py-0 5 w-64"
+						        multiple
+						        formControlName="favoriteRooms">
+							@for (room of rooms(); track room.id) {
+								<option [ngValue]="room.id"
+								        class="p-4">
+									{{ room.name }}
+								</option>
+							}
+						</select>
+					</form>
+					
+					<div class="p-2 gap-2 flex flex-row justify-center">
+						<button class="action-btn w-fit!"
+						        (click)="onSave()">
+							Save
+						</button>
+						<button class="action-btn w-fit!"
+						        (click)="onReset()">
+							Reset
+						</button>
+						<button class="action-btn w-fit!"
+						        (click)="onCancel()">
+							Cancel
+						</button>
+					</div>
+				}
+			</div>
+		}
 	</div>
 </div>

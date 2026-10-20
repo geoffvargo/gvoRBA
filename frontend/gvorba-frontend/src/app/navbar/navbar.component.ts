@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthStore } from '../stores/auth-store';
+import { UserStore } from '../stores/user-store';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -14,11 +15,12 @@ import { NgClass } from '@angular/common';
 })
 export class NavbarComponent {
 	private authStore = inject(AuthStore);
+	private userStore = inject(UserStore);
 	protected router = inject(Router);
 	
 	protected readonly isLoggedIn = this.authStore.isAuthenticated;
-	protected readonly isAdmin = this.authStore.isAdmin;
-	protected readonly role = this.authStore.role;
+	protected readonly isAdmin = this.userStore.isAdmin;
+	protected readonly role = this.userStore.role;
 	
 	menuVisible = signal(false);
 	

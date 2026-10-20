@@ -11,21 +11,7 @@ import { BookingStore } from '../stores/booking-store';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { BookingRequest } from '../models/booking-request.model';
-import {
-	addDays,
-	clamp,
-	combineDateAndMinutes,
-	DAY_END,
-	DAY_START,
-	DEFAULT_DUR,
-	HORIZON_DAYS,
-	isWeekday,
-	maxDurationFor,
-	MIN_DUR,
-	START_OPTIONS,
-	startOfToday,
-	toDateTimeString,
-} from '../utils/booking-time';
+import { addDays, clamp, combineDateAndMinutes, DAY_END, DAY_START, DEFAULT_DUR, HORIZON_DAYS, isWeekday, maxDurationFor, MIN_DUR, START_OPTIONS, startOfToday, toDateTimeString } from '../utils/booking-time';
 import { AuthStore } from '../stores/auth-store';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
@@ -66,19 +52,19 @@ export class CreateBookingComponent {
 	);
 	protected readonly rooms = this.roomStore.rooms;
 	protected readonly users = this.userStore.users;
-	protected readonly isAdmin = this.authStore.isAdmin;
-	protected readonly currentUser = this.authStore.user;
+	protected readonly isAdmin = this.userStore.isAdmin;
+	protected readonly currentUser = this.userStore.user;
 	protected readonly startOptions = signal(START_OPTIONS);
 	protected readonly isWeekdayFilter = isWeekday;
 	protected readonly MIN_DUR = MIN_DUR; // exposed for the template's [min] binding
-
+	
 	/** Form-level validator: flags a booking whose start + duration runs past DAY_END. */
 	private readonly endWithinWorkingHours: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 		const group = control as FormGroup<{
 			duration: AbstractControl<number | null>;
 			startsAt: AbstractControl<number | null>;
 		}>;
-
+		
 		const { startsAt: start, duration } = group.getRawValue();
 		
 		if (start == null || duration == null) {
@@ -155,12 +141,15 @@ export class CreateBookingComponent {
 	});
 	
 	constructor() {
-		this.authStore.loadCurrentUser();
-
+		this.userStore.loadUsers();
+		this.userStore.loadCurrentUser().subscribe({
+			error: err => console.error(err),
+		});
+		
 		// Non-admins can only book for themselves: pin userId to the logged-in user once it loads.
 		effect(() => {
 			if (!this.isAdmin()) {
-				const currentUserId = this.authStore.user()?.id;
+				const currentUserId = this.currentUser()?.id;
 				if (currentUserId != null) {
 					this.bookingCreateForm.controls.userId.setValue(currentUserId);
 				}

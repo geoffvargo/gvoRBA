@@ -117,16 +117,19 @@ public class BookingController {
 		try {
 			Booking saved = bookingRepository.save(booking);
 			publishCalendarEvent(booking, false);
-			appEventPublisher.publishEvent(
-				new BookingConfirmedEvent(
-					saved.getId(),
-					user.getEmail(),
-					user.getName(),
-					saved.getRoom().getName(),
-					saved.getStartsAt(),
-					saved.getEndsAt()
-				)
-			);
+			
+			if (user.getUserPrefs().getConfirmBookings()) {
+				appEventPublisher.publishEvent(
+					new BookingConfirmedEvent(
+						saved.getId(),
+						user.getEmail(),
+						user.getName(),
+						saved.getRoom().getName(),
+						saved.getStartsAt(),
+						saved.getEndsAt()
+					)
+				);
+			}
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}
@@ -201,16 +204,19 @@ public class BookingController {
 		
 		try {
 			Booking saved = bookingRepository.save(booking);
-			appEventPublisher.publishEvent(
-				new BookingConfirmedEvent(
-					saved.getId(),
-					user.getEmail(),
-					user.getName(),
-					saved.getRoom().getName(),
-					saved.getStartsAt(),
-					saved.getEndsAt()
-				)
-			);
+			
+			if (user.getUserPrefs().getConfirmBookings()) {
+				appEventPublisher.publishEvent(
+					new BookingConfirmedEvent(
+						saved.getId(),
+						user.getEmail(),
+						user.getName(),
+						saved.getRoom().getName(),
+						saved.getStartsAt(),
+						saved.getEndsAt()
+					)
+				);
+			}
 		} catch (DataIntegrityViolationException e) {
 			throw new OverlapConflictException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT, e.getMessage());
 		}
@@ -291,17 +297,19 @@ public class BookingController {
 			booking.setCancelledAt(null);
 			bookingRepository.save(booking);
 			publishCalendarEvent(booking, false);
-			appEventPublisher.publishEvent(
-				new BookingConfirmedEvent(
-					booking.getId(),
-					booking.getUserId().getEmail(),
-					booking.getUserId().getName(),
-					booking.getRoom().getName(),
-					booking.getStartsAt(),
-					booking.getEndsAt()
-				)
-			);
 			
+			if (booking.getUserId().getUserPrefs().getConfirmBookings()) {
+				appEventPublisher.publishEvent(
+					new BookingConfirmedEvent(
+						booking.getId(),
+						booking.getUserId().getEmail(),
+						booking.getUserId().getName(),
+						booking.getRoom().getName(),
+						booking.getStartsAt(),
+						booking.getEndsAt()
+					)
+				);
+			}
 			
 			return ResponseEntity.ok(booking);
 		}

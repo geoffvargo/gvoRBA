@@ -59,7 +59,8 @@ public class AdminController {
 			            .createdOn(new Date())
 			            .enabled(true)
 			            .password(passwordEncoder.encode(userDto.password()))
-			            .build();
+			            .build()
+			            .withDefaultPrefs();
 		
 		userRepository.save(user);
 		

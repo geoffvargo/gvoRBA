@@ -36,6 +36,7 @@
     "@ngxpert/hot-toast": "^6.4.1",
     "jose": "^6.2.6",
     "material-symbols": "^0.47.2",
+    "ngx-avatars": "^1.10.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

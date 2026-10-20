@@ -47,4 +47,20 @@ public class User {
 	
 	@Column(name = "provider_id")
 	private String providerId;
+	
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private UserPrefs userPrefs;
+
+	/**
+	 * Attaches a default {@link UserPrefs} if this user has none, so it gets saved along with the user.
+	 *
+	 * @return this user
+	 */
+	public User withDefaultPrefs() {
+		if (userPrefs == null) {
+			userPrefs = UserPrefs.builder().user(this).build();
+		}
+
+		return this;
+	}
 }
