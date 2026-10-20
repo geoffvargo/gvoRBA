@@ -1,46 +1,132 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { User } from '../models/user.model';
 import { AvatarComponent } from 'ngx-avatars';
 import { UserStore } from '../stores/user-store';
-import { NonNullableFormBuilder, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Room } from '../models/room.model';
+import { UserPrefs } from '../models/user.prefs';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { RoomStore } from '../stores/room-store';
 
 @Component({
 	selector: 'app-user-home',
 	imports: [
 		AvatarComponent,
+		MatProgressSpinner,
+		ReactiveFormsModule,
+		MatSlideToggle,
 	],
 	templateUrl: './user-home.component.html',
 	styleUrl: './user-home.component.css',
 })
 export class UserHomeComponent {
 	private userStore = inject(UserStore);
+	private roomStore = inject(RoomStore);
 	
 	isAdmin = this.userStore.isAdmin;
-	
 	isEditing = signal(false);
-	
-	// Falls back to an empty `User` while the store's user is still loading (or after logout), so the template never sees
-	// `null`.
+	isLoading = this.userStore.isLoading;
 	currUser = computed<User>(() => this.userStore.user() ?? new User());
+	userPrefs = this.userStore.userPrefs;
+	rooms = this.roomStore.rooms;
 	
 	private readonly fb = inject(NonNullableFormBuilder);
+	
+	constructor() {
+		effect(() => {
+			this.populateForms();
+		});
+	}
 	
 	userDetailsForm = this.fb.group({
 		name: ['', Validators.required],
 		email: ['', Validators.required],
 	});
 	
-	userPreferencesForm = this.fb.group({
+	protected readonly userDetailsValue = toSignal(
+		this.userDetailsForm.valueChanges, {
+			initialValue: this.userDetailsForm.value,
+		});
+	
+	// private readonly userDetails = computed(() => {
+	// 	const { name, email } = this.userDetailsForm.value;
+	// });
+	
+	userPrefsForm = this.fb.group({
 		emailNotification: [false, Validators.required],
 		multifactor: [false, Validators.required],
 		confirmBookings: [false, Validators.required],
 		notifyOnAdminCancel: [false, Validators.required],
-		favoriteRoons: [[], Validators.required],
+		favoriteRooms: this.fb.control<Room[]>([], Validators.required),
 	});
+	
+	protected readonly userPrefsFormValue = toSignal(
+		this.userPrefsForm.valueChanges, {
+			initialValue: this.userPrefsForm.value,
+		},
+	);
+	
+	private readonly userPrefsPayload = computed(() => {
+		const {
+			emailNotification, multifactor, confirmBookings, notifyOnAdminCancel, favoriteRooms,
+		} = this.userPrefsFormValue();
+		
+		if (
+			emailNotification == null ||
+			multifactor == null ||
+			confirmBookings == null ||
+			notifyOnAdminCancel == null ||
+			favoriteRooms == null
+		) {
+			return null;
+		}
+		
+		return {
+			emailNotification,
+			multifactor,
+			confirmBookings,
+			notifyOnAdminCancel,
+			favoriteRooms,
+		} as UserPrefs;
+	});
+	
+	populateForms() {
+		this.userDetailsForm.patchValue({
+			name: this.currUser().name,
+			email: this.currUser().email,
+		});
+		
+		const prefs = this.userPrefs();
+		this.userPrefsForm.patchValue({
+			emailNotification: prefs.emailNotification,
+			multifactor: prefs.multifactor,
+			confirmBookings: prefs.confirmBookings,
+			notifyOnAdminCancel: prefs.notifyOnAdminCancel,
+			favoriteRooms: prefs.favoriteRooms,
+		});
+	}
 	
 	onEdit() {
 		console.log('user edited');
 		this.isEditing.set(true);
+	}
+	
+	onSave() {
+		console.log('onSave {}', this.userPrefsPayload());
+		const payload: null | UserPrefs = this.userPrefsPayload();
+		
+		if (!payload) {
+			return;
+		}
+		
+		this.userStore.setPrefs(this.currUser().id, payload);
+		this.isEditing.set(false);
+	}
+	
+	onReset() {
+		console.log('onReset');
 	}
 	
 	onCancel() {

@@ -199,4 +199,45 @@ export class UserStore {
 			this._isLoading.set(false);
 		}
 	}
+	
+	getPrefs(id: number) {
+		this._isLoading.set(true);
+		this.apiService.getUserPrefs(id).subscribe({
+			next: data => {
+				this._userPrefs.set(data);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	setPrefs(id: number, payload: UserPrefs) {
+		this._isLoading.set(true);
+		this.apiService.setUserPrefs(id, payload).subscribe({
+			next: data => {
+				console.log(data);
+				this.toast.success('User set prefs successfully.', {
+					position: 'bottom-center',
+					dismissible: true,
+				});
+				/// Reload only after the save lands, so the GET can't race ahead and return stale prefs.
+				this.getPrefs(id);
+			},
+			error: err => {
+				console.error(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
+				this._isLoading.set(false);
+			},
+		});
+	}
 }
