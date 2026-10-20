@@ -61,13 +61,14 @@
 							Favorite Rooms:
 						</label>
 						<span id="favoriteRooms">
-							{{ userPrefs().favoriteRooms.length > 0 ? userPrefs().favoriteRooms : 'none' }}
+							{{ favoriteRoomNames() || 'none' }}
 						</span>
 					</div>
 					
 					<div class="flex flex-row p-2 justify-center">
 						<button class="action-btn w-fit!"
-						        (click)="onEdit()">Edit
+						        (click)="onEdit()">
+							Edit
 						</button>
 					</div>
 				} @else {

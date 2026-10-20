@@ -31,7 +31,16 @@ export class UserHomeComponent {
 	currUser = computed<User>(() => this.userStore.user() ?? new User());
 	userPrefs = this.userStore.userPrefs;
 	rooms = this.roomStore.rooms;
-	
+
+	// Backend sends favorite rooms as IDs; resolve them to names for display.
+	favoriteRoomNames = computed(() => {
+		const favIds = new Set<unknown>(this.userPrefs().favoriteRooms);
+		return this.rooms()
+			.filter(room => favIds.has(room.id))
+			.map(room => room.name)
+			.join(', ');
+	});
+
 	private readonly fb = inject(NonNullableFormBuilder);
 	
 	constructor() {
