@@ -6,6 +6,7 @@ import com.geoffvargo.gvorbabackend.models.*;
 import com.geoffvargo.gvorbabackend.models.User;
 import com.geoffvargo.gvorbabackend.notification.*;
 import com.geoffvargo.gvorbabackend.repos.*;
+import com.geoffvargo.gvorbabackend.security.jwt.*;
 
 import org.springframework.context.*;
 import org.springframework.dao.*;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.*;
 import java.nio.charset.*;
 import java.time.*;
 import java.util.*;
@@ -118,7 +120,7 @@ public class BookingController {
 			Booking saved = bookingRepository.save(booking);
 			publishCalendarEvent(booking, false);
 			
-			if (user.getUserPrefs().getConfirmBookings()) {
+			if (user.getUserPrefs().getConfirmBookings() && user.getUserPrefs().getEmailNotification()) {
 				appEventPublisher.publishEvent(
 					new BookingConfirmedEvent(
 						saved.getId(),
@@ -193,6 +195,18 @@ public class BookingController {
 			() -> new RoomNotFoundException(request.getRoomId())
 		);
 		
+		List<String> changes = new ArrayList<>();
+		for (Field f : BookingRequest.class.getDeclaredFields()) {
+			f.setAccessible(true);
+			try {
+				if (!Objects.deepEquals(f.get(BookingRequest.fromBooking(booking)), f.get(request))) {
+					changes.add(f.getName());
+				}
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 		Set<User> attendees = request.getAttendees() == null
 		                      ? new HashSet<>()
 		                      : new HashSet<>(userRepository.findAllById(request.getAttendees()));
@@ -205,15 +219,17 @@ public class BookingController {
 		try {
 			Booking saved = bookingRepository.save(booking);
 			
-			if (user.getUserPrefs().getConfirmBookings()) {
+			if (user.getUserPrefs().getEmailNotification() || user.getUserPrefs().getNotifyOnBookingChange()) {
+				LOGGER.info("Booking " + booking.getId()+ " updated");
 				appEventPublisher.publishEvent(
-					new BookingConfirmedEvent(
+					new BookingChangedEvent(
 						saved.getId(),
 						user.getEmail(),
 						user.getName(),
 						saved.getRoom().getName(),
 						saved.getStartsAt(),
-						saved.getEndsAt()
+						saved.getEndsAt(),
+						changes
 					)
 				);
 			}
@@ -259,9 +275,13 @@ public class BookingController {
 	
 	@PatchMapping("/cancel/{id}")
 	public ResponseEntity<?> cancelBooking(@PathVariable Long id,
-	                                       @AuthenticationPrincipal UserDetails userDetails) {
+	                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		Booking booking = bookingRepository.findById(id).orElseThrow(
 			() -> new BookingNotFoundException(id)
+		);
+		
+		User user = userRepository.findById(userDetails.getId()).orElseThrow(
+			() -> new UserNotFoundException(userDetails.getId())
 		);
 		
 		List<String> authList = userDetails.getAuthorities().stream()
@@ -272,8 +292,20 @@ public class BookingController {
 		    authList.contains("ROLE_ADMIN")) {
 			booking.setStatus(BookingStatus.CANCELLED);
 			booking.setCancelledAt(LocalDateTime.now());
-			bookingRepository.save(booking);
+			Booking saved = bookingRepository.save(booking);
 			publishCalendarEvent(booking, true);
+			
+			if (user.getUserPrefs().getEmailNotification() && user.getUserPrefs().getConfirmCancellations()) {
+				appEventPublisher.publishEvent(
+					new BookingCancelledEvent(saved.getId(),
+						user.getEmail(),
+						user.getName(),
+						saved.getRoom().getName(),
+						saved.getStartsAt(),
+						saved.getEndsAt())
+				);
+			}
+			
 			return ResponseEntity.ok(booking);
 		}
 		

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 
 import java.util.*;
 
+import javax.annotation.*;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,6 +37,18 @@ public class UserPrefs {
 	@Builder.Default
 	@Column(name = "notify_on_admin_cancel", nullable = false)
 	private Boolean notifyOnAdminCancel = false;
+	
+	@Builder.Default
+	@Column(name = "notify_on_room_deactivated", nullable = false)
+	private Boolean notifyOnRoomDeactivated = false;
+	
+	@Builder.Default
+	@Column(name = "notify_on_booking_change", nullable = false)
+	private Boolean notifyOnBookingChange = false;
+	
+	@Builder.Default
+	@Column(name = "confirm_cancellations", nullable = false)
+	private Boolean confirmCancellations = false;
 
 	@OneToOne(optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -47,4 +61,5 @@ public class UserPrefs {
 	@Column(name = "room_id")
 	@CollectionTable(name = "user_prefs_room_ids", joinColumns = @JoinColumn(name = "owner_id"))
 	private Set<Long> favoriteRooms = new LinkedHashSet<>();
+	
 }

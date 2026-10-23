@@ -25,6 +25,7 @@ import lombok.extern.slf4j.*;
 class EmailService {
 	private final JavaMailSender mailSender;
 	private final ITemplateEngine templateEngine;
+	private final TailwindInliner tailwindInliner;
 	
 	/// Sender address. lombok.config copies @Value onto the generated constructor parameter,
 	/// which is what lets this stay final.
@@ -58,6 +59,7 @@ class EmailService {
 		Context ctx = new Context(); // Thymeleaf variable holder (non-web, so no request/session)
 		ctx.setVariables(model); // expose each model entry as ${key} in the template
 		String html = templateEngine.process(template, ctx); // resolve the template and render it to an HTML string
+		html = tailwindInliner.inline(html); // Tailwind classes -> inline style attributes, for email clients
 		
 		MimeMessage message = mailSender.createMimeMessage();
 		

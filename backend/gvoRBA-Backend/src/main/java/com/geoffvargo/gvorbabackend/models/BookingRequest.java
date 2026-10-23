@@ -2,6 +2,7 @@ package com.geoffvargo.gvorbabackend.models;
 
 import java.time.*;
 import java.util.*;
+import java.util.stream.*;
 
 import javax.annotation.*;
 
@@ -21,4 +22,16 @@ public class BookingRequest {
 	
 	@Nullable
 	private Set<Long> attendees;
+	
+	public static BookingRequest fromBooking(Booking booking) {
+		return new BookingRequest(booking.getRoom().getId(),
+			booking.getUserId().getId(),
+			booking.getStartsAt(),
+			booking.getEndsAt(),
+			booking.getPurpose(),
+			booking.getStatus(),
+			(booking.getAttendees() != null) ? booking.getAttendees().stream()
+				                                   .map(User::getId)
+				                                   .collect(Collectors.toSet()) : null);
+	}
 }
