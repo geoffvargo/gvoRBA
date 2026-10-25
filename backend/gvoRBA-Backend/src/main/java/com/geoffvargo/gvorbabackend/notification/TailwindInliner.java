@@ -86,8 +86,9 @@ class TailwindInliner {
 				if (rule != null) {
 					matched.add(rule);
 				} else if (warnedClasses.add(className)) {
-					log.warn("Email class '{}' has no compiled Tailwind style; run `npm run email-css` "
-						         + "in frontend/gvorba-frontend.", className);
+					log.warn("Email class '{}' is missing from the loaded {}. Run `npm run email-css` in "
+						         + "frontend/gvorba-frontend, then rebuild and restart the backend so the new "
+						         + "file is copied to the classpath.", className, RULES_RESOURCE);
 				}
 			}
 			if (matched.isEmpty()) {

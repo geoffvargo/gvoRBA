@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!--/* Preview only: styles the raw file in a browser. th:remove deletes it from sent emails. */-->
+		<script th:remove="all"
+		        src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+	</head>
+	<body class="m-0 p-6 font-sans">
+		<table class="min-w-130 my-auto border border-separate rounded-lg"
+		       role="presentation">
+			<tr>
+				<td class="p-4">
+					<h2 class="mb-3">Room Deactivated</h2>
+					<p>Hi
+						<span th:text="${userName}">User</span>
+					   ,
+					</p>
+					<p>Your favorited room
+						<strong th:text="${roomName}">Room</strong>
+					   has been deactived.
+					</p>
+					<table class="w-100"
+					       role="presentation">
+						<tr>
+							<td>Location</td>
+							<td class="text-right"
+							    th:text="${location}">-
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

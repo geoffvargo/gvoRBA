@@ -55,9 +55,8 @@ public class BookingNotificationListener {
 				event.email(),
 				"Booking Confirmed: " + event.roomName(),
 				"email/booking-confirmed",
-				/// TODO(human): the template reads ${userName}; make this map's key match. onBookingCancelled has the same bug.
 				Map.of(
-					"guestName",
+					"userName",
 					event.name(),
 					"roomName",
 					event.roomName(),

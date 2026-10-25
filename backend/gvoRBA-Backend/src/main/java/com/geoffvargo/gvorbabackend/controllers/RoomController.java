@@ -1,9 +1,11 @@
 package com.geoffvargo.gvorbabackend.controllers;
 
 import com.geoffvargo.gvorbabackend.models.*;
+import com.geoffvargo.gvorbabackend.notification.*;
 import com.geoffvargo.gvorbabackend.repos.*;
 
 import org.slf4j.*;
+import org.springframework.context.*;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,8 @@ public class RoomController {
 	private final RoomRepository roomRepository;
 	
 	private final BookingRepository bookingRepository;
+	
+	private final ApplicationEventPublisher appEventPublisher;
 	
 	@GetMapping()
 	public ResponseEntity<?> getAllRooms(@RequestParam(required = false) String name,
@@ -137,6 +141,31 @@ public class RoomController {
 		
 		roomRepository.save(room);
 		
+		LOGGER.info("updateRoom() called.");
+		
+		if (!request.getIsActive()) {
+			appEventPublisher.publishEvent(
+				new RoomDeactivatedEvent(
+					room.getId(),
+					room.getName(),
+					room.getLocation(),
+					room.getCapacity(),
+					room.getAmenities()
+				)
+			);
+		} else if (request.getIsActive()) {
+			LOGGER.info("Sending RoomReactivated event.");
+			appEventPublisher.publishEvent(
+				new RoomReactivatedEvent(
+					room.getId(),
+					room.getName(),
+					room.getLocation(),
+					room.getCapacity(),
+					room.getAmenities()
+				)
+			);
+		}
+		
 		return ResponseEntity.ok(room);
 	}
 	
@@ -149,6 +178,16 @@ public class RoomController {
 		room.setIsActive(false);
 		
 		roomRepository.save(room);
+		
+		appEventPublisher.publishEvent(
+			new RoomDeactivatedEvent(
+				room.getId(),
+				room.getName(),
+				room.getLocation(),
+				room.getCapacity(),
+				room.getAmenities()
+			)
+		);
 		
 		return ResponseEntity.ok(room);
 	}
