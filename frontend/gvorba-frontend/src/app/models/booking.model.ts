@@ -1,9 +1,10 @@
 import { User } from './user.model';
+import { Room } from './room.model';
 
 export class Booking {
 	id = -1;
-	roomId = -1;
-	userId = -1;
+	room = new Room();
+	userId = new User();
 	startsAt: Date = new Date();
 	endsAt: Date = new Date();
 	cancelledAt: Date | null = null;
@@ -12,8 +13,8 @@ export class Booking {
 	attendees: User[] = [];
 	
 	constructor(id = -1,
-	            roomId = -1,
-	            userId = -1,
+	            room = new Room(),
+	            userId = new User(),
 	            startsAt: Date = new Date(),
 	            endsAt: Date = new Date(),
 	            cancelledAt: Date | null = null,
@@ -21,7 +22,7 @@ export class Booking {
 	            status = '',
 	            attendees = []) {
 		this.id = id;
-		this.roomId = roomId;
+		this.room = room;
 		this.userId = userId;
 		this.startsAt = startsAt;
 		this.endsAt = endsAt;

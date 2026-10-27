@@ -81,9 +81,9 @@ export class BookingsListAdminComponent implements OnInit, AfterViewInit {
 				case 'id':
 					return item.id;
 				case 'roomId':
-					return item.roomId;
+					return item.room.id;
 				case 'userId':
-					return item.userId;
+					return item.userId.id;
 				case 'startsAt':
 					return item.startsAt.getTime();
 				case 'endsAt':

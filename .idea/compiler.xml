@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="gvoRBA-backend (1)" />
       </profile>
       <profile name="Annotation profile for gvoRBA Backend" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -18,9 +19,6 @@
         <module name="gvoRBA-backend" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="gvoRBA-backend (1)" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

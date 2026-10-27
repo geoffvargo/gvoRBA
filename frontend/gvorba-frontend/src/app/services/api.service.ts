@@ -6,7 +6,7 @@ import { LoginRequest } from '../models/login-request.model';
 import { LoginResponse } from '../models/login-response.model';
 import { User } from '../models/user.model';
 import { Room } from '../models/room.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { TokenStorageService } from './token-storage-service';
 import { Booking } from '../models/booking.model';
 import { CreateRoomRequest } from '../models/create-room.request';
@@ -20,6 +20,16 @@ import { SignupRequest } from '../models/signup-request.model';
 import { UserPrefs } from '../models/user.prefs';
 
 // const baseURL = '/api';
+
+/** JSON has no date type, so the backend's LocalDateTime fields arrive as ISO strings. Turn them into real Dates. */
+function toBookings(bookings: Booking[]): Booking[] {
+	return bookings.map(b => ({
+		...b,
+		startsAt: new Date(b.startsAt),
+		endsAt: new Date(b.endsAt),
+		cancelledAt: b.cancelledAt ? new Date(b.cancelledAt) : null,
+	}));
+}
 
 @Injectable({
 	providedIn: 'root',
@@ -46,11 +56,11 @@ export class ApiService {
 	}
 	
 	getBookings() {
-		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings`);
+		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings`).pipe(map(toBookings));
 	}
-	
+
 	getMyBookings() {
-		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings/me`);
+		return this.httpClient.get<Booking[]>(`${this.baseUrl}/api/bookings/me`).pipe(map(toBookings));
 	}
 	
 	getCurrentUser() {
@@ -60,7 +70,7 @@ export class ApiService {
 	/* for room-store */
 	getRoomBookings(id: string, date: Date) {
 		return this.httpClient.get<Booking[]>(
-			`${this.baseUrl}/api/rooms/${id}/bookings?date=${date.toISOString().slice(0, 19)}`);
+			`${this.baseUrl}/api/rooms/${id}/bookings?date=${date.toISOString().slice(0, 19)}`).pipe(map(toBookings));
 	}
 	
 	createRoom(data: CreateRoomRequest) {
