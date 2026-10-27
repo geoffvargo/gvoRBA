@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!--/* Preview only: styles the raw file in a browser. th:remove deletes it from sent emails. */-->
+		<script th:remove="all"
+		        src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+	</head>
+	<body class="m-0 p-6 font-sans">
+		<table class="min-w-130 my-auto border border-separate rounded-lg"
+		       role="presentation">
+			<tr>
+				<td class="p-4">
+					<h2 class="mb-3">Booking Cancelled by Admin</h2>
+					<p>Hi
+						<span class="font-semibold"
+						      th:text="${userName}">User</span>
+					   ,
+					</p>
+					<p>Your reservation for
+						<strong th:text="${roomName}">Room</strong>
+					   has been cancelled by an Admin.
+					</p>
+					<table class="w-100"
+					       role="presentation">
+						<tr>
+							<td>From:</td>
+							<td class="text-right"
+							    th:text="${#temporals.format(start,'MMM d, yyyy h:mm a')}">-
+							</td>
+						</tr>
+						<tr>
+							<td>To:</td>
+							<td class="text-right"
+							    th:text="${#temporals.format(end,'MMM d, yyyy h:mm a')}">-
+							</td>
+						</tr>
+						<tr>
+							<td>Reference:</td>
+							<td class="text-right"
+							    th:text="${'#' + bookingId}">#0
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

@@ -56,7 +56,7 @@ public class BookingNotificationListener {
 				"Booking Confirmed: " + event.roomName(),
 				"email/booking-confirmed",
 				Map.of(
-					"guestName",
+					"userName",
 					event.name(),
 					"roomName",
 					event.roomName(),
@@ -71,6 +71,99 @@ public class BookingNotificationListener {
 			);
 		} catch (MailException e) {
 			log.error("Booking {} confirmation email failed.", event.bookingId(), e);
+		}
+	}
+	
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+	public void onBookingChanged(BookingChangedEvent event) {
+		List<EmailAttachment> attachments = new ArrayList<>();
+		
+		try {
+			String ics = icsService.exportIcs(event.bookingId(), event.name(), true);
+			attachments.add(
+				new EmailAttachment(
+					"booking-" + event.bookingId() + ".ics",
+					ics.getBytes(StandardCharsets.UTF_8),
+					"text/calendar; charset=UTF-8"
+				));
+		} catch (Exception e) {
+			log.warn("Booking {}: ICS not generated, sending without attachment.", event.bookingId(), e);
+		}
+		
+		try {
+			emailService.sendHtml(event.email(),
+				"Booking Changed: " + event.roomName(),
+				"email/booking-changed",
+				Map.of(
+					"userName",
+					event.name(),
+					"roomName",
+					event.roomName(),
+					"start",
+					event.start(),
+					"end",
+					event.end(),
+					"bookingId",
+					event.bookingId(),
+					"changes",
+					event.changes()
+				),
+				attachments);
+		} catch (MailException e) {
+			log.error("Booking {} change email failed.", event.bookingId(), e);
+		}
+	}
+	
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+	public void onBookingCancelled(BookingCancelledEvent event) {
+		try {
+			emailService.sendHtml(event.email(),
+				"Booking Cancelled: " + event.roomName(),
+				"email/booking-cancelled",
+				Map.of(
+					"guestName",
+					event.name(),
+					"roomName",
+					event.roomName(),
+					"start",
+					event.start(),
+					"end",
+					event.end(),
+					"bookingId",
+					event.bookingId()
+				),
+				new ArrayList<>());
+		} catch (MailException e) {
+			log.error("Booking {} cancellation email failed.",event.bookingId(), e);
+		}
+	}
+	
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+	public void onAdminCancelled(AdminBookingCancelEvent event) {
+		try {
+			emailService.sendHtml(
+				event.email(),
+				"Booking Cancelled by Admin",
+				"email/admin-cancelled-booking",
+				Map.of(
+					"userName",
+					event.name(),
+					"roomName",
+					event.roomName(),
+					"start",
+					event.start(),
+					"end",
+					event.end(),
+					"bookingId",
+					event.bookingId()
+				),
+				List.of()
+			);
+		} catch (MailException e) {
+			log.error("Booking {} cancellation email failed.", event.bookingId(), e);
 		}
 	}
 }

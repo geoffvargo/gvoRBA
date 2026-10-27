@@ -7,7 +7,9 @@
     "build": "npm run ng -- build",
     "watch": "npm run ng -- build --watch --configuration development",
     "test": "npm run ng -- test",
-    "lint": "npm run ng -- lint"
+    "lint": "npm run ng -- lint",
+    "email-css": "node tools/email-css/build.mjs",
+    "email-css:watch": "node tools/email-css/build.mjs --watch"
   },
   "prettier": {
     "printWidth": 100,
@@ -49,11 +51,15 @@
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "@maizzle/tailwindcss": "1.5.6",
+    "@tailwindcss/node": "4.3.0",
+    "@tailwindcss/oxide": "4.3.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/jasmine": "^6.0.0",
     "daisyui": "^5.5.23",
     "eslint": "^9.39.4",
     "jsdom": "^27.1.0",
+    "lightningcss": "1.32.0",
     "postcss": "^8.5.3",
     "tailwind-variant-groups": "file:vendor/tailwind-variant-groups-0.1.0.tgz",
     "tailwindcss": "^4.1.12",
