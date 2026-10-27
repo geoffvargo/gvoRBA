@@ -23,8 +23,9 @@ import java.util.*;
 import java.util.logging.*;
 
 import lombok.*;
+import lombok.extern.slf4j.*;
 
-@RestController
+@Slf4j @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/bookings")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -220,7 +221,7 @@ public class BookingController {
 			Booking saved = bookingRepository.save(booking);
 			
 			if (user.getUserPrefs().getEmailNotification() || user.getUserPrefs().getNotifyOnBookingChange()) {
-				LOGGER.info("Booking " + booking.getId()+ " updated");
+				LOGGER.info("Booking " + booking.getId() + " updated");
 				appEventPublisher.publishEvent(
 					new BookingChangedEvent(
 						saved.getId(),
@@ -296,14 +297,29 @@ public class BookingController {
 			publishCalendarEvent(booking, true);
 			
 			if (user.getUserPrefs().getEmailNotification() && user.getUserPrefs().getConfirmCancellations()) {
-				appEventPublisher.publishEvent(
-					new BookingCancelledEvent(saved.getId(),
-						user.getEmail(),
-						user.getName(),
-						saved.getRoom().getName(),
-						saved.getStartsAt(),
-						saved.getEndsAt())
-				);
+				if (authList.contains("ROLE_ADMIN")) {
+					log.info("User is ADMIN.");
+					appEventPublisher.publishEvent(
+						new AdminBookingCancelEvent(
+							saved.getId(),
+							saved.getUserId().getEmail(),
+							saved.getUserId().getName(),
+							user.getName(),
+							saved.getRoom().getName(),
+							saved.getStartsAt(),
+							saved.getEndsAt()
+						)
+					);
+				} else {
+					appEventPublisher.publishEvent(
+						new BookingCancelledEvent(saved.getId(),
+							user.getEmail(),
+							user.getName(),
+							saved.getRoom().getName(),
+							saved.getStartsAt(),
+							saved.getEndsAt())
+					);
+				}
 			}
 			
 			return ResponseEntity.ok(booking);
@@ -314,7 +330,8 @@ public class BookingController {
 	
 	@PatchMapping("/uncancel/{id}")
 	public ResponseEntity<?> uncancelBooking(@PathVariable Long id,
-	                                         @AuthenticationPrincipal UserDetails userDetails) {
+	                                         @AuthenticationPrincipal UserDetails
+		                                         userDetails) {
 		Booking booking = bookingRepository.findById(id).orElseThrow(
 			() -> new BookingNotFoundException(id)
 		);

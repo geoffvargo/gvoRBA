@@ -139,4 +139,31 @@ public class BookingNotificationListener {
 			log.error("Booking {} cancellation email failed.",event.bookingId(), e);
 		}
 	}
+	
+	@Async
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
+	public void onAdminCancelled(AdminBookingCancelEvent event) {
+		try {
+			emailService.sendHtml(
+				event.email(),
+				"Booking Cancelled by Admin",
+				"email/admin-cancelled-booking",
+				Map.of(
+					"userName",
+					event.name(),
+					"roomName",
+					event.roomName(),
+					"start",
+					event.start(),
+					"end",
+					event.end(),
+					"bookingId",
+					event.bookingId()
+				),
+				List.of()
+			);
+		} catch (MailException e) {
+			log.error("Booking {} cancellation email failed.", event.bookingId(), e);
+		}
+	}
 }
