@@ -1,4 +1,6 @@
 import { Booking } from '../models/booking.model';
+import { Room } from '../models/room.model';
+import { User } from '../models/user.model';
 
 // Current user in most tests is user 100. Rooms 1-3 are the workhorses.
 // Dates chosen relative to July 18, 2026 (SPEC's "current date"):
@@ -7,14 +9,14 @@ import { Booking } from '../models/booking.model';
 //   - future: late July / August 2026
 
 export const MOCK_BOOKING_1 = new Booking(
-	1, 1, 100,
+	1, new Room(1), new User(100),
 	new Date('2026-06-15T09:00:00'),
 	new Date('2026-06-15T10:00:00'),
 	null, 'Past team standup', 'CONFIRMED',
 );
 
 export const MOCK_BOOKING_2 = new Booking(
-	2, 2, 100,
+	2, new Room(2), new User(100),
 	new Date('2026-07-01T13:00:00'),
 	new Date('2026-07-01T14:30:00'),
 	null, 'Client call — Acme', 'CONFIRMED',
@@ -22,7 +24,7 @@ export const MOCK_BOOKING_2 = new Booking(
 
 // Cancelled past booking — exercises soft-delete display logic (FR-3.7)
 export const MOCK_BOOKING_3 = new Booking(
-	3, 1, 100,
+	3, new Room(1), new User(100),
 	new Date('2026-07-05T10:00:00'),
 	new Date('2026-07-05T11:00:00'),
 	new Date('2026-07-04T18:22:00'),
@@ -31,7 +33,7 @@ export const MOCK_BOOKING_3 = new Booking(
 
 // Today, mid-morning — most likely to appear in "today's day view" tests
 export const MOCK_BOOKING_4 = new Booking(
-	4, 1, 100,
+	4, new Room(1), new User(100),
 	new Date('2026-07-18T10:00:00'),
 	new Date('2026-07-18T11:00:00'),
 	null, 'Sprint planning', 'CONFIRMED',
@@ -39,7 +41,7 @@ export const MOCK_BOOKING_4 = new Booking(
 
 // Today, afternoon, different room
 export const MOCK_BOOKING_5 = new Booking(
-	5, 3, 100,
+	5, new Room(3), new User(100),
 	new Date('2026-07-18T14:00:00'),
 	new Date('2026-07-18T15:00:00'),
 	null, '1:1 with manager', 'CONFIRMED',
@@ -47,7 +49,7 @@ export const MOCK_BOOKING_5 = new Booking(
 
 // Minimum-length booking (15 min) — edge case per FR-3.1
 export const MOCK_BOOKING_6 = new Booking(
-	6, 2, 100,
+	6, new Room(2), new User(100),
 	new Date('2026-07-20T09:00:00'),
 	new Date('2026-07-20T09:15:00'),
 	null, 'Quick sync', 'CONFIRMED',
@@ -55,7 +57,7 @@ export const MOCK_BOOKING_6 = new Booking(
 
 // Maximum-length booking (4 hr) — edge case per FR-3.1
 export const MOCK_BOOKING_7 = new Booking(
-	7, 3, 100,
+	7, new Room(3), new User(100),
 	new Date('2026-07-22T13:00:00'),
 	new Date('2026-07-22T17:00:00'),
 	null, 'Design workshop', 'CONFIRMED',
@@ -64,7 +66,7 @@ export const MOCK_BOOKING_7 = new Booking(
 // Future booking by a DIFFERENT user — useful for room day-view tests
 // where you want bookings not owned by the current user
 export const MOCK_BOOKING_8 = new Booking(
-	8, 1, 200,
+	8, new Room(1), new User(200),
 	new Date('2026-07-25T10:00:00'),
 	new Date('2026-07-25T11:30:00'),
 	null, 'Interview panel', 'CONFIRMED',
@@ -72,7 +74,7 @@ export const MOCK_BOOKING_8 = new Booking(
 
 // Another different-user booking, same room, same day as #8 — day-view sorting
 export const MOCK_BOOKING_9 = new Booking(
-	9, 1, 300,
+	9, new Room(1), new User(300),
 	new Date('2026-07-25T14:00:00'),
 	new Date('2026-07-25T15:00:00'),
 	null, 'Vendor meeting', 'CONFIRMED',
@@ -80,7 +82,7 @@ export const MOCK_BOOKING_9 = new Booking(
 
 // Far-future booking near the 30-day boundary (FR-3.1)
 export const MOCK_BOOKING_10 = new Booking(
-	10, 2, 100,
+	10, new Room(2), new User(100),
 	new Date('2026-08-15T09:00:00'),
 	new Date('2026-08-15T10:00:00'),
 	null, 'Quarterly review', 'CONFIRMED',
