@@ -1,0 +1,9 @@
+/* Tailwind for backend email templates (not used by the Angular app).
+   theme(inline) writes literal values into each utility instead of var(--...) references,
+   and the Maizzle theme files swap oklch colors for hex and rem for px, which email clients need. */
+@import "tailwindcss/theme" theme(inline);
+@import "@maizzle/tailwindcss/colors" theme(inline);
+@import "@maizzle/tailwindcss/spacing" theme(inline);
+@import "@maizzle/tailwindcss/text" theme(inline);
+@import "@maizzle/tailwindcss/borders" theme(inline);
+@import "tailwindcss/utilities";
