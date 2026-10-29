@@ -62,6 +62,8 @@ public class UserPrefsController {
 		prefs.setEmailNotification(prefsDTO.emailNotification());
 		prefs.setFavoriteRooms(prefsDTO.favoriteRooms());
 		prefs.setNotifyOnAdminCancel(prefsDTO.notifyOnAdminCancel());
+		prefs.setNotifyOnBookingChange(prefsDTO.notifyOnBookingChange());
+		prefs.setNotifyOnRoomDeactivated(prefsDTO.notifyOnRoomDeactivated());
 		prefs.setMultifactor(prefsDTO.multifactor());
 		
 		prefsRepository.save(prefs);

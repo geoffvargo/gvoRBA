@@ -57,6 +57,21 @@
 						<span id="confirmBookings">{{ userPrefs().confirmBookings }}</span>
 						
 						<label class="font-semibold"
+						       for="notifyOnAdminCancel">Notify on Admin Cancel:
+						</label>
+						<span id="notifyOnAdminCancel">{{ userPrefs().notifyOnAdminCancel }}</span>
+						
+						<label class="font-semibold"
+						       for="notifyOnBookingChange">Notify on Booking Change:
+						</label>
+						<span id="notifyOnBookingChange">{{ userPrefs().notifyOnBookingChange }}</span>
+						
+						<label class="font-semibold"
+						       for="notifyOnRoomDeactivated">Notify on Room Deactivated:
+						</label>
+						<span id="notifyOnRoomDeactivated">{{ userPrefs().notifyOnRoomDeactivated }}</span>
+						
+						<label class="font-semibold"
 						       for="favoriteRooms">
 							Favorite Rooms:
 						</label>
@@ -101,6 +116,19 @@
 						</label>
 						<mat-slide-toggle name="notifyOnAdminCancel"
 						                  formControlName="notifyOnAdminCancel"></mat-slide-toggle>
+						
+						<label class="font-semibold"
+						       for="notifyOnBookingChange">Notify on Booking Changes:
+						</label>
+						<mat-slide-toggle name="notifyOnBookingChange"
+						                  formControlName="notifyOnBookingChange"></mat-slide-toggle>
+						
+						<label class="font-semibold"
+						       for="notifyOnRoomDeactivated">
+							Notify on Room Deactivated:
+						</label>
+						<mat-slide-toggle name="notifyOnRoomDeactivated"
+						                  formControlName="notifyOnRoomDeactivated"></mat-slide-toggle>
 						
 						<label class="font-semibold"
 						       for="favoriteRooms">

@@ -44,7 +44,7 @@ export class AuthStore {
 		
 		this.userStore.loadCurrentUser().subscribe({
 			next: data => {
-				console.log(data);
+				console.log('currUser(): ', data);
 			},
 			error: error => {
 				console.log(error);

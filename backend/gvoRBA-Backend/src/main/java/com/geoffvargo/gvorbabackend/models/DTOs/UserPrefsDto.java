@@ -13,6 +13,8 @@ public record UserPrefsDto(
 	Boolean multifactor,
 	Boolean confirmBookings,
 	Boolean notifyOnAdminCancel,
+	Boolean notifyOnBookingChange,
+	Boolean notifyOnRoomDeactivated,
 	Set<Long> favoriteRooms
 ) implements Serializable {
 	
@@ -25,7 +27,7 @@ public record UserPrefsDto(
 	 */
 	public static UserPrefsDto fromUserPrefs(UserPrefs prefs) {
 		if (prefs == null) {
-			return new UserPrefsDto(false, false, false, false, Set.of());
+			return new UserPrefsDto(false, false, false, false, false, false, Set.of());
 		}
 		
 		return new UserPrefsDto(
@@ -33,6 +35,8 @@ public record UserPrefsDto(
 			prefs.getMultifactor(),
 			prefs.getConfirmBookings(),
 			prefs.getNotifyOnAdminCancel(),
+			prefs.getNotifyOnBookingChange(),
+			prefs.getNotifyOnRoomDeactivated(),
 			Set.copyOf(prefs.getFavoriteRooms())
 		);
 	}
