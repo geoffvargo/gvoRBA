@@ -68,6 +68,8 @@ export class UserHomeComponent {
 		multifactor: [false, Validators.required],
 		confirmBookings: [false, Validators.required],
 		notifyOnAdminCancel: [false, Validators.required],
+		notifyOnBookingChange: [false, Validators.required],
+		notifyOnRoomDeactivated: [false, Validators.required],
 		favoriteRooms: this.fb.control<Room[]>([], Validators.required),
 	});
 	
@@ -79,7 +81,7 @@ export class UserHomeComponent {
 	
 	private readonly userPrefsPayload = computed(() => {
 		const {
-			emailNotification, multifactor, confirmBookings, notifyOnAdminCancel, favoriteRooms,
+			emailNotification, multifactor, confirmBookings, notifyOnAdminCancel, favoriteRooms, notifyOnBookingChange, notifyOnRoomDeactivated
 		} = this.userPrefsFormValue();
 		
 		if (
@@ -87,7 +89,9 @@ export class UserHomeComponent {
 			multifactor == null ||
 			confirmBookings == null ||
 			notifyOnAdminCancel == null ||
-			favoriteRooms == null
+			favoriteRooms == null ||
+			notifyOnBookingChange == null ||
+			notifyOnRoomDeactivated == null
 		) {
 			return null;
 		}
@@ -97,6 +101,8 @@ export class UserHomeComponent {
 			multifactor,
 			confirmBookings,
 			notifyOnAdminCancel,
+			notifyOnBookingChange,
+			notifyOnRoomDeactivated,
 			favoriteRooms,
 		} as UserPrefs;
 	});
@@ -113,6 +119,8 @@ export class UserHomeComponent {
 			multifactor: prefs.multifactor,
 			confirmBookings: prefs.confirmBookings,
 			notifyOnAdminCancel: prefs.notifyOnAdminCancel,
+			notifyOnBookingChange : prefs.notifyOnBookingChange,
+			notifyOnRoomDeactivated : prefs.notifyOnRoomDeactivated,
 			favoriteRooms: prefs.favoriteRooms,
 		});
 	}

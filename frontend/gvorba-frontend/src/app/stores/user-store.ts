@@ -54,6 +54,7 @@ export class UserStore {
 			tap(user => {
 				this._user.set(user);
 				this._userPrefs.set(user.userPrefs);
+				console.log('userPrefs: ', this._userPrefs());
 			}),
 		);
 	}
