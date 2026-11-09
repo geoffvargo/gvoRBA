@@ -11,6 +11,7 @@ import org.springframework.boot.*;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.*;
 import org.springframework.security.authentication.*;
+import org.springframework.security.authorization.*;
 import org.springframework.security.config.annotation.authentication.configuration.*;
 import org.springframework.security.config.annotation.web.builders.*;
 import org.springframework.security.config.annotation.web.configuration.*;
@@ -37,6 +38,10 @@ import lombok.*;
 @EnableScheduling /// enables @Scheduled jobs elsewhere in the app
 @RequiredArgsConstructor
 public class SecurityConfig {
+	private final TotpFactorAuthorizationManager factorAuthManager;
+	
+	private final MfaAccessDeniedHandler mfaAccessDeniedHandler;
+	
 	private final AuthEntryPointJwt unauthorizedHandler;
 	
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
@@ -93,6 +98,10 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http, CustomLoggingFilter customLoggingFilter)
 	throws Exception {
+		DefaultAuthorizationManagerFactory<Object> mfa = new DefaultAuthorizationManagerFactory<>();
+		
+		mfa.setAdditionalAuthorization(factorAuthManager);
+		
 		/// CSRF is off because API auth uses the Authorization: Bearer header, not session cookies.
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
@@ -106,12 +115,17 @@ public class SecurityConfig {
 				                           .requestMatchers("/api/auth/public/**").permitAll()
 				                           .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 				                           .requestMatchers("/api/dev/**").permitAll()
-//				                           .requestMatchers("/api/calendar/**").permitAll()
 				                           
 				                           /// Without this, any uncaught exception is re-dispatched to /error,
 				                           /// rejected here, and surfaces as a misleading 401.
 				                           .requestMatchers("/error").permitAll()
-				                           .anyRequest().authenticated());
+				                           
+				                           /// This is to allow mutlifactor/2fa to work
+				                           .requestMatchers(
+					                           "/api/auth/2fa/verify",
+					                           "/api/auth/2fa/recover"
+				                           ).authenticated()
+				                           .anyRequest().access(mfa.authenticated()));
 		
 		/// The user services provision the local account (with ROLE_USER) during login:
 		/// the OIDC one handles Google (openid scope), the plain OAuth2 one handles GitHub.
@@ -121,7 +135,13 @@ public class SecurityConfig {
 				                                                         .oidcUserService(customOidcUserService))
 			                           .successHandler(oAuth2LoginSuccessHandler)
 			                           .failureHandler(oAuth2LoginFailureHandler));
-		http.exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler));
+		
+		/// This is for exception handling
+		http.exceptionHandling(ex -> {
+				ex.authenticationEntryPoint(unauthorizedHandler);
+				ex.accessDeniedHandler(mfaAccessDeniedHandler);
+			}
+		);
 		
 		/// Both filters run before Spring's form-login filter: log the request, then read the JWT
 		/// and populate the SecurityContext.
@@ -201,7 +221,7 @@ public class SecurityConfig {
 				user1.setCreatedOn(new Date());
 				user1.setEnabled(true);
 				user1.withDefaultPrefs();
-
+				
 				userRepository.save(user1);
 			}
 			

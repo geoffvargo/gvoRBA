@@ -36,13 +36,17 @@ public class UserDetailsImpl implements UserDetails {
 	@Getter
 	private Collection<? extends GrantedAuthority> authorities;
 	
-	public UserDetailsImpl(Long id, String name, String email, String password,
+	@Getter
+	private boolean multifactor;
+	
+	public UserDetailsImpl(Long id, String name, String email, String password, boolean multifactor,
 	                       List<? extends GrantedAuthority> authority) {
 		this.id = id;
 		this.username = name;
 		this.email = email;
 		this.password = password;
 		this.authorities = authority;
+		this.multifactor = multifactor;
 	}
 	
 	public static UserDetailsImpl build(User user) {
@@ -52,7 +56,8 @@ public class UserDetailsImpl implements UserDetails {
 			user.getName(),
 			user.getEmail(),
 			user.getPassword(),
-			List.of(authority)
+			List.of(authority),
+			user.getUserPrefs().getMultifactor()
 		);
 	}
 	

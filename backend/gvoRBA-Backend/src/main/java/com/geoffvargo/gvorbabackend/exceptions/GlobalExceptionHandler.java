@@ -23,7 +23,8 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler(InvalidRefreshTokenException.class)
-	public ResponseEntity<ApiError> handleRefreshToken(InvalidRefreshTokenException ex, HttpServletRequest request) {
+	public ResponseEntity<ApiError> handleRefreshToken(InvalidRefreshTokenException ex,
+	                                                   HttpServletRequest request) {
 		ApiError err = new ApiError(
 			Instant.now(),
 			HttpStatus.UNAUTHORIZED.value(),
@@ -32,5 +33,19 @@ public class GlobalExceptionHandler {
 			request.getRequestURI());
 		
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+	}
+	
+	@ExceptionHandler(TwoFactorException.class)
+	public ResponseEntity<ApiError> handleTwoFactor(TwoFactorException e, HttpServletRequest request) {
+		ApiError err = new ApiError(
+			Instant.now(),
+			e.getStatus().value(),
+			e.getCode(),
+			e.getMessage(),
+			request.getRequestURI()
+		);
+		
+		return ResponseEntity.status(e.getStatus())
+			       .body(err);
 	}
 }

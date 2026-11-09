@@ -106,7 +106,8 @@ public class AuthController {
 		SecurityContextHolder.getContext().setAuthentication(auth);
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-		String jwtToken = jwtUtils.generateTokenFromUsername(Objects.requireNonNull(userDetails));
+//		String jwtToken = jwtUtils.generateTokenFromUsername(Objects.requireNonNull(userDetails));
+		String jwtToken = jwtUtils.generateTokenFromUsername(Objects.requireNonNull(userDetails), false);
 		
 		/// get RefreshToken
 		User user = userRepository.findByName(userDetails.getUsername()).orElseThrow(
@@ -114,7 +115,8 @@ public class AuthController {
 		);
 		String raw;
 		try {
-			raw = refreshTokenService.issue(user);
+//			raw = refreshTokenService.issue(user);
+			raw = refreshTokenService.issue(user, false);
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
@@ -125,10 +127,16 @@ public class AuthController {
 			                     .toList();
 		
 		/// prepare the response body
-		LoginResponse response = new LoginResponse(jwtToken, userDetails.getUsername(), roles);
+		LoginResponse response = new LoginResponse(
+			jwtToken,
+			userDetails.getUsername(),
+			roles,
+			user.getUserPrefs().getMultifactor()
+		);
 		
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
-			buildRefreshCookie(raw).toString()).body(response);
+				buildRefreshCookie(raw).toString())
+			       .body(response);
 	}
 	
 	@PostMapping("/public/signup")
@@ -151,9 +159,9 @@ public class AuthController {
 			            .enabled(true)
 			            .build()
 			            .withDefaultPrefs();
-
+		
 		userRepository.save(user);
-
+		
 		return ResponseEntity.ok("User registered successfully!");
 	}
 	
@@ -164,14 +172,26 @@ public class AuthController {
 		}
 		
 		RotationResult res = refreshTokenService.rotate(cookieValue);
-		String jwt = jwtUtils.generateTokenFromUsername(res.principal());
+//		String jwt = jwtUtils.generateTokenFromUsername(res.principal());
+		String jwt = jwtUtils.generateTokenFromUsername(res.principal(), res.mfaVerified());
 		
 		List<String> roles = res.principal().getAuthorities().stream()
 			                     .map(GrantedAuthority::getAuthority)
 			                     .toList();
 		
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, buildRefreshCookie(res.rawToken()).toString())
-			       .body(new LoginResponse(jwt, res.principal().getUsername(), roles));
+		boolean mfaRequired = res.principal().isMultifactor() && !res.mfaVerified();
+		
+		return ResponseEntity.ok().header(
+				HttpHeaders.SET_COOKIE,
+				buildRefreshCookie(res.rawToken()).toString())
+			       .body(
+				       new LoginResponse(
+					       jwt,
+					       res.principal().getUsername(),
+					       roles,
+					       mfaRequired
+				       )
+			       );
 	}
 	
 	@PostMapping("/public/logout")

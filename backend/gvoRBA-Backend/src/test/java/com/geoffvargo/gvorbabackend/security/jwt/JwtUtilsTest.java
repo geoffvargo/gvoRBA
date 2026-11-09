@@ -3,7 +3,6 @@ package com.geoffvargo.gvorbabackend.security.jwt;
 import com.geoffvargo.gvorbabackend.models.*;
 
 import org.junit.jupiter.api.*;
-import org.slf4j.*;
 import org.springframework.test.util.*;
 
 import java.util.Base64;
@@ -14,40 +13,60 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.*;
 import io.jsonwebtoken.security.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link JwtUtils}. The secret and expiry are set by hand since {@code @Value} isn't processed here.
+ */
 class JwtUtilsTest {
-	// Must be >= 256 bits (32 bytes) for HS256.
+	/// Must be >= 256 bits (32 bytes) for HS256.
 	private static final String TEST_SECRET =
 		Base64.getEncoder().encodeToString("test-secret-key-that-is-32-bytes!!".getBytes());
-	private static final int EXPIRATION_MS = 3_600_000; // 1 hour
-	public static final Logger LOGGER = LoggerFactory.getLogger(JwtUtilsTest.class);
+	private static final int EXPIRATION_MS = 3_600_000; /// 1 hour
+
 	private JwtUtils jwtUtils;
-	
+
 	@BeforeEach
 	void setUp() {
 		jwtUtils = new JwtUtils();
 		ReflectionTestUtils.setField(jwtUtils, "secret", TEST_SECRET);
 		ReflectionTestUtils.setField(jwtUtils, "expirationMs", EXPIRATION_MS);
 	}
-	
-	// --- helpers ---
-	
+
+	/// --- tests ---
+
 	@Test
 	void generateTokenFromUsername_subjectIsUsername() {
-		UserDetailsImpl details = buildDetails(userWithRole(AppRole.ROLE_USER));
-		
-		String token = jwtUtils.generateTokenFromUsername(details);
-		
-		LOGGER.info(token);
-		
+		String token = jwtUtils.generateTokenFromUsername(buildDetails(userWithRole(AppRole.ROLE_USER)));
+
+		assertEquals("jane", parse(token).getSubject());
+	}
+
+	@Test
+	void generateTokenFromUsername_rolesClaimContainsRole() {
+		String token = jwtUtils.generateTokenFromUsername(buildDetails(userWithRole(AppRole.ROLE_USER)));
+
 		assertEquals(AppRole.ROLE_USER.name(), parse(token).get("roles", String.class));
 	}
-	
+
+	/// --- helpers ---
+
+	/**
+	 * Builds the principal the same way the login flow does.
+	 *
+	 * @param user the user to wrap
+	 * @return the user's details
+	 */
 	private UserDetailsImpl buildDetails(User user) {
 		return UserDetailsImpl.build(user);
 	}
-	
+
+	/**
+	 * Builds a user with the given role and default prefs, which {@code UserDetailsImpl.build} requires.
+	 *
+	 * @param appRole the user's role
+	 * @return the user
+	 */
 	private User userWithRole(AppRole appRole) {
 		return User.builder()
 			       .id(1L)
@@ -55,11 +74,16 @@ class JwtUtilsTest {
 			       .email("jane@example.com")
 			       .password("hashed")
 			       .role(new Role(appRole))
-			       .build();
+			       .build()
+			       .withDefaultPrefs();
 	}
-	
-	// --- tests ---
-	
+
+	/**
+	 * Verifies a token with the test secret and returns its claims.
+	 *
+	 * @param token the signed JWT
+	 * @return the token's claims
+	 */
 	private Claims parse(String token) {
 		SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(TEST_SECRET));
 		return Jwts.parser()

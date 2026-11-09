@@ -41,6 +41,7 @@ public class User {
 	@Column(name = "enabled", nullable = false)
 	private Boolean enabled;
 	
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	@Column(name = "auth_provider")
 	private AuthProvider authProvider = AuthProvider.LOCAL;
@@ -50,7 +51,15 @@ public class User {
 	
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private UserPrefs userPrefs;
-
+	
+	/** AES-GCM ciphertext (Base64) of the raw 20-byte TOTP secret. Null until setup. */
+	@Column(name = "totp_secret")
+	private String totpSecret;
+	
+	/** Highest TOTP time step ever accepted. Written only by UserRepository.claimTotpStep. */
+	@Column(name = "totp_last_step")
+	private Long totpLastStep;
+	
 	/**
 	 * Attaches a default {@link UserPrefs} if this user has none, so it gets saved along with the user.
 	 *
