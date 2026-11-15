@@ -60,6 +60,9 @@ public class User {
 	@Column(name = "totp_last_step")
 	private Long totpLastStep;
 	
+	@Column(name = "totp_enrolled", nullable = false)
+	private boolean totpEnrolled = false;
+	
 	/**
 	 * Attaches a default {@link UserPrefs} if this user has none, so it gets saved along with the user.
 	 *
@@ -71,5 +74,10 @@ public class User {
 		}
 
 		return this;
+	}
+	
+	@JsonIgnore
+	public boolean isMultifactorRequired() {
+		return totpEnrolled && userPrefs != null && userPrefs.getMultifactor();
 	}
 }

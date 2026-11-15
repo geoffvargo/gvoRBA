@@ -57,7 +57,7 @@ public class UserDetailsImpl implements UserDetails {
 			user.getEmail(),
 			user.getPassword(),
 			List.of(authority),
-			user.getUserPrefs().getMultifactor()
+			user.isMultifactorRequired()
 		);
 	}
 	

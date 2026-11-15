@@ -199,6 +199,13 @@
 		    <artifactId>spring-boot-starter-test</artifactId>
 		    <groupId>org.springframework.boot</groupId>
 		    <scope>test</scope>
+		</dependency>
+		<!-- Pins the JUnit launcher to the same version as the rest of JUnit (managed by Boot).
+		     Without it IntelliJ adds its own launcher, which can be an older 1.x that crashes on JUnit 6. -->
+		<dependency>
+		    <artifactId>junit-platform-launcher</artifactId>
+		    <groupId>org.junit.platform</groupId>
+		    <scope>test</scope>
 		</dependency><dependency><artifactId>spring-boot-starter-actuator</artifactId><groupId>org.springframework.boot</groupId></dependency>
 	</dependencies>
 	

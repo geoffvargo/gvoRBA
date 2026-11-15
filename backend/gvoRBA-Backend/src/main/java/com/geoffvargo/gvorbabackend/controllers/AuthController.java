@@ -131,7 +131,7 @@ public class AuthController {
 			jwtToken,
 			userDetails.getUsername(),
 			roles,
-			user.getUserPrefs().getMultifactor()
+			user.isMultifactorRequired()
 		);
 		
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,

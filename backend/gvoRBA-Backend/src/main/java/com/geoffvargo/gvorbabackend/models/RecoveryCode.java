@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter @Setter @ToString @NoArgsConstructor
+@Getter @Setter @ToString @NoArgsConstructor @AllArgsConstructor @Builder
 @Table(name = "recovery_code")
 public class RecoveryCode {
 	@Id

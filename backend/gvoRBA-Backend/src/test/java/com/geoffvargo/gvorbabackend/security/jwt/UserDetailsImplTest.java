@@ -40,12 +40,27 @@ class UserDetailsImplTest {
 		assertEquals(List.of(role.name()), authorities);
 	}
 
-	@ParameterizedTest
-	@ValueSource(booleans = {true, false})
-	void build_copiesMultifactorPref(boolean multifactor) {
-		UserDetailsImpl details = UserDetailsImpl.build(buildUser(AppRole.ROLE_USER, multifactor));
+	/**
+	 * MFA is required only when the user has finished authenticator setup <em>and</em> has the pref on.
+	 *
+	 * @param enrolled    whether the user has finished authenticator setup
+	 * @param pref        whether the user has MFA turned on in their prefs
+	 * @param expected    the {@code multifactor} flag the principal should carry
+	 */
+	@ParameterizedTest(name = "enrolled={0}, pref={1} -> required={2}")
+	@CsvSource({
+		"true,  true,  true",
+		"true,  false, false",
+		"false, true,  false",
+		"false, false, false",
+	})
+	void build_requiresMfaOnlyWhenEnrolledAndPrefOn(boolean enrolled, boolean pref, boolean expected) {
+		User user = buildUser(AppRole.ROLE_USER, pref);
+		user.setTotpEnrolled(enrolled);
 
-		assertEquals(multifactor, details.isMultifactor());
+		UserDetailsImpl details = UserDetailsImpl.build(user);
+
+		assertEquals(expected, details.isMultifactor());
 	}
 
 	/// --- helpers ---
