@@ -17,7 +17,7 @@ public class RefreshCookieFactory {
 	public RefreshCookieFactory() {
 	}
 	
-	ResponseCookie buildRefreshCookie(String rawToken) {
+	public ResponseCookie buildRefreshCookie(String rawToken) {
 		ResponseCookie ans = ResponseCookie.from("refreshToken")
 			                     .value(rawToken)
 			                     .path("/api/auth")

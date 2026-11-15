@@ -30,4 +30,8 @@ public class RefreshToken {
 	
 	@Column(name = "revoked_at")
 	private LocalDateTime revokedAt;
+	
+	@Builder.Default
+	@Column(name = "mfa_verified", nullable = false)
+	private Boolean mfaVerified = false;
 }

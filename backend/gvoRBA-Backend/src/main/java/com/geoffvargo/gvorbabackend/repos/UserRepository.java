@@ -3,6 +3,7 @@ package com.geoffvargo.gvorbabackend.repos;
 import com.geoffvargo.gvorbabackend.models.*;
 
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.*;
 import org.springframework.stereotype.*;
 
 import java.util.*;
@@ -16,11 +17,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByName(String name);
 	
 	Optional<User> findByEmail(String email);
-
+	
 	Optional<User> findByEmailIgnoreCase(String email);
 	
 	User getUserById(Long id);
 	
 	Optional<User> findByAuthProviderAndProviderId(AuthProvider authProvider, String providerId);
 	
+	@Modifying(flushAutomatically = true, clearAutomatically = true)
+	@Query("""
+	       		UPDATE User u
+	       			SET u.totpLastStep = :step
+	       		WHERE u.id = :id
+	       			AND (u.totpLastStep IS NULL OR u.totpLastStep < :step)
+	       """)
+	int claimTotpStep(@Param("id") Long id, @Param("step") long step);
 }

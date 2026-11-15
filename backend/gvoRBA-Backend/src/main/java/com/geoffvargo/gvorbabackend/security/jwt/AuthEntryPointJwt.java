@@ -1,37 +1,38 @@
 package com.geoffvargo.gvorbabackend.security.jwt;
 
+import com.geoffvargo.gvorbabackend.exceptions.*;
+import com.geoffvargo.gvorbabackend.security.*;
+
 import org.slf4j.*;
+import org.springframework.http.*;
 import org.springframework.security.core.*;
 import org.springframework.security.web.*;
 import org.springframework.stereotype.*;
 
 import java.io.*;
-import java.util.*;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import tools.jackson.databind.*;
+import lombok.*;
 
 @Component
+@RequiredArgsConstructor
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
-	public static final Logger LOGGER = LoggerFactory.getLogger(AuthEntryPointJwt.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthEntryPointJwt.class);
+	
+	private final ApiErrorWriter errorWriter;
 	
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 	                     AuthenticationException authException) throws IOException, ServletException {
-		LOGGER.error("Unauthorized access");
+		LOGGER.error("Unauthorized access to {} : {}", request.getRequestURI(), authException.getMessage());
 		
-		response.setContentType("application/json");
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		
-		final Map<String, Object> map = new HashMap<>();
-		
-		map.put("atatus", HttpServletResponse.SC_UNAUTHORIZED);
-		map.put("error", "Unauthorized access");
-		map.put("message", authException.getMessage());
-		map.put("path", request.getServletPath());
-		
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(response.getOutputStream(), map);
+		errorWriter.write(
+			request,
+			response,
+			HttpStatus.UNAUTHORIZED,
+			ErrorCode.AUTHENTICATION_REQUIRED,
+			"Authentication required."
+		);
 	}
 }

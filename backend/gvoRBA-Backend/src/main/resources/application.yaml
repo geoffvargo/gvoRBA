@@ -19,6 +19,10 @@ app:
     product-name: gvorba
   mail:
     from: ${MAIL_FROM:no-reply@gvorba.local}
+  mfa:
+    issuer: ${MFA_ISSUER:gvorba}
+    ecryption-password: ${MFA_ENCRYPTION_PASSWORD}
+    ecryption-salt: ${MFA_ENCRYPTION_SALT}
 
 
 spring:
