@@ -12,6 +12,10 @@ export const adminGuard: CanActivateFn = () => {
 	const authStore = inject(AuthStore);
 	
 	const token = tokenService.getToken();
+	
+	if (authStore.mfaPending()) {
+		return new RedirectCommand(router.parseUrl('/mfa'));
+	}
 
 	// Fast path: stored token is still valid, decide synchronously.
 	if (token !== null && !jwtHelper.isTokenExpired(token)) {
@@ -21,7 +25,14 @@ export const adminGuard: CanActivateFn = () => {
 	// Token missing/expired: try a silent refresh before giving up, then
 	// re-check the role against whatever token comes back.
 	return authStore.refresh().pipe(
-		map(newToken => hasAdminRole(jwtHelper, newToken) ? true : redirect(router)),
+		// map(newToken => hasAdminRole(jwtHelper, newToken) ? true : redirect(router)),
+		map(newToken => {
+			if (authStore.mfaPending()) {
+				return new RedirectCommand(router.parseUrl('/mfa'));
+			} else {
+				return hasAdminRole(jwtHelper, newToken) ? true : redirect(router);
+			}
+		}),
 		catchError(() => of(redirect(router))),
 	);
 };

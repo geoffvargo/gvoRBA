@@ -1,0 +1,62 @@
+<div class="flex justify-center py-16">
+	<div class="card bg-base-100 shadow-lg w-96 p-6 text-center gap-4">
+		<h2 class="text-2xl font-semibold">Two-Factor Verification</h2>
+		<div class="flex flex-col">
+			@if (!useRecoveryCode()) {
+				<form [formGroup]="codeForm"
+				      class="flex flex-col">
+					
+					<label class="font-semibold"
+					       for="code">
+						Enter 6-digit code from your authenticator app
+					</label>
+					
+					<input type="text"
+					       class="input"
+					       id="code"
+					       formControlName="code">
+				
+				</form>
+				
+				<div class="p-2 justify-center">
+					<button class="action-btn w-fit!"
+					        (click)="onSubmitCode()"
+					        [disabled]="codeForm.invalid || isSubmitting()">
+						Verify
+					</button>
+				</div>
+				<button class="btn btn-link"
+				        (click)="toggleMode()">
+					Use a recovery code instead
+				</button>
+
+			} @else {
+				<form [formGroup]="recoveryForm">
+					
+					<label for="recovery">
+						Enter one of your recovery codes
+					</label>
+					<input type="text"
+					       class="input"
+					       id="recovery"
+					       formControlName="recoveryCode">
+				
+				</form>
+				
+				<button class="action-btn w-fit!"
+				        (click)="onSuibmitRecoveryCode()"
+				        [disabled]="recoveryForm.invalid || isSubmitting()">
+					Use Recovery Code
+				</button>
+				<button class="btn btn-link"
+				        (click)="toggleMode()">
+					Use an authentication code instead
+				</button>
+			}
+			<button class="btn btn-ghost"
+			        (click)="onCancel()">
+				Cancel and sign out
+			</button>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,101 @@
+<div class="card p-4 bg-base-100 shadow-lg w-fit text-center flex flex-col gap-3">
+	<h2 class="text-2xl font-semibold p-4">
+		Authenticator app
+	</h2>
+	@switch (mode()) {
+		<!-- MARK: loading -->
+		@case ('loading') {
+			<p>Loading...</p>
+		}
+		<!-- MARK: notEnrolled -->
+		@case ('notEnrolled') {
+			<p>No authenticator app is set up."</p>
+			@if (multifactorPref().multifactor) {
+				<p>
+					Multifactor is on, but no code is asked for at login until you finish setup.
+				</p>
+			}
+			<button class="action-btn"
+			        (click)="startSetup()">
+				Set Up Authenticator
+			</button>
+		}
+		<!-- MARK: setup -->
+		@case ('setup') {
+			<p>Scan this QR code with your authenticator app, or type the key below.</p>
+			<img [src]="qrDataUrl()"
+			     alt=""
+			     height="200" />
+			<code>{{ secret() }}</code>
+			<form [formGroup]="codeForm"
+			      (ngSubmit)="confirmSetup()"
+			      class="justify-center">
+				<label for="code">Enter the 6-digit code the app shows</label>
+				<input type="text"
+				       inputmode="numeric"
+				       class="input"
+				       id="code"
+				       formControlName="code">
+				
+				<div class="flex flex-col justify-center">
+					<button class="action-btn w-fit! self-center"
+					        type="submit"
+					        [disabled]="codeForm.invalid">
+						Confirm
+					</button>
+					<button class="action-btn w-fit! self-center"
+					        (click)="cancel()">
+						Cancel
+					</button>
+				</div>
+			</form>
+		}
+		<!-- MARK: showCodes -->
+		@case ('showCodes') {
+			<p>
+				Save these recovery codes now. Each works once, and they won't be shown again.
+			</p>
+			<ul>
+				@for (code of recoveryCodes(); track code) {
+					{{ code }}
+				}
+			</ul>
+			<button class="action-btn w-fit!"
+			        (click)="finishShowingCodes()">
+				Done
+			</button>
+		}
+		<!-- MARK: enrolled -->
+		@case ('enrolled') {
+			<p>Your authenticator app is set up.</p>
+			@if (!multifactorPref().multifactor) {
+				<p>Multifactor is off, so no code is asked for at login.</p>
+			}
+			<button class="action-btn w-fit!"
+			        (click)="startDisabled()">
+				Remove Authenticator
+			</button>
+		}
+		<!-- MARK: disabling -->
+		@case ('disabling') {
+			<form [formGroup]="codeForm"
+			      class="justify-center"
+			      (ngSubmit)="confirmDisabled()">
+				<label>Enter a current 6-digit code to remove your authentication</label>
+				<input type="text"
+				       class="input"
+				       id="code"
+				       formControlName="code">
+				<button class="action-btn w-fit! self-center"
+				        type="submit"
+				        [disabled]="codeForm.invalid">
+					Remove
+				</button>
+				<button class="action-btn w-fit!"
+				        (click)="cancel()">
+					Cancel
+				</button>
+			</form>
+		}
+	}
+</div>

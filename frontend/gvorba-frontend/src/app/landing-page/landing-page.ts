@@ -54,8 +54,12 @@ export class LandingPage {
 		}
 		
 		this.authStore.login(this.loginRequest()).subscribe({
-			next: () => {
-				this.router.navigate(['/home']).then();
+			next: data => {
+				if (this.authStore.mfaPending()) {
+					this.router.navigate(['/mfa']).then();
+				} else {
+					this.router.navigate(['/home']).then();
+				}
 			},
 			error: err => {
 				console.error(err);

@@ -15,4 +15,16 @@ export class TokenStorageService {
 	removeToken() {
 		return sessionStorage.removeItem('auth-token');
 	}
+	
+	getMfaPending() {
+		return sessionStorage.getItem('mfa_pending') === 'true';
+	}
+	
+	saveMfaPending(pending: boolean) {
+		sessionStorage.setItem('mfa-pending', String(pending));
+	}
+	
+	removeMfaPending() {
+		sessionStorage.removeItem('mfa-pending');
+	}
 }
