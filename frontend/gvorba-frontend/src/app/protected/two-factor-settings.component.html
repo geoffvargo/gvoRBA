@@ -1,6 +1,6 @@
 <div class="card p-4 bg-base-100 shadow-lg w-fit text-center flex flex-col gap-3">
 	<h2 class="text-2xl font-semibold p-4">
-		Authenticator app
+		Two Factor Authentication
 	</h2>
 	@switch (mode()) {
 		<!-- MARK: loading -->
@@ -9,7 +9,7 @@
 		}
 		<!-- MARK: notEnrolled -->
 		@case ('notEnrolled') {
-			<p>No authenticator app is set up."</p>
+			<p>No authenticator app is set up.</p>
 			@if (multifactorPref().multifactor) {
 				<p>
 					Multifactor is on, but no code is asked for at login until you finish setup.
@@ -52,39 +52,45 @@
 		}
 		<!-- MARK: showCodes -->
 		@case ('showCodes') {
+		<div class="flex flex-col justify-center">
 			<p>
 				Save these recovery codes now. Each works once, and they won't be shown again.
 			</p>
-			<ul>
+			<ul class="m-4">
 				@for (code of recoveryCodes(); track code) {
 					{{ code }}
+					<br>
 				}
 			</ul>
-			<button class="action-btn w-fit!"
+			<button class="action-btn w-fit! self-center"
 			        (click)="finishShowingCodes()">
 				Done
 			</button>
+		</div>
 		}
 		<!-- MARK: enrolled -->
 		@case ('enrolled') {
-			<p>Your authenticator app is set up.</p>
-			@if (!multifactorPref().multifactor) {
-				<p>Multifactor is off, so no code is asked for at login.</p>
-			}
-			<button class="action-btn w-fit!"
-			        (click)="startDisabled()">
-				Remove Authenticator
-			</button>
+			<div class="flex flex-col justify-center">
+				<p>Your authenticator app is set up.</p>
+				@if (!multifactorPref().multifactor) {
+					<p>Multifactor is off, so no code is asked for at login.</p>
+				}
+				<button class="action-btn w-fit! self-center p-4 m-4"
+				        (click)="startDisabled()">
+					Remove Authenticator
+				</button>
+			</div>
 		}
 		<!-- MARK: disabling -->
 		@case ('disabling') {
 			<form [formGroup]="codeForm"
-			      class="justify-center"
+			      class="flex flex-col justify-center"
 			      (ngSubmit)="confirmDisabled()">
-				<label for="code">Enter a current 6-digit code to remove your authentication
+				<label for="code">
+					Enter a current 6-digit code to remove your authentication
 				</label>
 				<input type="text"
-				       class="input"
+				       class="input self-center"
 				       id="code"
 				       formControlName="code">
 				<button class="action-btn w-fit! self-center"
@@ -92,7 +98,7 @@
 				        [disabled]="codeForm.invalid">
 					Remove
 				</button>
-				<button class="action-btn w-fit!"
+				<button class="action-btn w-fit! self-center"
 				        (click)="cancel()">
 					Cancel
 				</button>
