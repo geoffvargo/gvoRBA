@@ -28,12 +28,12 @@ describe('adminGuardGuard', () => {
 		firstValueFrom(runGuard() as Observable<boolean | RedirectCommand>);
 	
 	let tokenService: { getToken: ReturnType<typeof vi.fn> };
-	let authStore: { refresh: ReturnType<typeof vi.fn> };
+	let authStore: { mfaPending: ReturnType<typeof vi.fn>; refresh: ReturnType<typeof vi.fn> };
 	let jwtHelper: JwtHelperService;
 	
 	beforeEach(() => {
 		tokenService = { getToken: vi.fn() };
-		authStore = { refresh: vi.fn() };
+		authStore = { mfaPending: vi.fn().mockReturnValue(false), refresh: vi.fn() };
 		jwtHelper = new JwtHelperService(); // real decode + real expiry check
 		
 		TestBed.configureTestingModule({

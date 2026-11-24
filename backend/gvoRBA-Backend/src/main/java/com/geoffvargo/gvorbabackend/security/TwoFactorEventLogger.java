@@ -11,6 +11,5 @@ public class TwoFactorEventLogger {
 	@EventListener
 	public void on(TwoFactorEvent event) {
 		log.info("type: {}. username: {}, at: {}", event.type(), event.username(), event.at());
-		throw new UnsupportedOperationException();
 	}
 }

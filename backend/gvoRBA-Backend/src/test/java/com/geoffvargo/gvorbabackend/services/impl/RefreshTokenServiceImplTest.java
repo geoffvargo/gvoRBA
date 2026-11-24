@@ -275,17 +275,19 @@ class RefreshTokenServiceImplTest {
 		assertEquals(user.getName(), result.principal().getUsername());
 	}
 
-	/// RotationResult.mfaVerified feeds LoginResponse.mfaRequired, so it mirrors the user's multifactor preference.
+	/// RotationResult.mfaVerified decides whether the refreshed access token carries the TOTP factor, so it must
+	/// come from the presented row (did this session pass MFA?), never from the user's multifactor preference.
+	/// The preference is set to the opposite value to prove the row wins.
 	@ParameterizedTest
 	@ValueSource(booleans = {true, false})
-	void rotate_validToken_resultMfaFlagMirrorsUserMultifactorPref(boolean multifactor) {
-		user = buildUser(multifactor);
-		RefreshToken row = storedToken(LocalDateTime.now().plusDays(1), null, false);
+	void rotate_validToken_resultMfaFlagMirrorsRowMfaVerified(boolean mfaVerified) {
+		user = buildUser(!mfaVerified);
+		RefreshToken row = storedToken(LocalDateTime.now().plusDays(1), null, mfaVerified);
 		when(refreshTokenRepository.findByTokenHash(anyString())).thenReturn(Optional.of(row));
 
 		RotationResult result = service.rotate(RAW_TOKEN);
 
-		assertEquals(multifactor, result.mfaVerified());
+		assertEquals(mfaVerified, result.mfaVerified());
 	}
 
 	@Test

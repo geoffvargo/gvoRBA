@@ -2,6 +2,7 @@ export interface LoginResponse {
 	jwtToken: string;
 	username: string;
 	roles: string[];
+	mfaRequired: boolean,
 }
 
 export function emptyResponse(overrides: Partial<LoginResponse> = {}): LoginResponse {
@@ -9,6 +10,7 @@ export function emptyResponse(overrides: Partial<LoginResponse> = {}): LoginResp
 		jwtToken: '',
 		username: '',
 		roles: [],
+		mfaRequired: false,
 		...overrides,
 	};
 }

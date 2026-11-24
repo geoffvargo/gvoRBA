@@ -9,6 +9,7 @@ import { UserPrefs } from '../models/user.prefs';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { RoomStore } from '../stores/room-store';
+import { TwoFactorSettingsComponent } from './two-factor-settings.component';
 
 @Component({
 	selector: 'app-user-home',
@@ -17,6 +18,7 @@ import { RoomStore } from '../stores/room-store';
 		MatProgressSpinner,
 		ReactiveFormsModule,
 		MatSlideToggle,
+		TwoFactorSettingsComponent,
 	],
 	templateUrl: './user-home.component.html',
 	styleUrl: './user-home.component.css',

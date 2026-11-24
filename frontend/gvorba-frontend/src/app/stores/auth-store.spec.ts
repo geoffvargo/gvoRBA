@@ -21,6 +21,8 @@ describe('AuthStore', () => {
 	};
 	let tokenStorageSpy: {
 		saveToken: Mock,
+		saveMfaPending: Mock,
+		removeMfaPending: Mock,
 	};
 	
 	beforeEach(() => {
@@ -32,6 +34,8 @@ describe('AuthStore', () => {
 		};
 		tokenStorageSpy = {
 			saveToken: vi.fn(),
+			saveMfaPending: vi.fn(),
+			removeMfaPending: vi.fn(),
 		};
 		
 		sessionStorage.removeItem('auth-token');

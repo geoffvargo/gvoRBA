@@ -326,15 +326,15 @@ public class TwoFactorService {
 		limiter.checkAllowed(username);
 		
 		User user = loadUser(username);
-		
-		if (user.isTotpEnrolled()) {
+
+		if (!user.isTotpEnrolled()) {
 			throw new TwoFactorException(ErrorCode.MFA_NOT_ENABLED, HttpStatus.CONFLICT);
 		}
-		
+
 		requireValidCode(user, code);
-		
+
 		user = loadUser(username); /// make sure our copy of user isn't stale
-		
+
 		return upgradeSession(user, refreshToken);
 	}
 	
@@ -402,15 +402,15 @@ public class TwoFactorService {
 		limiter.checkAllowed(username);
 		
 		User user = loadUser(username);
-		
-		if (user.isTotpEnrolled()) {
+
+		if (!user.isTotpEnrolled()) {
 			throw new TwoFactorException(ErrorCode.MFA_NOT_ENABLED, HttpStatus.CONFLICT);
 		}
-		
+
 		requireValidCode(user, code);
-		
+
 		user = loadUser(username);
-		
+
 		user.setTotpEnrolled(false);
 		user.setTotpSecret(null);
 		user.setTotpLastStep(null);

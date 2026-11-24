@@ -18,6 +18,8 @@ import { BookingDetailsComponent } from './protected/booking-details.component';
 import { SignUpComponent } from './sign-up.component';
 import { BookingsListAdminComponent } from './protected/admin/bookings-list-admin.component';
 import { Oauth2CallbackComponent } from './oauth2/oauth2-callback.component';
+import { MfaVerifyComponent } from './mfa/mfa-verify.component';
+import { mfaPendingGuard } from './guards/mfa-pending-guard';
 
 export const routes: Routes = [
 	{ path: '', component: LandingPage },
@@ -25,6 +27,7 @@ export const routes: Routes = [
 	{ path: 'signup', component: SignUpComponent },
 	{ path: 'home', component: UserHomeComponent, canActivate: [authGuard] },
 	{ path: 'oauth2/callback', component: Oauth2CallbackComponent },
+	{ path: 'mfa', component: MfaVerifyComponent, canActivate: [mfaPendingGuard] },
 	{ path: 'admin/rooms', component: RoomsAdminComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/create', component: RoomsCreateComponent, canActivate: [adminGuard] },
 	{ path: 'admin/rooms/:id', component: RoomManageComponent, canActivate: [adminGuard] },

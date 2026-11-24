@@ -37,6 +37,8 @@ public class TotpFactorAuthorizationManager implements AuthorizationManager<Obje
 	}
 	
 	public static boolean hasTotp(Authentication authentication) {
-		return authentication.getAuthorities().contains(Factors.TOTP);
+		return authentication.getAuthorities().stream().anyMatch(
+			a -> Factors.TOTP.equals(a.getAuthority())
+		);
 	}
 }

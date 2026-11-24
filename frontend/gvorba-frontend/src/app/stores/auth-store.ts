@@ -3,9 +3,11 @@ import { ApiService } from '../services/api.service';
 import { LoginRequest } from '../models/login-request.model';
 import { SignupRequest } from '../models/signup-request.model';
 import { TokenStorageService } from '../services/token-storage-service';
-import { finalize, map, Observable, shareReplay, switchMap, tap } from 'rxjs';
+import { finalize, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { UserStore } from './user-store';
+import { OtpRequest } from '../models/two-factor.models';
+import { LoginResponse } from '../models/login-response.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -22,12 +24,14 @@ export class AuthStore {
 	private _authToken = signal('');
 	private _isLoading = signal(false);
 	private _error = signal<Error | null>(null);
+	private _mfaPending = signal(false);
 	
 	readonly authToken = this._authToken.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
 	readonly error = this._error.asReadonly();
+	readonly mfaPending = this._mfaPending.asReadonly();
 	
-	isAuthenticated = computed(() => this.authToken() !== '');
+	isAuthenticated = computed(() => this.authToken() !== '' && !this.mfaPending());
 	
 	constructor() {
 		this.restoreSession();
@@ -40,6 +44,13 @@ export class AuthStore {
 		const token = sessionStorage.getItem('auth-token');
 		if (!token) {
 			return;
+		}
+		
+		this._authToken.set(token);
+		this._mfaPending.set(this.tokenStorage.getMfaPending());
+		
+		if (this._mfaPending()) {
+			return;    // a pending token can't call /api/auth/me; the /mfa page takes it from here
 		}
 		
 		this.userStore.loadCurrentUser().subscribe({
@@ -71,6 +82,7 @@ export class AuthStore {
 		});
 	}
 	
+	/* MARK: refresh() */
 	refresh() {
 		// Dedupe concurrent refresh calls (e.g. several guards/interceptors
 		// firing around the same time): everyone gets the same in-flight
@@ -82,8 +94,7 @@ export class AuthStore {
 		this.inFlight = this.apiService.refreshToken().pipe(
 			tap(
 				r => {
-					this._authToken.set(r.jwtToken);
-					this.tokenStorage.saveToken(r.jwtToken);
+					this.applySession(r);
 				}),
 			// Re-fetch the user here too, not just the token. Previously
 			// refresh() only updated the token, so `isAdmin`/`role` (derived
@@ -91,9 +102,14 @@ export class AuthStore {
 			// any time a silent refresh fired — isAuthenticated looked fine
 			// while admin-only UI silently disappeared.
 			switchMap(
-				r => this.userStore.loadCurrentUser().pipe(
-					map(() => r.jwtToken),
-				)),
+				r => r.mfaRequired
+				     ? of(r.jwtToken)
+				     : this.userStore.loadCurrentUser().pipe(
+						map(
+							() => r.jwtToken,
+						),
+					),
+			),
 			finalize(
 				() => this.inFlight = null),
 			shareReplay({
@@ -108,11 +124,14 @@ export class AuthStore {
 	login(user: LoginRequest) {
 		this._isLoading.set(true);
 		return this.apiService.loginUser(user).pipe(
-			tap(resp => {
-				this.tokenStorage.saveToken(resp.jwtToken);
-				this._authToken.set(resp.jwtToken);
+			tap(resp => this.applySession(resp)),
+			switchMap(resp => {
+				// Decide what this step emits when resp.mfaRequired is true vs. false.
+				if (resp.mfaRequired) {
+					return of(resp);
+				}
+				return this.userStore.loadCurrentUser().pipe(map(() => resp));
 			}),
-			switchMap(() => this.userStore.loadCurrentUser()),
 			tap({
 				next: () => {
 					this._isLoading.set(false);
@@ -142,6 +161,40 @@ export class AuthStore {
 	private resetState() {
 		sessionStorage.removeItem('auth-token');
 		this.userStore.clearCurrentUser();
+		this.tokenStorage.removeMfaPending();
+		this._mfaPending.set(false);
 		this._authToken.set('');
+		
+	}
+	
+	verifyCode(code: OtpRequest) {
+		return this.apiService.verifyTwoFactor(code).pipe(
+			tap(data => this.applySession(data)),
+			switchMap(data => this.userStore.loadCurrentUser().pipe(
+				map(() => data),
+			)),
+		);
+	}
+	
+	recoverWithCode(recoveryCode: string) {
+		return this.apiService.recoverTwoFactor({ recoveryCode }).pipe(
+			tap(data => this.applySession(data)),
+			switchMap(data => this.userStore.loadCurrentUser().pipe(
+				map(() => data),
+			)),
+		);
+	}
+	
+	applySession(resp: LoginResponse) {
+		this.tokenStorage.saveToken(resp.jwtToken);
+		this.tokenStorage.saveMfaPending(resp.mfaRequired);
+		
+		this._authToken.set(resp.jwtToken);
+		this._mfaPending.set(resp.mfaRequired);
+	}
+	
+	markMfaRequired() {
+		this.tokenStorage.saveMfaPending(true);
+		this._mfaPending.set(true);
 	}
 }

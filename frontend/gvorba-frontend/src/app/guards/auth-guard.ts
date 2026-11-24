@@ -12,12 +12,23 @@ export const authGuard: CanActivateFn = (_route, _state) => {
 	const authStore = inject(AuthStore);
 	const token = tokenService.getToken();
 	
+	if (authStore.mfaPending()) {
+		return new RedirectCommand(router.parseUrl('/mfa'));
+	}
+	
 	if (token !== null && !jwtHelper.isTokenExpired(token)) {
 		return true;
 	}
 	
 	return authStore.refresh().pipe(
-		map(() => true),
+		// map(() => true),
+		map(() => {
+			if (authStore.mfaPending()) {
+				return new RedirectCommand(router.parseUrl('/mfa'));
+			} else {
+				return true;
+			}
+		}),
 		catchError(() =>
 			of(new RedirectCommand(router.parseUrl('/access-denied')))),
 	);

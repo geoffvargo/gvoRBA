@@ -18,6 +18,7 @@ import { UserCreationModel } from '../models/user-creation.model';
 import { BookingResponse } from '../models/booking.response';
 import { SignupRequest } from '../models/signup-request.model';
 import { UserPrefs } from '../models/user.prefs';
+import { ConfirmResponse, OtpRequest, RecoveryRequest, SetupResponse, StatusResponse } from '../models/two-factor.models';
 
 // const baseURL = '/api';
 
@@ -177,5 +178,30 @@ export class ApiService {
 	
 	setUserPrefs(id: number, payload: UserPrefs) {
 		return this.httpClient.post<UserPrefs>(`${this.baseUrl}/api/userprefs/${id}/set-prefs`, payload);
+	}
+	
+	/* for TwoFactor */
+	getTwoFactorStatus() {
+		return this.httpClient.get<StatusResponse>(`${this.baseUrl}/api/auth/2fa/status`);
+	}
+	
+	setupTwoFactor() {
+		return this.httpClient.post<SetupResponse>(`${this.baseUrl}/api/auth/2fa/setup`, null);
+	}
+	
+	confirmTwoFactor(payload: OtpRequest) {
+		return this.httpClient.post<ConfirmResponse>(`${this.baseUrl}/api/auth/2fa/confirm`, payload);
+	}
+	
+	verifyTwoFactor(payload: OtpRequest) {
+		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/2fa/verify`, payload);
+	}
+	
+	recoverTwoFactor(payload: RecoveryRequest) {
+		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/2fa/recover`, payload);
+	}
+	
+	disableTwoFactor(payload: OtpRequest) {
+		return this.httpClient.post<void>(`${this.baseUrl}/api/auth/2fa/disable`, payload);
 	}
 }
