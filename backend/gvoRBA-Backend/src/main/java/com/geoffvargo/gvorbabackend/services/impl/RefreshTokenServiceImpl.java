@@ -107,7 +107,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 			String newRaw = issue(row.getUser(), row.getMfaVerified());
 			row.setRevokedAt(LocalDateTime.now());
 			
-			return new RotationResult(newRaw, principal, row.getUser().getUserPrefs().getMultifactor());
+			return new RotationResult(newRaw, principal, row.getMfaVerified());
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException("SHA-256 is required on every Java platform", e);
 		}
