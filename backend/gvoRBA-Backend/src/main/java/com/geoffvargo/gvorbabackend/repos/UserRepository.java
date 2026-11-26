@@ -10,6 +10,8 @@ import java.util.*;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+	List<User> findAllByEnabledTrue();
+	
 	Boolean existsByName(String name);
 	
 	Boolean existsByEmail(String email);

@@ -23,6 +23,7 @@ public class User {
 	@Column(name = "email")
 	private String email;
 	
+	@JsonIgnore
 	@Column(name = "password")
 	private String password;
 	
@@ -53,10 +54,12 @@ public class User {
 	private UserPrefs userPrefs;
 	
 	/** AES-GCM ciphertext (Base64) of the raw 20-byte TOTP secret. Null until setup. */
+	@JsonIgnore
 	@Column(name = "totp_secret")
 	private String totpSecret;
 	
 	/** Highest TOTP time step ever accepted. Written only by UserRepository.claimTotpStep. */
+	@JsonIgnore
 	@Column(name = "totp_last_step")
 	private Long totpLastStep;
 	
