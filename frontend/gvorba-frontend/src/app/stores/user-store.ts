@@ -8,6 +8,7 @@ import { firstValueFrom, Observable, tap } from 'rxjs';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { AuthProviderEnum } from '../models/auth-provider.enum';
 import { UserPrefs } from '../models/user.prefs';
+import { UserSummary } from '../models/user-summary.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -21,12 +22,14 @@ export class UserStore {
 	private _loadedUser = signal<User | null>(null);
 	private _isLocal = signal<boolean>(false);
 	private _userPrefs = signal<UserPrefs>(new UserPrefs());
+	private _directory = signal<UserSummary[]>([]);
 	
 	readonly users = this._users.asReadonly();
 	readonly isLoading = this._isLoading.asReadonly();
 	readonly loadedUser = this._loadedUser.asReadonly();
 	readonly isLocal = this._isLocal.asReadonly();
 	readonly userPrefs = this._userPrefs.asReadonly();
+	readonly directory = this._directory.asReadonly();
 	
 	/// The logged-in user. AuthStore drives this through loadCurrentUser()/clearCurrentUser()
 	/// on login, refresh, and logout.
@@ -70,6 +73,25 @@ export class UserStore {
 			next: data => {
 				this._users.set(data);
 				console.log(data);
+				this._isLoading.set(false);
+			},
+			error: err => {
+				console.log(err);
+				this.toast.error(err.message, {
+					position: 'bottom-center',
+					dismissible: true,
+				});
+				this._isLoading.set(false);
+			},
+		});
+	}
+	
+	loadDireectory() {
+		this._isLoading.set(true);
+		
+		this.apiService.loadUserDirectory().subscribe({
+			next: data => {
+				this._directory.set(data);
 				this._isLoading.set(false);
 			},
 			error: err => {
