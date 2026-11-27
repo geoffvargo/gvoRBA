@@ -43,7 +43,7 @@ export class BookingDetailsComponent implements OnInit {
 	protected userStore = inject(UserStore);
 	
 	protected bookingId = signal<number>(this.route.snapshot.params['id']);
-	protected users = this.userStore.users;
+	protected users = this.userStore.directory;
 	protected booking = this.bookingStore.currentBooking;
 	protected isLoading = this.bookingStore.isLoading;
 	protected isAdmin = this.userStore.isAdmin;
@@ -132,7 +132,7 @@ export class BookingDetailsComponent implements OnInit {
 	}
 	
 	ngOnInit() {
-		this.userStore.loadUsers(); // attendee picker
+		this.userStore.loadDireectory(); // attendee picker
 		this.bookingStore.loadBooking(this.bookingId());
 		console.log('currentBooking', this.booking());
 		console.log(this.attendeeNames());

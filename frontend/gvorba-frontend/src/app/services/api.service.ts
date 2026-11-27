@@ -19,6 +19,7 @@ import { BookingResponse } from '../models/booking.response';
 import { SignupRequest } from '../models/signup-request.model';
 import { UserPrefs } from '../models/user.prefs';
 import { ConfirmResponse, OtpRequest, RecoveryRequest, SetupResponse, StatusResponse } from '../models/two-factor.models';
+import { UserSummary } from '../models/user-summary.model';
 
 // const baseURL = '/api';
 
@@ -68,7 +69,7 @@ export class ApiService {
 		return this.httpClient.get<User>(`${this.baseUrl}/api/auth/me`);
 	}
 	
-	/* for room-store */
+	/* MARK: for room-store */
 	getRoomBookings(id: string, date: Date) {
 		return this.httpClient.get<Booking[]>(
 			`${this.baseUrl}/api/rooms/${id}/bookings?date=${date.toISOString().slice(0, 19)}`).pipe(map(toBookings));
@@ -86,7 +87,7 @@ export class ApiService {
 		return this.httpClient.delete<Room>(`${this.baseUrl}/api/rooms/${id}`);
 	}
 	
-	/* for booking-store */
+	/* MARK: for booking-store */
 	cancelBooking(id: number) {
 		return this.httpClient.patch<Booking>(`${this.baseUrl}/api/bookings/cancel/${id}`, null);
 	}
@@ -107,7 +108,7 @@ export class ApiService {
 		return this.httpClient.patch(`${this.baseUrl}/api/bookings/${id}/edit`, payload);
 	}
 	
-	/* for user-store */
+	/* MARK: for user-store */
 	loadUsers() {
 		return this.httpClient.get<User[]>(`${this.baseUrl}/api/users/`);
 	}
@@ -132,7 +133,7 @@ export class ApiService {
 		return this.httpClient.put<User>(`${this.baseUrl}/api/users/create`, data);
 	}
 	
-	/* for auth-store */
+	/* MARK: for auth-store */
 	loginUser(data: LoginRequest) {
 		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/signin`, data);
 	}
@@ -163,7 +164,7 @@ export class ApiService {
 		return this.httpClient.post<LoginResponse>(`${this.baseUrl}/api/auth/public/refresh`, null);
 	}
 	
-	/* for ICS */
+	/* MARK: for ICS */
 	
 	exportIcs(bookingId: number) {
 		return this.httpClient.get(`${this.baseUrl}/api/bookings/${bookingId}/calendar.ics`, {
@@ -171,7 +172,7 @@ export class ApiService {
 		});
 	}
 	
-	/* for UserPrefs */
+	/* MARK: for UserPrefs */
 	getUserPrefs(id: number) {
 		return this.httpClient.get<UserPrefs>(`${this.baseUrl}/api/userprefs/${id}/get-prefs`);
 	}
@@ -180,7 +181,7 @@ export class ApiService {
 		return this.httpClient.post<UserPrefs>(`${this.baseUrl}/api/userprefs/${id}/set-prefs`, payload);
 	}
 	
-	/* for TwoFactor */
+	/* MARK: for TwoFactor */
 	getTwoFactorStatus() {
 		return this.httpClient.get<StatusResponse>(`${this.baseUrl}/api/auth/2fa/status`);
 	}
@@ -203,5 +204,10 @@ export class ApiService {
 	
 	disableTwoFactor(payload: OtpRequest) {
 		return this.httpClient.post<void>(`${this.baseUrl}/api/auth/2fa/disable`, payload);
+	}
+	
+	/* MARK: for UserSummary */
+	loadUserDirectory() {
+		return this.httpClient.get<UserSummary[]>(`${this.baseUrl}/api/directory/users`);
 	}
 }

@@ -51,7 +51,7 @@ export class CreateBookingComponent {
 		this.roomStore.isLoading() || this.userStore.isLoading() || this.authStore.isLoading(),
 	);
 	protected readonly rooms = this.roomStore.rooms;
-	protected readonly users = this.userStore.users;
+	protected readonly users = this.userStore.directory;
 	protected readonly isAdmin = this.userStore.isAdmin;
 	protected readonly currentUser = this.userStore.user;
 	protected readonly startOptions = signal(START_OPTIONS);
@@ -141,7 +141,7 @@ export class CreateBookingComponent {
 	});
 	
 	constructor() {
-		this.userStore.loadUsers();
+		this.userStore.loadDireectory();
 		this.userStore.loadCurrentUser().subscribe({
 			error: err => console.error(err),
 		});
